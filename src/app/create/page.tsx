@@ -4,13 +4,13 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StudioFromParams from "@/components/studio/StudioFromParams";
 
-// Legacy URL kept working for existing links; the canonical studio is /create.
 export const metadata: Metadata = {
   title: "Create your print — SoundWave Art",
+  description: "Choose a finished design, add your recording and your words, and see exactly what we'll print.",
   alternates: { canonical: "/create" },
 };
 
-export default function CustomProductPage() {
+export default function CreatePage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#2D2A26]">
       <Navbar />

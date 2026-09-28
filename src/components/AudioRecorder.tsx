@@ -161,18 +161,21 @@ export default function AudioRecorder({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check size limit: 50MB
-    if (file.size > 50 * 1024 * 1024) {
-      setErrorMsg("Audio file exceeds maximum allowed size of 50MB.");
-      return;
-    }
-
     const name = file.name.toLowerCase();
+    const isVideo = file.type.startsWith("video/") || [".mp4", ".mov"].some((ext) => name.endsWith(ext));
     const validExtensions = [".mp3", ".wav", ".webm", ".m4a", ".aac", ".ogg"];
     const isValidExt = validExtensions.some((ext) => name.endsWith(ext));
 
-    if (!isValidExt && !file.type.startsWith("audio/")) {
-      setErrorMsg("Unsupported file format. Please upload an MP3, WAV, or WebM audio file.");
+    if (!isValidExt && !isVideo && !file.type.startsWith("audio/")) {
+      setErrorMsg("Unsupported file. Upload an audio file (MP3, M4A, WAV) or a phone video (MP4, MOV).");
+      return;
+    }
+
+    // Audio files go to the server as-is (50MB cap). Videos are decoded in the
+    // browser and only their sound is uploaded, so they may be larger.
+    const limit = isVideo ? 400 * 1024 * 1024 : 50 * 1024 * 1024;
+    if (file.size > limit) {
+      setErrorMsg(isVideo ? "That video is over 400MB — trim it to the moment you want first." : "Audio file exceeds maximum allowed size of 50MB.");
       return;
     }
 
@@ -187,7 +190,7 @@ export default function AudioRecorder({
           <button
             type="button"
             onClick={startRecording}
-            className="flex-1 min-w-[170px] flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-[#B76E79] hover:bg-[#A05C66] text-white font-semibold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+            className="flex-1 min-w-[170px] flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-[#2D2A26] hover:bg-[#000000] text-white font-semibold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
           >
             <svg
               className="w-5 h-5"
@@ -210,14 +213,14 @@ export default function AudioRecorder({
           </button>
         )}
 
-        <label className="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#D8C7B5] hover:border-[#B76E79] text-[#2D2A26] font-medium cursor-pointer transition-all">
-          <svg className="w-5 h-5 text-[#B76E79]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <label className="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#D8C7B5] hover:border-[#2D2A26] text-[#2D2A26] font-medium cursor-pointer transition-all">
+          <svg className="w-5 h-5 text-[#2D2A26]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
           <span>Upload Audio</span>
           <input
             type="file"
-            accept="audio/mp3,audio/wav,audio/webm,audio/mpeg,.mp3,.wav,.webm"
+            accept="audio/*,video/mp4,video/quicktime,.mp3,.wav,.webm,.m4a,.mp4,.mov,.aac"
             onChange={handleFileUpload}
             className="hidden"
           />

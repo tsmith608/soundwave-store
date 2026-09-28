@@ -3,6 +3,21 @@
 import React, { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { FRAME_SIZES, PALETTES } from "@/lib/constants";
+import FramedArtwork from "@/components/art/FramedArtwork";
+import { getDesign, type ArtFields } from "@/lib/art";
+import { track } from "@/lib/analytics";
+
+interface OrderArtwork {
+  designId: string;
+  colorwayId: string;
+  fields: ArtFields;
+  peaks: number[];
+  showQr: boolean;
+  format: "framed" | "print";
+  frameFinish: string | null;
+  widthIn: number;
+  heightIn: number;
+}
 
 interface OrderData {
   id: string;
@@ -15,6 +30,7 @@ interface OrderData {
   caption: string | null;
   partnerOrderId: string | null;
   totalAmount: number;
+  artwork?: OrderArtwork | null;
   customerEmail?: string;
   shippingName?: string;
   shippingAddress?: string;
@@ -87,6 +103,23 @@ export default function OrderStatusPage({
 
     return () => clearInterval(interval);
   }, [orderId]);
+
+  const [isTestOrder, setIsTestOrder] = useState(false);
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    setIsTestOrder(sp.get("preview_checkout") === "1");
+  }, []);
+
+  // Browser half of the purchase conversion; the server sends the same event_id from the Stripe webhook.
+  useEffect(() => {
+    if (!order || order.status === "pending_payment") return;
+    if (new URLSearchParams(window.location.search).get("status") !== "success") return;
+    track(
+      "purchase",
+      { order_id: order.id, value: order.totalAmount / 100, currency: "USD", design_id: order.artwork?.designId, size: order.frameSize },
+      { eventId: `purchase_${order.id}`, onceKey: order.id }
+    );
+  }, [order]);
 
   const frameConfig = order ? FRAME_SIZES[order.frameSize] : null;
   const paletteConfig = order ? PALETTES[order.palette] : null;
@@ -161,12 +194,18 @@ export default function OrderStatusPage({
               </div>
 
               <div className="text-right sm:text-right">
-                <span className="text-xs text-[#6B655F] block">Total Paid</span>
+                <span className="text-xs text-[#6B655F] block">{order.status === "pending_payment" ? "Total" : "Total Paid"}</span>
                 <span className="text-2xl font-serif font-bold text-[#2D2A26]">
                   ${(order.totalAmount / 100).toFixed(2)}
                 </span>
               </div>
             </div>
+
+            {isTestOrder && (
+              <div className="rounded-xl border border-[#E3D3B8] bg-[#FBF5EA] px-5 py-4 text-sm text-[#5C4A2E]">
+                Payments aren&apos;t switched on yet, so this order was saved as a test and nothing was charged.
+              </div>
+            )}
 
             {/* Stepper Progression */}
             <div className="bg-white border border-[#EAE3DC] rounded-2xl p-6 sm:p-8 shadow-sm">
@@ -217,6 +256,22 @@ export default function OrderStatusPage({
                   Artwork Proof Preview
                 </span>
 
+                {order.artwork && getDesign(order.artwork.designId) ? (
+                  <div className="w-full max-w-[380px] bg-[#EDE8E1] p-8">
+                    <FramedArtwork
+                      designId={order.artwork.designId}
+                      fields={order.artwork.fields}
+                      peaks={order.artwork.peaks}
+                      colorwayId={order.artwork.colorwayId}
+                      widthIn={order.artwork.widthIn}
+                      heightIn={order.artwork.heightIn}
+                      showQr={order.artwork.showQr}
+                      format={order.artwork.format}
+                      frameFinish={order.artwork.frameFinish ?? "black"}
+                      idPrefix="order"
+                    />
+                  </div>
+                ) : (
                 <div
                   className="w-full max-w-[360px] bg-[#FDFBF7] p-4 rounded-xl border-4 border-[#E8DDD1] shadow-md overflow-hidden"
                   style={{
@@ -233,9 +288,10 @@ export default function OrderStatusPage({
                     }}
                   />
                 </div>
+                )}
 
                 <p className="text-[11px] text-[#6B655F] mt-4 text-center">
-                  Low-res preview proof • High-res 300 DPI file currently in print production
+                  {order.artwork ? "This is the exact artwork we print, rendered from your order." : "Low-res preview proof • High-res 300 DPI file currently in print production"}
                 </p>
               </div>
 

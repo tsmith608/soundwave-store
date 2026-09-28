@@ -24,6 +24,27 @@ export async function GET(
       );
     }
 
+    // Public artwork spec (no file paths) so the order page renders the exact artwork
+    let artwork: Record<string, unknown> | null = null;
+    if (order.artworkSpec) {
+      try {
+        const spec = JSON.parse(order.artworkSpec);
+        artwork = {
+          designId: spec.designId,
+          colorwayId: spec.colorwayId,
+          fields: spec.fields,
+          peaks: spec.peaks,
+          showQr: spec.showQr,
+          format: spec.format,
+          frameFinish: spec.frameFinish,
+          widthIn: spec.widthIn,
+          heightIn: spec.heightIn,
+        };
+      } catch {
+        artwork = null;
+      }
+    }
+
     // Return sanitized public order DTO
     return NextResponse.json({
       id: order.id,
@@ -36,6 +57,7 @@ export async function GET(
       caption: order.caption,
       partnerOrderId: order.partnerOrderId,
       totalAmount: order.totalAmount,
+      artwork,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
     });

@@ -136,6 +136,8 @@ export interface CreateOrderInput {
   audioPath: string;
   photoPath?: string | null;
   decorativeTheme?: string | null;
+  artworkSpec?: string | null;
+  listenToken?: string | null;
   previewUrl?: string | null;
   printPdfPath?: string | null;
   status?: OrderStatus;
@@ -174,6 +176,8 @@ export async function createOrder(data: CreateOrderInput) {
       audioPath: sanitizeString(data.audioPath),
       photoPath: sanitizeString(data.photoPath) ?? null,
       decorativeTheme: sanitizeString(data.decorativeTheme) || "botanical",
+      artworkSpec: sanitizeString(data.artworkSpec) ?? null,
+      listenToken: sanitizeString(data.listenToken) ?? null,
       previewUrl: sanitizeString(data.previewUrl) ?? null,
       printPdfPath: sanitizeString(data.printPdfPath) ?? null,
       status: sanitizeString(data.status) || "pending_payment",
@@ -238,6 +242,7 @@ export async function updateOrderStatus(
     externalOrderId?: string | null;
     resendEmailId?: string | null;
     emailStatus?: string | null;
+    stripeSessionId?: string | null;
   }
 ) {
   await ensurePragmas();
@@ -255,6 +260,7 @@ export async function updateOrderStatus(
       ...(updates?.externalOrderId !== undefined ? { externalOrderId: sanitizeString(updates.externalOrderId) } : {}),
       ...(updates?.resendEmailId !== undefined ? { resendEmailId: sanitizeString(updates.resendEmailId) } : {}),
       ...(updates?.emailStatus !== undefined ? { emailStatus: sanitizeString(updates.emailStatus) } : {}),
+      ...(updates?.stripeSessionId !== undefined ? { stripeSessionId: sanitizeString(updates.stripeSessionId) } : {}),
     },
   });
 }

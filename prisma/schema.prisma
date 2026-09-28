@@ -19,6 +19,10 @@ model Order {
   audioPath           String
   photoPath           String?
   decorativeTheme     String           @default("botanical")
+  // Curated-design orders: JSON { version, designId, colorwayId, fields, peaks, showQr, format, frameFinish, widthIn, heightIn }
+  artworkSpec         String?
+  // Unguessable token behind the printed scan-to-listen code (/l/<token>)
+  listenToken         String?          @unique
   previewUrl          String?
   printPdfPath        String?
   status              String           @default("pending_payment")
@@ -109,4 +113,20 @@ model EmailEvent {
   @@index([orderId])
   @@index([resendEmailId])
   @@index([eventType])
+}
+
+// First-party funnel events (see docs/analytics-plan.md)
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  event     String
+  eventId   String?
+  sessionId String?
+  path      String?
+  referrer  String?
+  params    String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([sessionId])
 }

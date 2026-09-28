@@ -167,3 +167,47 @@ export async function decodePeaksFromBlob(blob: Blob, n = PEAK_RESOLUTION): Prom
     void ctx.close();
   }
 }
+
+/**
+ * Browser-only: decodes any format the browser can play (including the audio
+ * track of MP4/MOV videos) and re-encodes it as 16-bit mono WAV at 22.05 kHz,
+ * so phone videos and uncommon formats can be uploaded reliably.
+ */
+export async function blobToWav(blob: Blob, sampleRate = 22050): Promise<Blob> {
+  const buf = await blob.arrayBuffer();
+  const Ctx: typeof AudioContext =
+    (globalThis as unknown as { AudioContext: typeof AudioContext }).AudioContext ||
+    (globalThis as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+  const ctx = new Ctx();
+  let audio: AudioBuffer;
+  try {
+    audio = await ctx.decodeAudioData(buf.slice(0));
+  } finally {
+    void ctx.close();
+  }
+  const length = Math.ceil(audio.duration * sampleRate);
+  const off = new OfflineAudioContext(1, length, sampleRate);
+  const src = off.createBufferSource();
+  src.buffer = audio;
+  src.connect(off.destination);
+  src.start();
+  const rendered = await off.startRendering();
+  const data = rendered.getChannelData(0);
+  const out = new DataView(new ArrayBuffer(44 + data.length * 2));
+  const w = (o: number, s: string) => [...s].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+  w(0, "RIFF");
+  out.setUint32(4, 36 + data.length * 2, true);
+  w(8, "WAVE");
+  w(12, "fmt ");
+  out.setUint32(16, 16, true);
+  out.setUint16(20, 1, true);
+  out.setUint16(22, 1, true);
+  out.setUint32(24, sampleRate, true);
+  out.setUint32(28, sampleRate * 2, true);
+  out.setUint16(32, 2, true);
+  out.setUint16(34, 16, true);
+  w(36, "data");
+  out.setUint32(40, data.length * 2, true);
+  for (let i = 0; i < data.length; i++) out.setInt16(44 + i * 2, Math.max(-1, Math.min(1, data[i])) * 0x7fff, true);
+  return new Blob([out.buffer], { type: "audio/wav" });
+}
