@@ -1,0 +1,46 @@
+{
+  "name": "soundwave-store",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "test": "tsx src/lib/verify.ts",
+    "test:m1": "tsx src/lib/verify.ts",
+    "test:m3_m4": "tsx src/lib/verify_m3_m4.ts",
+    "test:sprint2": "tsx tests/test_sprint2_unified.ts",
+    "test:all": "tsx src/lib/verify.ts && tsx src/lib/verify_m3_m4.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.4.0",
+    "better-sqlite3": "^11.8.1",
+    "framer-motion": "^13.4.0",
+    "lucide-react": "^1.47.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "stripe": "^17.7.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.4.0",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "postcss": "^8.4.38",
+    "prisma": "^6.4.0",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.13",
+    "typescript": "^5"
+  }
+}

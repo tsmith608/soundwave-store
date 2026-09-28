@@ -1,0 +1,695 @@
+{
+  "total": 86,
+  "passedCount": 86,
+  "failedCount": 0,
+  "results": [
+    {
+      "category": "Checkout Frame Size",
+      "name": "Valid frame size '8x10' accepted",
+      "passed": true,
+      "expected": "HTTP 200 with success: true",
+      "actual": "HTTP 200, body: {\"success\":true,\"orderId\":\"ord_mubr78xj_xqcvr2tv\",\"checkoutUrl\":\"http://localhost:3000/order/ord_mubr78xj_xqcvr2tv?session_id=cs_test_ord_mubr78xj_xqcvr2tv_1790025897091&mock_payment=true\",\"sessionId\":\"cs_test_ord_mubr78xj_xqcvr2tv_1790025897091\"}",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Valid frame size '11x14' accepted",
+      "passed": true,
+      "expected": "HTTP 200 with success: true",
+      "actual": "HTTP 200, body: {\"success\":true,\"orderId\":\"ord_mubr79tw_3ounhpeg\",\"checkoutUrl\":\"http://localhost:3000/order/ord_mubr79tw_3ounhpeg?session_id=cs_test_ord_mubr79tw_3ounhpeg_1790025897198&mock_payment=true\",\"sessionId\":\"cs_test_ord_mubr79tw_3ounhpeg_1790025897198\"}",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Valid frame size '16x20' accepted",
+      "passed": true,
+      "expected": "HTTP 200 with success: true",
+      "actual": "HTTP 200, body: {\"success\":true,\"orderId\":\"ord_mubr79wv_5l5r06s4\",\"checkoutUrl\":\"http://localhost:3000/order/ord_mubr79wv_5l5r06s4?session_id=cs_test_ord_mubr79wv_5l5r06s4_1790025897320&mock_payment=true\",\"sessionId\":\"cs_test_ord_mubr79wv_5l5r06s4_1790025897320\"}",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Valid frame size '24x36' accepted",
+      "passed": true,
+      "expected": "HTTP 200 with success: true",
+      "actual": "HTTP 200, body: {\"success\":true,\"orderId\":\"ord_mubr7a09_vvsixnx7\",\"checkoutUrl\":\"http://localhost:3000/order/ord_mubr7a09_vvsixnx7?session_id=cs_test_ord_mubr7a09_vvsixnx7_1790025897464&mock_payment=true\",\"sessionId\":\"cs_test_ord_mubr7a09_vvsixnx7_1790025897464\"}",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size '12x18' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size '5x7' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size '4x6' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size '20x30' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size 'custom' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size '' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size '  ' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size '8X10' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size",
+      "name": "Invalid frame size '8x10 ' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size - Prototype Defense",
+      "name": "Prototype property frameSize='toString' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400 (rejected as invalid frame size)",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size - Prototype Defense",
+      "name": "Prototype property frameSize='valueOf' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400 (rejected as invalid frame size)",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size - Prototype Defense",
+      "name": "Prototype property frameSize='constructor' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400 (rejected as invalid frame size)",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size - Prototype Defense",
+      "name": "Prototype property frameSize='__proto__' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400 (rejected as invalid frame size)",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size - Prototype Defense",
+      "name": "Prototype property frameSize='hasOwnProperty' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400 (rejected as invalid frame size)",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Checkout Frame Size - Type Safety",
+      "name": "Non-string frameSize '1620' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size - Type Safety",
+      "name": "Non-string frameSize 'true' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size - Type Safety",
+      "name": "Non-string frameSize '{}' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size - Type Safety",
+      "name": "Non-string frameSize '[]' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Checkout Frame Size - Type Safety",
+      "name": "Non-string frameSize 'null' rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Price Tampering Defense",
+      "name": "Client attempts price=1 cent does not override canonical DB price (14900)",
+      "passed": true,
+      "expected": "DB order totalAmount strictly 14900 cents ($149.00)",
+      "actual": "DB order totalAmount: 14900 cents",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Price Tampering Defense",
+      "name": "Client attempts price=0 free checkout does not override canonical DB price (14900)",
+      "passed": true,
+      "expected": "DB order totalAmount strictly 14900 cents ($149.00)",
+      "actual": "DB order totalAmount: 14900 cents",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Price Tampering Defense",
+      "name": "Client attempts negative price does not override canonical DB price (14900)",
+      "passed": true,
+      "expected": "DB order totalAmount strictly 14900 cents ($149.00)",
+      "actual": "DB order totalAmount: 14900 cents",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Price Tampering Defense",
+      "name": "Client attempts float price does not override canonical DB price (14900)",
+      "passed": true,
+      "expected": "DB order totalAmount strictly 14900 cents ($149.00)",
+      "actual": "DB order totalAmount: 14900 cents",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Price Tampering Defense",
+      "name": "Client passes unit_amount=10 does not override canonical DB price (14900)",
+      "passed": true,
+      "expected": "DB order totalAmount strictly 14900 cents ($149.00)",
+      "actual": "DB order totalAmount: 14900 cents",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Caption Boundaries",
+      "name": "Caption of exact boundary length 200 chars accepted",
+      "passed": true,
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Caption Boundaries",
+      "name": "Caption of length 201 chars rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Caption Boundaries",
+      "name": "Caption of length 10,000 chars rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Surrogate Safety",
+      "name": "Unpaired Unicode surrogates in caption do not crash server",
+      "passed": true,
+      "expected": "Handled gracefully (HTTP 200 or 400, no crash/500)",
+      "actual": "HTTP 200",
+      "severity": "HIGH"
+    },
+    {
+      "category": "JSON Parsing",
+      "name": "Malformed JSON payload rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "JSON Parsing",
+      "name": "Empty request body rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "HMAC Security",
+      "name": "Missing stripe-signature header rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "HMAC Security",
+      "name": "Completely forged signature rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "HMAC Security",
+      "name": "Signature signed with wrong secret rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "HMAC Security",
+      "name": "Multiple v1 signatures with one valid matches correctly (Stripe key rolling)",
+      "passed": true,
+      "expected": "HTTP 200 (at least one valid v1 matches)",
+      "actual": "HTTP 200",
+      "severity": "HIGH"
+    },
+    {
+      "category": "HMAC Security",
+      "name": "Non-hex characters in v1 signature rejected with 400 without crashing",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Replay Attack Defense",
+      "name": "Replay with timestamp expired by 301s rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400 (expired timestamp)",
+      "actual": "HTTP 400",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Replay Attack Defense",
+      "name": "Replay with timestamp 1 day old rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Replay Attack Defense",
+      "name": "Future timestamp +305s rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400 (clock drift tolerance exceeded)",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Replay Attack Defense",
+      "name": "Timestamp within tolerance (290s ago) accepted with 200",
+      "passed": true,
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Replay Attack Defense",
+      "name": "Non-numeric timestamp string rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Corrupted Payload",
+      "name": "Truncated JSON payload with matching signature rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400 (Invalid JSON payload)",
+      "actual": "HTTP 400",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Corrupted Payload",
+      "name": "Array JSON payload rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Corrupted Payload",
+      "name": "Event missing 'id' property rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Corrupted Payload",
+      "name": "Event missing 'type' property rejected with 400",
+      "passed": true,
+      "expected": "HTTP 400",
+      "actual": "HTTP 400",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "Event Type Handling",
+      "name": "Unknown event type acknowledged with 200 and ignored",
+      "passed": true,
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "severity": "LOW"
+    },
+    {
+      "category": "Idempotency",
+      "name": "First delivery of checkout.session.completed processes with 200",
+      "passed": true,
+      "expected": "HTTP 200, status: 'processed'",
+      "actual": "HTTP 200, status: 'processed'",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "State Transition",
+      "name": "Order status transitioned to pending_fulfillment",
+      "passed": true,
+      "expected": "status: 'pending_fulfillment'",
+      "actual": "status: 'pending_fulfillment'",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Idempotency",
+      "name": "Sequential duplicate delivery returns 200 and duplicate_ignored",
+      "passed": true,
+      "expected": "HTTP 200, status: 'duplicate_ignored'",
+      "actual": "HTTP 200, status: 'duplicate_ignored'",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Concurrency & Idempotency",
+      "name": "5 concurrent duplicate webhook deliveries all return 200 without DB lock crash",
+      "passed": true,
+      "expected": "All 5 requests return HTTP 200",
+      "actual": "Statuses: [200, 200, 200, 200, 200]",
+      "severity": "HIGH"
+    },
+    {
+      "category": "State Machine Regression Guard",
+      "name": "Order in status 'shipped' does NOT regress to pending_fulfillment",
+      "passed": true,
+      "expected": "status remains 'shipped'",
+      "actual": "status is 'shipped'",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "State Machine Regression Guard",
+      "name": "Order in status 'delivered' does NOT regress to pending_fulfillment",
+      "passed": true,
+      "expected": "status remains 'delivered'",
+      "actual": "status is 'delivered'",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "State Machine Regression Guard",
+      "name": "Order in status 'fulfillment_submitted' does NOT regress to pending_fulfillment",
+      "passed": true,
+      "expected": "status remains 'fulfillment_submitted'",
+      "actual": "status is 'fulfillment_submitted'",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Order Query",
+      "name": "Non-existent order ID returns 404",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Path Traversal",
+      "name": "Path traversal ID '../../package.json' safely returns 404 without crashing",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Path Traversal",
+      "name": "Path traversal ID '..%2F..%2Fpackage.json' safely returns 404 without crashing",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Path Traversal",
+      "name": "Path traversal ID '..\\..\\..\\windows\\system.ini' safely returns 404 without crashing",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Path Traversal",
+      "name": "Path traversal ID '....//....//etc/passwd' safely returns 404 without crashing",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query SQL Injection",
+      "name": "SQL injection payload '' OR '1'='1' safely returns 404",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Order Query SQL Injection",
+      "name": "SQL injection payload 'ord_1'; DROP TABLE \"Order\"; --' safely returns 404",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Order Query SQL Injection",
+      "name": "SQL injection payload '1 UNION SELECT * FROM \"Order\"' safely returns 404",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Order Query Surrogate Safety",
+      "name": "Unpaired surrogate in order ID does not crash query route",
+      "passed": true,
+      "expected": "HTTP 404 (safe lookup, no crash)",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Lifecycle",
+      "name": "Order in 'pending_payment' returns correct statusLabel 'Pending Payment'",
+      "passed": true,
+      "expected": "statusLabel: 'Pending Payment'",
+      "actual": "statusLabel: 'Pending Payment'",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "PII Privacy Protection",
+      "name": "Order query DTO does NOT expose customer PII or Stripe session ID for 'pending_payment'",
+      "passed": true,
+      "expected": "No email, address, name, or stripeSessionId in public JSON",
+      "actual": "leaks: email=false, addr=false, name=false, session=false",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Lifecycle",
+      "name": "Order in 'pending_fulfillment' returns correct statusLabel 'Payment Confirmed'",
+      "passed": true,
+      "expected": "statusLabel: 'Payment Confirmed'",
+      "actual": "statusLabel: 'Payment Confirmed'",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "PII Privacy Protection",
+      "name": "Order query DTO does NOT expose customer PII or Stripe session ID for 'pending_fulfillment'",
+      "passed": true,
+      "expected": "No email, address, name, or stripeSessionId in public JSON",
+      "actual": "leaks: email=false, addr=false, name=false, session=false",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Lifecycle",
+      "name": "Order in 'fulfillment_submitted' returns correct statusLabel 'Print Submitted'",
+      "passed": true,
+      "expected": "statusLabel: 'Print Submitted'",
+      "actual": "statusLabel: 'Print Submitted'",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "PII Privacy Protection",
+      "name": "Order query DTO does NOT expose customer PII or Stripe session ID for 'fulfillment_submitted'",
+      "passed": true,
+      "expected": "No email, address, name, or stripeSessionId in public JSON",
+      "actual": "leaks: email=false, addr=false, name=false, session=false",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Lifecycle",
+      "name": "Order in 'shipped' returns correct statusLabel 'Shipped'",
+      "passed": true,
+      "expected": "statusLabel: 'Shipped'",
+      "actual": "statusLabel: 'Shipped'",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "PII Privacy Protection",
+      "name": "Order query DTO does NOT expose customer PII or Stripe session ID for 'shipped'",
+      "passed": true,
+      "expected": "No email, address, name, or stripeSessionId in public JSON",
+      "actual": "leaks: email=false, addr=false, name=false, session=false",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Lifecycle",
+      "name": "Order in 'delivered' returns correct statusLabel 'Delivered'",
+      "passed": true,
+      "expected": "statusLabel: 'Delivered'",
+      "actual": "statusLabel: 'Delivered'",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "PII Privacy Protection",
+      "name": "Order query DTO does NOT expose customer PII or Stripe session ID for 'delivered'",
+      "passed": true,
+      "expected": "No email, address, name, or stripeSessionId in public JSON",
+      "actual": "leaks: email=false, addr=false, name=false, session=false",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Lifecycle",
+      "name": "Order in 'payment_failed' returns correct statusLabel 'Payment Failed'",
+      "passed": true,
+      "expected": "statusLabel: 'Payment Failed'",
+      "actual": "statusLabel: 'Payment Failed'",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "PII Privacy Protection",
+      "name": "Order query DTO does NOT expose customer PII or Stripe session ID for 'payment_failed'",
+      "passed": true,
+      "expected": "No email, address, name, or stripeSessionId in public JSON",
+      "actual": "leaks: email=false, addr=false, name=false, session=false",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Order Query Lifecycle",
+      "name": "Order in 'cancelled' returns correct statusLabel 'Cancelled'",
+      "passed": true,
+      "expected": "statusLabel: 'Cancelled'",
+      "actual": "statusLabel: 'Cancelled'",
+      "severity": "MEDIUM"
+    },
+    {
+      "category": "PII Privacy Protection",
+      "name": "Order query DTO does NOT expose customer PII or Stripe session ID for 'cancelled'",
+      "passed": true,
+      "expected": "No email, address, name, or stripeSessionId in public JSON",
+      "actual": "leaks: email=false, addr=false, name=false, session=false",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Preview Route",
+      "name": "Non-existent order preview returns 404",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Preview Path Traversal",
+      "name": "Path traversal ID '../../package.json' in preview route returns 404",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Preview Path Traversal",
+      "name": "Path traversal ID '..%2F..%2Fstorage%2Fsoundwave.db' in preview route returns 404",
+      "passed": true,
+      "expected": "HTTP 404",
+      "actual": "HTTP 404",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Preview Path Traversal Defense",
+      "name": "Poisoned order.previewUrl ('../../package.json') does NOT leak arbitrary files",
+      "passed": true,
+      "expected": "Path traversal blocked (package.json contents not returned)",
+      "actual": "Blocked, fallback SVG rendered",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Preview SVG XSS Defense",
+      "name": "Malicious HTML/script tags in caption and palette are XML-escaped in SVG preview",
+      "passed": true,
+      "expected": "Raw tags escaped (&lt;script&gt;), no unescaped injection",
+      "actual": "Properly escaped",
+      "severity": "CRITICAL"
+    },
+    {
+      "category": "Preview SVG Security Headers",
+      "name": "SVG preview response contains strict Content-Security-Policy and nosniff",
+      "passed": true,
+      "expected": "CSP default-src 'none' and X-Content-Type-Options: nosniff present",
+      "actual": "CSP: 'default-src 'none'; style-src 'unsafe-inline'', X-Content-Type-Options: 'nosniff'",
+      "severity": "HIGH"
+    },
+    {
+      "category": "Preview File Serving",
+      "name": "Existing preview image file on disk is returned with image/jpeg Content-Type",
+      "passed": true,
+      "expected": "HTTP 200, Content-Type: image/jpeg",
+      "actual": "HTTP 200, Content-Type: image/jpeg",
+      "severity": "HIGH"
+    }
+  ]
+}

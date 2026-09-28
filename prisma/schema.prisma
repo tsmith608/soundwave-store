@@ -1,0 +1,112 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Order {
+  id                  String           @id @default(uuid())
+  customerEmail       String
+  shippingName        String?
+  shippingAddress     String?
+  frameSize           String
+  palette             String
+  caption             String?
+  audioPath           String
+  photoPath           String?
+  decorativeTheme     String           @default("botanical")
+  previewUrl          String?
+  printPdfPath        String?
+  status              String           @default("pending_payment")
+  partnerOrderId      String?
+  stripeSessionId     String?          @unique
+  totalAmount         Int              @default(0)
+
+  // Etsy Integration Fields (Sprint 2 Milestone 3)
+  source              String           @default("direct") // "direct" | "etsy"
+  externalOrderId     String?          @unique            // Etsy receipt ID / partner ID
+  personalizationData String?                             // JSON string: song, artist, notes
+  etsyListingId       String?
+  etsyReceiptId       String?
+  audioSourceUrl      String?
+
+  // Resend Email Tracking Fields (Sprint 2 Milestone 4)
+  resendEmailId       String?          @unique
+  emailStatus         String?          @default("not_sent") // "not_sent" | "sent" | "delivered" | "bounced" | "complained"
+  emailDeliveredAt    DateTime?
+  emailBounceReason   String?
+  emailBouncedAt      DateTime?
+  lastEmailEventAt    DateTime?
+
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  fulfillmentLogs     FulfillmentLog[]
+  emailEvents         EmailEvent[]
+
+  @@index([status])
+  @@index([customerEmail])
+  @@index([stripeSessionId])
+  @@index([externalOrderId])
+  @@index([source])
+  @@index([resendEmailId])
+}
+
+model WebhookEvent {
+  id          String    @id @default(uuid())
+  eventId     String    @unique
+  eventType   String
+  status      String
+  payload     String
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([eventId])
+  @@index([eventType])
+}
+
+model FulfillmentLog {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  step      String
+  status    String
+  details   String?
+  timestamp DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model EtsyToken {
+  id           String   @id @default(uuid())
+  shopId       String?
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  tokenType    String?  @default("Bearer")
+  scope        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([shopId])
+}
+
+model EmailEvent {
+  id            String    @id @default(uuid())
+  orderId       String?
+  order         Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  resendEmailId String
+  eventType     String    // "email.sent", "email.delivered", "email.bounced", "email.complained", "email.opened", "email.clicked"
+  recipient     String
+  subject       String?
+  bounceReason  String?
+  payload       String?   // Raw webhook JSON payload
+  createdAt     DateTime  @default(now())
+
+  @@index([orderId])
+  @@index([resendEmailId])
+  @@index([eventType])
+}

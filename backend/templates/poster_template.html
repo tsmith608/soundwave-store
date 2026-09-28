@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SoundWave Art Print</title>
+  <style>
+    /* 1. Embedded Cursive / Script Font */
+    {% if cursive_font_uri %}
+    @font-face {
+      font-family: 'GreatVibes';
+      src: url("{{ cursive_font_uri }}") format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    {% endif %}
+
+    /* 2. Exact Physical Page Size for 300 DPI Print PDF */
+    @page {
+      size: {{ width_in }}in {{ height_in }}in;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: {{ width_in }}in;
+      height: {{ height_in }}in;
+      overflow: hidden;
+      background-color: {{ bg_color }};
+      color: {{ text_color }};
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* 3. Outer Poster Canvas with Fine-Art Archival Margins */
+    .poster-canvas {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7% 9%; /* 7% top/bottom, 9% side margin for frame matting */
+      background-color: {{ bg_color }};
+      {% if bg_texture_uri %}
+      background-image: url("{{ bg_texture_uri }}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      {% endif %}
+    }
+
+    /* 3b. Decorative Framing Borders & Aesthetic Accents (All 8 Themes) */
+    .decorative-border-outer {
+      position: absolute;
+      top: 3.5%;
+      left: 4.5%;
+      right: 4.5%;
+      bottom: 3.5%;
+      border: 1.5px solid {{ caption_color }};
+      opacity: 0.32;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+
+    .decorative-border-inner {
+      position: absolute;
+      top: 4.2%;
+      left: 5.2%;
+      right: 5.2%;
+      bottom: 4.2%;
+      border: 0.75px solid {{ caption_color }};
+      opacity: 0.20;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+
+    .theme-border-outer-art_deco {
+      border: 1.6px solid {{ caption_color }};
+      opacity: 0.50;
+    }
+    .theme-border-inner-art_deco {
+      border: 0.8px solid {{ caption_color }};
+      opacity: 0.32;
+    }
+
+    .theme-border-outer-vintage_grunge {
+      border: 1.4px dashed {{ caption_color }};
+      opacity: 0.36;
+    }
+    .theme-border-inner-vintage_grunge {
+      border: 0.75px solid {{ caption_color }};
+      opacity: 0.22;
+    }
+
+    .theme-border-outer-luxury_marble {
+      border: 1.5px solid {{ caption_color }};
+      opacity: 0.45;
+    }
+    .theme-border-inner-luxury_marble {
+      border: 0.75px solid {{ caption_color }};
+      opacity: 0.28;
+    }
+
+    .theme-border-outer-abstract_geometric {
+      border-top: 2px solid {{ caption_color }};
+      border-left: 2px solid {{ caption_color }};
+      border-bottom: 1px solid {{ caption_color }};
+      border-right: 1px solid {{ caption_color }};
+      opacity: 0.45;
+    }
+    .theme-border-inner-abstract_geometric {
+      border: 0.75px solid {{ caption_color }};
+      opacity: 0.20;
+    }
+
+    .theme-border-outer-celestial {
+      border: 1.2px solid {{ caption_color }};
+      opacity: 0.38;
+    }
+    .theme-border-inner-celestial {
+      border: 0.6px dashed {{ caption_color }};
+      opacity: 0.24;
+    }
+
+    /* Corner Accents */
+    .corner-motif {
+      position: absolute;
+      pointer-events: none;
+    }
+    .floral-flourish {
+      position: absolute;
+      width: 0.9in;
+      height: 0.9in;
+      pointer-events: none;
+    }
+    .corner-crosshair {
+      position: absolute;
+      width: 0.45in;
+      height: 0.45in;
+      pointer-events: none;
+    }
+    .corner-tl { top: 3.5%; left: 4.5%; }
+    .corner-tr { top: 3.5%; right: 4.5%; transform: scaleX(-1); transform-origin: center; }
+    .corner-bl { bottom: 3.5%; left: 4.5%; transform: scaleY(-1); transform-origin: center; }
+    .corner-br { bottom: 3.5%; right: 4.5%; transform: scale(-1, -1); transform-origin: center; }
+
+    /* Photo Frame Window */
+    .photo-container {
+      width: 100%;
+      flex: 1 1 42%;
+      max-height: 44%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1%;
+      z-index: 2;
+    }
+
+    .photo-mat-frame {
+      height: 96%;
+      max-width: 86%;
+      aspect-ratio: 4 / 3;
+      padding: 0.08in;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.2px solid {{ caption_color }}33;
+      {% if decorative_theme == 'arch' or decorative_theme == 'luxury_marble' %}
+      border-radius: 160px 160px 6px 6px;
+      {% elif decorative_theme == 'art_deco' %}
+      border-radius: 0px;
+      border: 1.6px solid {{ caption_color }}66;
+      box-shadow: 0 0 16px {{ caption_color }}22;
+      {% elif decorative_theme == 'abstract_geometric' or decorative_theme == 'geometric' %}
+      border-radius: 0px;
+      border: 2px solid {{ caption_color }}55;
+      {% elif decorative_theme == 'vintage_grunge' %}
+      border-radius: 4px;
+      border: 1.2px dashed {{ caption_color }}55;
+      {% elif decorative_theme == 'celestial' %}
+      border-radius: 8px;
+      border: 1.2px solid {{ caption_color }}55;
+      box-shadow: 0 0 20px rgba(167, 139, 250, 0.25);
+      {% else %}
+      border-radius: 6px;
+      {% endif %}
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .personal-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      {% if decorative_theme == 'arch' or decorative_theme == 'luxury_marble' %}
+      border-radius: 154px 154px 4px 4px;
+      {% elif decorative_theme == 'art_deco' %}
+      border-radius: 0px;
+      {% elif decorative_theme == 'abstract_geometric' or decorative_theme == 'geometric' %}
+      border-radius: 0px;
+      {% elif decorative_theme == 'celestial' %}
+      border-radius: 6px;
+      {% else %}
+      border-radius: 4px;
+      {% endif %}
+      display: block;
+    }
+
+    .theme-divider {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0.05in 0;
+      z-index: 2;
+    }
+    .botanical-divider {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0.05in 0;
+      z-index: 2;
+    }
+
+    /* 4. Soundwave Artwork Container */
+    .waveform-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      {% if photo_uri %}
+      flex: 0 0 18%;
+      max-height: 22%;
+      min-height: 14%;
+      margin: 0.5% 0;
+      {% else %}
+      flex: 1;
+      max-height: 56%;
+      min-height: 38%;
+      margin-top: 2%;
+      {% endif %}
+    }
+
+    .waveform-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    }
+
+    /* 5. Lower Presentation Section: Caption & QR Code */
+    .footer-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      z-index: 2;
+      {% if photo_uri %}
+      gap: 0.16in;
+      margin-bottom: 1.5%;
+      {% else %}
+      gap: 0.25in;
+      margin-bottom: 2%;
+      {% endif %}
+    }
+
+    /* Caption Box with Binary Search Auto-Fit */
+    .caption-container {
+      width: 88%;
+      max-height: 1.4in;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .caption-text {
+      color: {{ caption_color }};
+      font-family: {{ font_family_stack }};
+      font-weight: {{ font_weight }};
+      font-style: {{ font_style }};
+      letter-spacing: {{ letter_spacing }};
+      line-height: 1.22;
+      word-break: break-word;
+      padding: 0 0.1in;
+      --cap-min: {{ cap_min_px }};
+      --cap-max: {{ cap_max_px }};
+    }
+
+    /* Optional Subtitle / Date Line */
+    {% if subcaption %}
+    .subcaption-text {
+      margin-top: 0.08in;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.12in;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      color: {{ caption_color }};
+    }
+    {% endif %}
+
+    /* 6. Scannable QR Code Footer */
+    .qr-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.06in;
+    }
+
+    .qr-badge {
+      width: 1.0in;
+      height: 1.0in;
+      background: #ffffff;
+      padding: 0.05in;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .scan-hint {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.085in;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.65;
+      color: {{ caption_color }};
+    }
+  </style>
+</head>
+<body>
+  <div class="poster-canvas theme-{{ decorative_theme }}">
+    <!-- 1. Theme Borders & Corner Motifs (Rendered for ALL prints, decoupled from photo) -->
+    {% if decorative_theme == 'modern_border' %}
+    <div class="decorative-border-outer"></div>
+    <div class="decorative-border-inner"></div>
+
+    <svg class="corner-crosshair corner-tl" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="12" x2="28" y2="12" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+      <line x1="12" y1="0" x2="12" y2="28" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+    </svg>
+    <svg class="corner-crosshair corner-tr" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="40" y2="12" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+      <line x1="28" y1="0" x2="28" y2="28" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+    </svg>
+    <svg class="corner-crosshair corner-bl" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="28" x2="28" y2="28" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+      <line x1="12" y1="12" x2="12" y2="40" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+    </svg>
+    <svg class="corner-crosshair corner-br" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="28" x2="40" y2="28" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+      <line x1="28" y1="12" x2="28" y2="40" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+    </svg>
+
+    {% elif decorative_theme == 'arch' %}
+    <div class="decorative-border-outer"></div>
+    <div class="decorative-border-inner" style="border-radius: 40px 40px 0 0;"></div>
+
+    <svg class="corner-motif floral-flourish corner-tl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 10 50 A 40 40 0 0 1 50 10" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.5" />
+      <path d="M 16 50 A 34 34 0 0 1 50 16" stroke="{{ caption_color }}" stroke-width="0.75" opacity="0.3" />
+      <rect x="8" y="48" width="6" height="4" fill="{{ caption_color }}" opacity="0.6" />
+      <rect x="48" y="8" width="4" height="6" fill="{{ caption_color }}" opacity="0.6" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-tr" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 10 50 A 40 40 0 0 1 50 10" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.5" />
+      <path d="M 16 50 A 34 34 0 0 1 50 16" stroke="{{ caption_color }}" stroke-width="0.75" opacity="0.3" />
+      <rect x="8" y="48" width="6" height="4" fill="{{ caption_color }}" opacity="0.6" />
+      <rect x="48" y="8" width="4" height="6" fill="{{ caption_color }}" opacity="0.6" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-bl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 10 50 A 40 40 0 0 1 50 10" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.5" />
+      <path d="M 16 50 A 34 34 0 0 1 50 16" stroke="{{ caption_color }}" stroke-width="0.75" opacity="0.3" />
+      <rect x="8" y="48" width="6" height="4" fill="{{ caption_color }}" opacity="0.6" />
+      <rect x="48" y="8" width="4" height="6" fill="{{ caption_color }}" opacity="0.6" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-br" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 10 50 A 40 40 0 0 1 50 10" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.5" />
+      <path d="M 16 50 A 34 34 0 0 1 50 16" stroke="{{ caption_color }}" stroke-width="0.75" opacity="0.3" />
+      <rect x="8" y="48" width="6" height="4" fill="{{ caption_color }}" opacity="0.6" />
+      <rect x="48" y="8" width="4" height="6" fill="{{ caption_color }}" opacity="0.6" />
+    </svg>
+
+    {% elif decorative_theme == 'art_deco' %}
+    <div class="decorative-border-outer theme-border-outer-art_deco"></div>
+    <div class="decorative-border-inner theme-border-inner-art_deco"></div>
+
+    <svg class="corner-motif floral-flourish corner-tl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 42 L 6 6 L 42 6" stroke="{{ caption_color }}" stroke-width="1.8" opacity="0.75" />
+      <path d="M 14 36 L 14 14 L 36 14" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+      <path d="M 22 30 L 22 22 L 30 22" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.45" />
+      <polygon points="6,6 10,2 14,6 10,10" fill="{{ wave_color }}" opacity="0.8" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-tr" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 42 L 6 6 L 42 6" stroke="{{ caption_color }}" stroke-width="1.8" opacity="0.75" />
+      <path d="M 14 36 L 14 14 L 36 14" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+      <path d="M 22 30 L 22 22 L 30 22" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.45" />
+      <polygon points="6,6 10,2 14,6 10,10" fill="{{ wave_color }}" opacity="0.8" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-bl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 42 L 6 6 L 42 6" stroke="{{ caption_color }}" stroke-width="1.8" opacity="0.75" />
+      <path d="M 14 36 L 14 14 L 36 14" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+      <path d="M 22 30 L 22 22 L 30 22" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.45" />
+      <polygon points="6,6 10,2 14,6 10,10" fill="{{ wave_color }}" opacity="0.8" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-br" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 42 L 6 6 L 42 6" stroke="{{ caption_color }}" stroke-width="1.8" opacity="0.75" />
+      <path d="M 14 36 L 14 14 L 36 14" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.6" />
+      <path d="M 22 30 L 22 22 L 30 22" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.45" />
+      <polygon points="6,6 10,2 14,6 10,10" fill="{{ wave_color }}" opacity="0.8" />
+    </svg>
+
+    {% elif decorative_theme == 'vintage_grunge' %}
+    <div class="decorative-border-outer theme-border-outer-vintage_grunge"></div>
+    <div class="decorative-border-inner theme-border-inner-vintage_grunge"></div>
+
+    <svg class="corner-motif floral-flourish corner-tl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 54 A 48 48 0 0 1 54 6" stroke="{{ caption_color }}" stroke-width="1.4" opacity="0.45" />
+      <path d="M 12 54 A 42 42 0 0 1 54 12" stroke="{{ caption_color }}" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.35" />
+      <path d="M 18 54 A 36 36 0 0 1 54 18" stroke="{{ caption_color }}" stroke-width="1.0" opacity="0.3" />
+      <path d="M 24 54 A 30 30 0 0 1 54 24" stroke="{{ caption_color }}" stroke-width="0.7" opacity="0.25" />
+      <circle cx="54" cy="6" r="2.5" fill="{{ wave_color }}" opacity="0.7" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-tr" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 54 A 48 48 0 0 1 54 6" stroke="{{ caption_color }}" stroke-width="1.4" opacity="0.45" />
+      <path d="M 12 54 A 42 42 0 0 1 54 12" stroke="{{ caption_color }}" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.35" />
+      <path d="M 18 54 A 36 36 0 0 1 54 18" stroke="{{ caption_color }}" stroke-width="1.0" opacity="0.3" />
+      <path d="M 24 54 A 30 30 0 0 1 54 24" stroke="{{ caption_color }}" stroke-width="0.7" opacity="0.25" />
+      <circle cx="54" cy="6" r="2.5" fill="{{ wave_color }}" opacity="0.7" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-bl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 54 A 48 48 0 0 1 54 6" stroke="{{ caption_color }}" stroke-width="1.4" opacity="0.45" />
+      <path d="M 12 54 A 42 42 0 0 1 54 12" stroke="{{ caption_color }}" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.35" />
+      <path d="M 18 54 A 36 36 0 0 1 54 18" stroke="{{ caption_color }}" stroke-width="1.0" opacity="0.3" />
+      <path d="M 24 54 A 30 30 0 0 1 54 24" stroke="{{ caption_color }}" stroke-width="0.7" opacity="0.25" />
+      <circle cx="54" cy="6" r="2.5" fill="{{ wave_color }}" opacity="0.7" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-br" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 54 A 48 48 0 0 1 54 6" stroke="{{ caption_color }}" stroke-width="1.4" opacity="0.45" />
+      <path d="M 12 54 A 42 42 0 0 1 54 12" stroke="{{ caption_color }}" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.35" />
+      <path d="M 18 54 A 36 36 0 0 1 54 18" stroke="{{ caption_color }}" stroke-width="1.0" opacity="0.3" />
+      <path d="M 24 54 A 30 30 0 0 1 54 24" stroke="{{ caption_color }}" stroke-width="0.7" opacity="0.25" />
+      <circle cx="54" cy="6" r="2.5" fill="{{ wave_color }}" opacity="0.7" />
+    </svg>
+
+    {% elif decorative_theme == 'luxury_marble' %}
+    <div class="decorative-border-outer theme-border-outer-luxury_marble"></div>
+    <div class="decorative-border-inner theme-border-inner-luxury_marble"></div>
+
+    <svg class="corner-motif floral-flourish corner-tl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 40 L 6 6 L 40 6" stroke="{{ caption_color }}" stroke-width="1.6" opacity="0.7" />
+      <path d="M 12 34 L 12 12 L 34 12" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.4" />
+      <polygon points="6,6 9,3 12,6 9,9" fill="{{ wave_color }}" opacity="0.9" />
+      <line x1="6" y1="18" x2="18" y2="6" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.5" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-tr" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 40 L 6 6 L 40 6" stroke="{{ caption_color }}" stroke-width="1.6" opacity="0.7" />
+      <path d="M 12 34 L 12 12 L 34 12" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.4" />
+      <polygon points="6,6 9,3 12,6 9,9" fill="{{ wave_color }}" opacity="0.9" />
+      <line x1="6" y1="18" x2="18" y2="6" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.5" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-bl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 40 L 6 6 L 40 6" stroke="{{ caption_color }}" stroke-width="1.6" opacity="0.7" />
+      <path d="M 12 34 L 12 12 L 34 12" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.4" />
+      <polygon points="6,6 9,3 12,6 9,9" fill="{{ wave_color }}" opacity="0.9" />
+      <line x1="6" y1="18" x2="18" y2="6" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.5" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-br" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 40 L 6 6 L 40 6" stroke="{{ caption_color }}" stroke-width="1.6" opacity="0.7" />
+      <path d="M 12 34 L 12 12 L 34 12" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.4" />
+      <polygon points="6,6 9,3 12,6 9,9" fill="{{ wave_color }}" opacity="0.9" />
+      <line x1="6" y1="18" x2="18" y2="6" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.5" />
+    </svg>
+
+    {% elif decorative_theme == 'abstract_geometric' or decorative_theme == 'geometric' %}
+    <div class="decorative-border-outer theme-border-outer-abstract_geometric"></div>
+    <div class="decorative-border-inner theme-border-inner-abstract_geometric"></div>
+
+    <svg class="corner-motif floral-flourish corner-tl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 48 A 42 42 0 0 1 48 6" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.55" />
+      <circle cx="18" cy="18" r="5" fill="{{ wave_color }}" opacity="0.75" />
+      <line x1="6" y1="6" x2="32" y2="32" stroke="{{ caption_color }}" stroke-width="1.0" opacity="0.4" />
+      <circle cx="48" cy="6" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+      <circle cx="6" cy="48" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-tr" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 48 A 42 42 0 0 1 48 6" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.55" />
+      <circle cx="18" cy="18" r="5" fill="{{ wave_color }}" opacity="0.75" />
+      <line x1="6" y1="6" x2="32" y2="32" stroke="{{ caption_color }}" stroke-width="1.0" opacity="0.4" />
+      <circle cx="48" cy="6" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+      <circle cx="6" cy="48" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-bl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 48 A 42 42 0 0 1 48 6" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.55" />
+      <circle cx="18" cy="18" r="5" fill="{{ wave_color }}" opacity="0.75" />
+      <line x1="6" y1="6" x2="32" y2="32" stroke="{{ caption_color }}" stroke-width="1.0" opacity="0.4" />
+      <circle cx="48" cy="6" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+      <circle cx="6" cy="48" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-br" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 6 48 A 42 42 0 0 1 48 6" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.55" />
+      <circle cx="18" cy="18" r="5" fill="{{ wave_color }}" opacity="0.75" />
+      <line x1="6" y1="6" x2="32" y2="32" stroke="{{ caption_color }}" stroke-width="1.0" opacity="0.4" />
+      <circle cx="48" cy="6" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+      <circle cx="6" cy="48" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+    </svg>
+
+    {% elif decorative_theme == 'celestial' %}
+    <div class="decorative-border-outer theme-border-outer-celestial"></div>
+    <div class="decorative-border-inner theme-border-inner-celestial"></div>
+
+    <svg class="corner-motif floral-flourish corner-tl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="10" x2="20" y2="30" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.8" />
+      <line x1="10" y1="20" x2="30" y2="20" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.8" />
+      <circle cx="20" cy="20" r="2.5" fill="{{ wave_color }}" opacity="0.9" />
+      <line x1="20" y1="20" x2="44" y2="12" stroke="{{ caption_color }}" stroke-width="0.75" stroke-dasharray="2 2" opacity="0.45" />
+      <circle cx="44" cy="12" r="1.5" fill="{{ caption_color }}" opacity="0.7" />
+      <line x1="20" y1="20" x2="12" y2="44" stroke="{{ caption_color }}" stroke-width="0.75" stroke-dasharray="2 2" opacity="0.45" />
+      <circle cx="12" cy="44" r="1.5" fill="{{ caption_color }}" opacity="0.7" />
+      <circle cx="34" cy="34" r="1.0" fill="{{ caption_color }}" opacity="0.5" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-tr" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="10" x2="20" y2="30" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.8" />
+      <line x1="10" y1="20" x2="30" y2="20" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.8" />
+      <circle cx="20" cy="20" r="2.5" fill="{{ wave_color }}" opacity="0.9" />
+      <line x1="20" y1="20" x2="44" y2="12" stroke="{{ caption_color }}" stroke-width="0.75" stroke-dasharray="2 2" opacity="0.45" />
+      <circle cx="44" cy="12" r="1.5" fill="{{ caption_color }}" opacity="0.7" />
+      <line x1="20" y1="20" x2="12" y2="44" stroke="{{ caption_color }}" stroke-width="0.75" stroke-dasharray="2 2" opacity="0.45" />
+      <circle cx="12" cy="44" r="1.5" fill="{{ caption_color }}" opacity="0.7" />
+      <circle cx="34" cy="34" r="1.0" fill="{{ caption_color }}" opacity="0.5" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-bl" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="10" x2="20" y2="30" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.8" />
+      <line x1="10" y1="20" x2="30" y2="20" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.8" />
+      <circle cx="20" cy="20" r="2.5" fill="{{ wave_color }}" opacity="0.9" />
+      <line x1="20" y1="20" x2="44" y2="12" stroke="{{ caption_color }}" stroke-width="0.75" stroke-dasharray="2 2" opacity="0.45" />
+      <circle cx="44" cy="12" r="1.5" fill="{{ caption_color }}" opacity="0.7" />
+      <line x1="20" y1="20" x2="12" y2="44" stroke="{{ caption_color }}" stroke-width="0.75" stroke-dasharray="2 2" opacity="0.45" />
+      <circle cx="12" cy="44" r="1.5" fill="{{ caption_color }}" opacity="0.7" />
+      <circle cx="34" cy="34" r="1.0" fill="{{ caption_color }}" opacity="0.5" />
+    </svg>
+    <svg class="corner-motif floral-flourish corner-br" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="10" x2="20" y2="30" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.8" />
+      <line x1="10" y1="20" x2="30" y2="20" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.8" />
+      <circle cx="20" cy="20" r="2.5" fill="{{ wave_color }}" opacity="0.9" />
+      <line x1="20" y1="20" x2="44" y2="12" stroke="{{ caption_color }}" stroke-width="0.75" stroke-dasharray="2 2" opacity="0.45" />
+      <circle cx="44" cy="12" r="1.5" fill="{{ caption_color }}" opacity="0.7" />
+      <line x1="20" y1="20" x2="12" y2="44" stroke="{{ caption_color }}" stroke-width="0.75" stroke-dasharray="2 2" opacity="0.45" />
+      <circle cx="12" cy="44" r="1.5" fill="{{ caption_color }}" opacity="0.7" />
+      <circle cx="34" cy="34" r="1.0" fill="{{ caption_color }}" opacity="0.5" />
+    </svg>
+
+    {% elif decorative_theme == 'minimal' %}
+    <div class="decorative-border-outer"></div>
+
+    {% else %}
+    <!-- Botanical floral flourish corner accents (botanical, floral, or default) -->
+    <div class="decorative-border-outer"></div>
+    <div class="decorative-border-inner"></div>
+
+    <svg class="floral-flourish corner-tl" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 12 88 C 12 46, 46 12, 88 12" stroke="{{ caption_color }}" stroke-width="1.8" stroke-linecap="round" opacity="0.65" />
+      <path d="M 20 88 C 20 51, 51 20, 88 20" stroke="{{ caption_color }}" stroke-width="0.9" stroke-linecap="round" opacity="0.45" />
+      <path d="M 32 54 C 28 46, 20 44, 16 46 C 16 54, 24 58, 32 54 Z" fill="{{ caption_color }}" opacity="0.65" />
+      <path d="M 54 32 C 46 28, 44 20, 46 16 C 54 16, 58 24, 54 32 Z" fill="{{ caption_color }}" opacity="0.65" />
+      <path d="M 22 72 C 17 66, 11 65, 8 67 C 8 73, 14 77, 22 72 Z" fill="{{ caption_color }}" opacity="0.55" />
+      <path d="M 72 22 C 66 17, 65 11, 67 8 C 73 8, 77 14, 72 22 Z" fill="{{ caption_color }}" opacity="0.55" />
+      <circle cx="88" cy="12" r="3.5" fill="{{ wave_color }}" opacity="0.8" />
+      <circle cx="12" cy="88" r="3.5" fill="{{ wave_color }}" opacity="0.8" />
+    </svg>
+    <svg class="floral-flourish corner-tr" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 12 88 C 12 46, 46 12, 88 12" stroke="{{ caption_color }}" stroke-width="1.8" stroke-linecap="round" opacity="0.65" />
+      <path d="M 20 88 C 20 51, 51 20, 88 20" stroke="{{ caption_color }}" stroke-width="0.9" stroke-linecap="round" opacity="0.45" />
+      <path d="M 32 54 C 28 46, 20 44, 16 46 C 16 54, 24 58, 32 54 Z" fill="{{ caption_color }}" opacity="0.65" />
+      <path d="M 54 32 C 46 28, 44 20, 46 16 C 54 16, 58 24, 54 32 Z" fill="{{ caption_color }}" opacity="0.65" />
+      <path d="M 22 72 C 17 66, 11 65, 8 67 C 8 73, 14 77, 22 72 Z" fill="{{ caption_color }}" opacity="0.55" />
+      <path d="M 72 22 C 66 17, 65 11, 67 8 C 73 8, 77 14, 72 22 Z" fill="{{ caption_color }}" opacity="0.55" />
+      <circle cx="88" cy="12" r="3.5" fill="{{ wave_color }}" opacity="0.8" />
+      <circle cx="12" cy="88" r="3.5" fill="{{ wave_color }}" opacity="0.8" />
+    </svg>
+    <svg class="floral-flourish corner-bl" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 12 88 C 12 46, 46 12, 88 12" stroke="{{ caption_color }}" stroke-width="1.8" stroke-linecap="round" opacity="0.65" />
+      <path d="M 20 88 C 20 51, 51 20, 88 20" stroke="{{ caption_color }}" stroke-width="0.9" stroke-linecap="round" opacity="0.45" />
+      <path d="M 32 54 C 28 46, 20 44, 16 46 C 16 54, 24 58, 32 54 Z" fill="{{ caption_color }}" opacity="0.65" />
+      <path d="M 54 32 C 46 28, 44 20, 46 16 C 54 16, 58 24, 54 32 Z" fill="{{ caption_color }}" opacity="0.65" />
+      <path d="M 22 72 C 17 66, 11 65, 8 67 C 8 73, 14 77, 22 72 Z" fill="{{ caption_color }}" opacity="0.55" />
+      <path d="M 72 22 C 66 17, 65 11, 67 8 C 73 8, 77 14, 72 22 Z" fill="{{ caption_color }}" opacity="0.55" />
+      <circle cx="88" cy="12" r="3.5" fill="{{ wave_color }}" opacity="0.8" />
+      <circle cx="12" cy="88" r="3.5" fill="{{ wave_color }}" opacity="0.8" />
+    </svg>
+    <svg class="floral-flourish corner-br" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 12 88 C 12 46, 46 12, 88 12" stroke="{{ caption_color }}" stroke-width="1.8" stroke-linecap="round" opacity="0.65" />
+      <path d="M 20 88 C 20 51, 51 20, 88 20" stroke="{{ caption_color }}" stroke-width="0.9" stroke-linecap="round" opacity="0.45" />
+      <path d="M 32 54 C 28 46, 20 44, 16 46 C 16 54, 24 58, 32 54 Z" fill="{{ caption_color }}" opacity="0.65" />
+      <path d="M 54 32 C 46 28, 44 20, 46 16 C 54 16, 58 24, 54 32 Z" fill="{{ caption_color }}" opacity="0.65" />
+      <path d="M 22 72 C 17 66, 11 65, 8 67 C 8 73, 14 77, 22 72 Z" fill="{{ caption_color }}" opacity="0.55" />
+      <path d="M 72 22 C 66 17, 65 11, 67 8 C 73 8, 77 14, 72 22 Z" fill="{{ caption_color }}" opacity="0.55" />
+      <circle cx="88" cy="12" r="3.5" fill="{{ wave_color }}" opacity="0.8" />
+      <circle cx="12" cy="88" r="3.5" fill="{{ wave_color }}" opacity="0.8" />
+    </svg>
+    {% endif %}
+
+    <!-- 2. Customer Personal Photo Frame (Rendered ONLY if photo_uri is provided) -->
+    {% if photo_uri %}
+    <div class="photo-container">
+      <div class="photo-mat-frame">
+        <img src="{{ photo_uri }}" alt="Personal Photo" class="personal-photo" />
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- 3. Waveform Container -->
+    <div class="waveform-container">
+      <img src="{{ waveform_uri }}" alt="SoundWave Art" class="waveform-image" />
+    </div>
+
+    <!-- 4. Aesthetic Theme Dividers (Rendered for ALL prints, decoupled from photo) -->
+    {% if decorative_theme == 'modern_border' %}
+    <div class="theme-divider modern-divider">
+      <svg width="180" height="16" viewBox="0 0 180 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="15" y1="8" x2="75" y2="8" stroke="{{ caption_color }}" stroke-width="1" opacity="0.4" />
+        <circle cx="90" cy="8" r="2.5" fill="{{ caption_color }}" opacity="0.6" />
+        <line x1="105" y1="8" x2="165" y2="8" stroke="{{ caption_color }}" stroke-width="1" opacity="0.4" />
+      </svg>
+    </div>
+    {% elif decorative_theme == 'arch' %}
+    <div class="theme-divider arch-divider">
+      <svg width="220" height="16" viewBox="0 0 220 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="8" x2="210" y2="8" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.35" />
+        <line x1="30" y1="11" x2="190" y2="11" stroke="{{ caption_color }}" stroke-width="0.5" opacity="0.25" />
+        <polygon points="110,4 114,8 110,12 106,8" fill="{{ caption_color }}" opacity="0.7" />
+      </svg>
+    </div>
+    {% elif decorative_theme == 'art_deco' %}
+    <div class="theme-divider art-deco-divider">
+      <svg width="200" height="20" viewBox="0 0 200 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="10" x2="70" y2="10" stroke="{{ caption_color }}" stroke-width="1" opacity="0.4" />
+        <line x1="130" y1="10" x2="190" y2="10" stroke="{{ caption_color }}" stroke-width="1" opacity="0.4" />
+        <polygon points="100,2 107,10 100,18 93,10" fill="{{ caption_color }}" opacity="0.8" />
+        <polygon points="85,6 90,10 85,14 80,10" fill="{{ caption_color }}" opacity="0.5" />
+        <polygon points="115,6 120,10 115,14 110,10" fill="{{ caption_color }}" opacity="0.5" />
+        <circle cx="100" cy="10" r="2" fill="{{ wave_color }}" />
+      </svg>
+    </div>
+    {% elif decorative_theme == 'vintage_grunge' %}
+    <div class="theme-divider vintage-divider">
+      <svg width="210" height="18" viewBox="0 0 210 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="15" y1="9" x2="80" y2="9" stroke="{{ caption_color }}" stroke-width="1" stroke-dasharray="4 2" opacity="0.45" />
+        <line x1="130" y1="9" x2="195" y2="9" stroke="{{ caption_color }}" stroke-width="1" stroke-dasharray="4 2" opacity="0.45" />
+        <circle cx="105" cy="9" r="6" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.7" />
+        <circle cx="105" cy="9" r="2" fill="{{ wave_color }}" opacity="0.9" />
+        <line x1="95" y1="9" x2="99" y2="9" stroke="{{ caption_color }}" stroke-width="1" opacity="0.6" />
+        <line x1="111" y1="9" x2="115" y2="9" stroke="{{ caption_color }}" stroke-width="1" opacity="0.6" />
+      </svg>
+    </div>
+    {% elif decorative_theme == 'luxury_marble' %}
+    <div class="theme-divider marble-divider">
+      <svg width="220" height="18" viewBox="0 0 220 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="7" x2="90" y2="7" stroke="{{ caption_color }}" stroke-width="0.9" opacity="0.5" />
+        <line x1="25" y1="11" x2="85" y2="11" stroke="{{ caption_color }}" stroke-width="0.6" opacity="0.35" />
+        <line x1="130" y1="7" x2="210" y2="7" stroke="{{ caption_color }}" stroke-width="0.9" opacity="0.5" />
+        <line x1="135" y1="11" x2="195" y2="11" stroke="{{ caption_color }}" stroke-width="0.6" opacity="0.35" />
+        <polygon points="110,2 116,9 110,16 104,9" fill="{{ caption_color }}" opacity="0.85" />
+        <circle cx="110" cy="9" r="2" fill="{{ wave_color }}" />
+      </svg>
+    </div>
+    {% elif decorative_theme == 'abstract_geometric' or decorative_theme == 'geometric' %}
+    <div class="theme-divider geometric-divider">
+      <svg width="200" height="20" viewBox="0 0 200 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="10" x2="70" y2="10" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.5" />
+        <line x1="130" y1="10" x2="190" y2="10" stroke="{{ caption_color }}" stroke-width="1.5" opacity="0.5" />
+        <circle cx="85" cy="10" r="4.5" fill="{{ wave_color }}" opacity="0.8" />
+        <circle cx="100" cy="10" r="7" stroke="{{ caption_color }}" stroke-width="1.2" opacity="0.65" />
+        <circle cx="115" cy="10" r="3" fill="{{ caption_color }}" opacity="0.75" />
+      </svg>
+    </div>
+    {% elif decorative_theme == 'celestial' %}
+    <div class="theme-divider celestial-divider">
+      <svg width="220" height="22" viewBox="0 0 220 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="11" x2="80" y2="11" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.4" />
+        <line x1="140" y1="11" x2="210" y2="11" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.4" />
+        <path d="M 110 3 A 8 8 0 0 0 110 19 A 6 6 0 0 1 110 3 Z" fill="{{ caption_color }}" opacity="0.85" />
+        <circle cx="94" cy="11" r="2" fill="{{ wave_color }}" opacity="0.9" />
+        <circle cx="126" cy="11" r="2" fill="{{ wave_color }}" opacity="0.9" />
+        <line x1="94" y1="7" x2="94" y2="15" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.7" />
+        <line x1="126" y1="7" x2="126" y2="15" stroke="{{ caption_color }}" stroke-width="0.8" opacity="0.7" />
+      </svg>
+    </div>
+    {% elif decorative_theme == 'minimal' %}
+    <div class="theme-divider minimal-divider">
+      <svg width="140" height="12" viewBox="0 0 140 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="20" y1="6" x2="120" y2="6" stroke="{{ caption_color }}" stroke-width="0.75" opacity="0.3" />
+      </svg>
+    </div>
+    {% else %}
+    <!-- Botanical Sprig Divider (botanical, floral, or default) -->
+    <div class="theme-divider botanical-divider">
+      <svg width="180" height="24" viewBox="0 0 180 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="12" x2="70" y2="12" stroke="{{ caption_color }}" stroke-width="1" stroke-linecap="round" opacity="0.4" />
+        <line x1="110" y1="12" x2="170" y2="12" stroke="{{ caption_color }}" stroke-width="1" stroke-linecap="round" opacity="0.4" />
+        <path d="M 74 12 C 80 6, 88 6, 90 12 C 88 18, 80 18, 74 12 Z" fill="{{ caption_color }}" opacity="0.7" />
+        <path d="M 106 12 C 100 6, 92 6, 90 12 C 92 18, 100 18, 106 12 Z" fill="{{ caption_color }}" opacity="0.7" />
+        <circle cx="90" cy="12" r="3" fill="{{ wave_color }}" opacity="0.9" />
+      </svg>
+    </div>
+    {% endif %}
+
+    <!-- Presentation Details -->
+    <div class="footer-section">
+      <div class="caption-container">
+        <div class="caption-text">{{ caption }}</div>
+      </div>
+      {% if subcaption %}
+      <div class="subcaption-text">{{ subcaption }}</div>
+      {% endif %}
+
+      <div class="qr-container">
+        <div class="qr-badge">
+          <img src="{{ qr_uri }}" alt="Scan to Listen" class="qr-image" />
+        </div>
+        <span class="scan-hint">Scan to listen</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Binary-Search Caption Auto-Fitter -->
+  <script>
+    (function () {
+      function fitCaption() {
+        const box = document.querySelector('.caption-container');
+        const text = document.querySelector('.caption-text');
+        if (!box || !text || !text.textContent.trim()) {
+          document.documentElement.setAttribute('data-fit-done', '1');
+          return;
+        }
+
+        const cs = getComputedStyle(text);
+        const min = parseFloat(cs.getPropertyValue('--cap-min')) || 14;
+        const max = parseFloat(cs.getPropertyValue('--cap-max')) || 80;
+
+        function fits(px) {
+          text.style.fontSize = px + 'px';
+          return box.scrollWidth <= box.clientWidth + 1 && box.scrollHeight <= box.clientHeight + 1;
+        }
+
+        let lo = min, hi = max, best = min;
+        for (let i = 0; i < 16; i++) {
+          const mid = (lo + hi) / 2;
+          if (fits(mid)) {
+            best = mid;
+            lo = mid;
+          } else {
+            hi = mid;
+          }
+        }
+        text.style.fontSize = Math.floor(best) + 'px';
+        document.documentElement.setAttribute('data-fit-done', '1');
+        document.documentElement.setAttribute('data-final-size', Math.floor(best));
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitCaption);
+      } else {
+        window.addEventListener('load', fitCaption);
+      }
+    })();
+  </script>
+</body>
+</html>
