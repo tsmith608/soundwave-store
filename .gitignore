@@ -52,3 +52,6 @@ next-env.d.ts
 *.db
 *.db-journal
 temp_page.html
+
+# Local render output
+/docs/review/designs/contact-sheet.html
