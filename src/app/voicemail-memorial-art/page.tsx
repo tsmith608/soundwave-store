@@ -13,14 +13,14 @@ const c: IntentContent = {
   eyebrow: "Voicemail & voice memorial",
   h1: "Keep their voice where you can see it.",
   intro: [
-    "A voicemail is often the only recording people have of someone's everyday voice. In Memoriam sets their name, their voice as a single fine line, and the words they actually said — no hearts, doves or stock phrases.",
+    "A voicemail is often the only recording people have of someone's everyday voice. Herbarium grows their voice into a quiet pressed botanical — every leaf a moment of the message — with their name and the words they actually said on a specimen label. No hearts, doves or stock phrases.",
     "Scan the code on the print and the message plays, from any phone, for anyone in the family.",
   ],
   occasion: "memorial",
   examples: [
-    { designId: "in-memoriam", colorwayId: "stone", kind: "voice", seed: "vm-1", frame: "white", caption: "", fields: { names: "Walter James Brennan", date: "1938 — 2025", subtitle: "Voicemail · 11 March 2021", message: "Hey kiddo, it's Dad. Nothing important. Just wanted to hear your voice.", title: "" } },
-    { designId: "in-memoriam", colorwayId: "linen", kind: "voice", seed: "vm-2", frame: "natural", caption: "Linen colourway, for warmer rooms.", fields: { names: "Nana", date: "Always", subtitle: "Birthday message · 2019", message: "Happy birthday my darling girl, I'm so proud of you.", title: "" } },
-    { designId: "in-memoriam", colorwayId: "slate", kind: "voice", seed: "vm-3", frame: "black", caption: "Slate, a darker, stone-like finish.", fields: { names: "Marcus Reid", date: "1979 — 2024", subtitle: "Voice note · Summer 2023", message: "Race you to the end of the pier.", title: "" } },
+    { designId: "herbarium", colorwayId: "stone", kind: "voice", seed: "vm-1", frame: "white", caption: "", fields: { title: "Walter James Brennan", subtitle: "Voicemail · 11 March 2021", names: "His children", date: "1938 — 2025", message: "Hey kiddo, it's Dad. Just wanted to hear your voice." } },
+    { designId: "night-of", colorwayId: "midnight", kind: "voice", seed: "vm-2", frame: "black", caption: "the moon on the night they were born — or the night you lost them.", fields: { date: "1946-11-02", names: "Nana", title: "Her birthday message, 2019", message: "I'm so proud of you, my darling girl.", subtitle: "" } },
+    { designId: "herbarium", colorwayId: "herbarium", kind: "voice", seed: "vm-3", frame: "natural", caption: "Herbarium colourway, for warmer rooms.", fields: { title: "Marcus Reid", subtitle: "Voice note · Summer 2023", names: "Always", date: "1979 — 2024", message: "Race you to the end of the pier." } },
   ],
   howToTitle: "Saving the voicemail from your phone",
   howTo: [

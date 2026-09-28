@@ -4,6 +4,45 @@
 
 ---
 
+## 0. Pivot (28 Sep 2026, owner decision): The Night Of + Herbarium only
+
+The store now sells **two designs**, which scored highest in the critique and are the most distinctive:
+
+- **The Night Of** — the real moon for the customer's date, ringed by their recording.
+  Colourways: Midnight, Dawn, Plum Night.
+- **Herbarium** — a pressed botanical whose leaf lengths are drawn from the recording.
+  Colourways: Herbarium, Blush, Cyanotype, plus a new **Stone** colourway for memorial and pet orders.
+
+**What happened to the other three designs.** Liner Notes, The Arch and In Memoriam are **retired, not deleted** (`RETIRED_DESIGNS` in `src/lib/art/index.ts`):
+
+- They still render, so any existing order still prints.
+- They're visible in the internal gallery (`/dev/designs`).
+- Bringing one back is a one-line change.
+- Old links (`?design=liner-notes`, `?template=…`) land on the nearest current design.
+
+**Every occasion now maps to one of the two:**
+
+| Occasion | Design |
+|---|---|
+| Wedding song, memorial, baby, pet | Herbarium (Stone for memorial and pet, Blush for baby) |
+| The night we met, wedding night / vows, anniversary | The Night Of |
+
+Homepage, designs page, intent pages, FAQ and mockups were all updated to match.
+
+**Trade-off to watch.** Memorial buyers lose the purely typographic In Memoriam. Herbarium Stone is gentler but more decorative. If memorial becomes a big share of orders and feedback asks for "just their name and voice", bring In Memoriam back.
+
+### Hidden QR codes: what's possible
+
+- **Cryptography doesn't hide a code.** The link is already cryptographically protected: each print gets a random 96-bit token (`/l/<token>`), so nobody can guess or enumerate other people's recordings.
+- **What "hiding" can mean in practice:**
+
+| Option | Status | Notes |
+|---|---|---|
+| **Discreet tone-on-tone code** (new default) | **Built** | The code is printed as a faint shade of the paper colour with no caption, like a blind stamp. Studio offers *Discreet* / *Standard* / *None*. Tested: 14/14 decode after simulated phone-photo degradation (blur, noise, uneven light, JPEG) with ZXing (`npm run test:qr`); ZXing still decoded down to ~14% contrast, and we print at 30% for margin. **Must be confirmed on a physical print with iPhone and Android cameras before launch.** |
+| Code on the back of the frame / a separate card | Possible later | Needs the print partner to add a label or insert. Most POD partners don't; would need own packing. |
+| NFC tag in the frame (tap phone to play, no visible mark) | Possible later | ~$0.20–0.50 per tag; iPhone and Android read URL tags natively. Needs manual insertion, so not compatible with pure dropshipping. |
+| Invisible watermark (Digimarc-style) | Not recommended | Requires a special app to read, which defeats "just point your camera". |
+
 ## 1. Old vs new
 
 ![Before and after](review/old-vs-new.jpg)
@@ -18,7 +57,7 @@
 
 ## 2. Final proposed product lineup
 
-**Five finished designs, three colourways each.** Details and critique: [art-direction-2026.md](art-direction-2026.md).
+**After the pivot (§0), only The Night Of and Herbarium are sold.** The table below is the original five-design lineup, kept for reference. Details and critique: [art-direction-2026.md](art-direction-2026.md).
 
 | Design | Direction | Best for | Colourways |
 |---|---|---|---|
@@ -38,7 +77,7 @@
 
 - Frames: black, natural oak, white.
 - Free tracked US shipping.
-- Optional scan-to-listen QR (on by default).
+- Scan-to-listen QR: Discreet (default), Standard or None.
 
 ## 3. Major changes (in commits)
 

@@ -13,15 +13,15 @@ const c: IntentContent = {
   eyebrow: "First dance & wedding song art",
   h1: "The song you danced to, typeset like it deserves.",
   intro: [
-    "Most wedding-song prints are a waveform in a thin border with a script font underneath. Ours start from a finished layout — a record-sleeve grid, a botanical specimen, the moon on your wedding night — and your song fills in the part that's yours.",
+    "Most wedding-song prints are a waveform in a thin border with a script font underneath. Ours are finished artworks: a pressed botanical whose leaves are grown from your song, or the moon exactly as it was on your wedding night, ringed by it.",
     "The shape is drawn from the actual audio you upload, not a generic wave, and an optional code on the print plays the song back.",
   ],
   occasion: "wedding",
   examples: [
-    { designId: "liner-notes", colorwayId: "bone", kind: "song", seed: "wed-1", frame: "black", caption: "", fields: { title: "Can't Help Falling in Love", subtitle: "Elvis Presley", names: "Priya & Daniel", date: "2024-09-21", message: "First dance, and every kitchen dance since." } },
-    { designId: "herbarium", colorwayId: "herbarium", kind: "song", seed: "wed-2", frame: "natural", caption: "the song grown into a stem, every leaf a moment of it.", fields: { title: "Our first dance", subtitle: "“La Vie en Rose”, Louis Armstrong", names: "Ana & Luis", date: "2023-06-10", message: "Pressed from the song we danced to." } },
-    { designId: "night-of", colorwayId: "midnight", kind: "song", seed: "wed-3", frame: "black", caption: "the moon exactly as it was over your wedding.", fields: { date: "2025-08-09", names: "Kate & Tom", title: "“At Last” — Etta James", message: "", subtitle: "" } },
-    { designId: "liner-notes", colorwayId: "ink", kind: "song", seed: "wed-4", frame: "white", caption: "the same design in Ink.", fields: { title: "Lover", subtitle: "Taylor Swift", names: "Jess & Morgan", date: "2022-10-01", message: "" } },
+    { designId: "herbarium", colorwayId: "herbarium", kind: "song", seed: "wed-2", frame: "natural", caption: "", fields: { title: "Our first dance", subtitle: "“Can't Help Falling in Love”, Elvis Presley", names: "Priya & Daniel", date: "2024-09-21", message: "Pressed from the song we danced to." } },
+    { designId: "night-of", colorwayId: "midnight", kind: "song", seed: "wed-3", frame: "black", caption: "the moon exactly as it was over your wedding, ringed by your song.", fields: { date: "2025-08-09", names: "Kate & Tom", title: "“At Last” — Etta James", message: "", subtitle: "" } },
+    { designId: "herbarium", colorwayId: "cyanotype", kind: "song", seed: "wed-4", frame: "white", caption: "Cyanotype colourway, like a sun-print.", fields: { title: "La Vie en Rose", subtitle: "Louis Armstrong", names: "Ana & Luis", date: "2023-06-10", message: "" } },
+    { designId: "night-of", colorwayId: "dawn", kind: "song", seed: "wed-5", frame: "natural", caption: "Dawn colourway, for lighter rooms.", fields: { date: "2022-10-01", names: "Jess & Morgan", title: "“Lover” — Taylor Swift", message: "Our first dance, under this moon.", subtitle: "" } },
   ],
   howToTitle: "Getting the song into the studio",
   howTo: [
@@ -30,7 +30,7 @@ const c: IntentContent = {
     { title: "Check the words", body: "Song title, artist, your names and the date. We print exactly what's in the preview, so it's worth a second look at spelling." },
   ],
   considerations: [
-    { title: "Which design?", body: "Liner Notes suits people who care about the music itself. Herbarium and The Night Of are softer and read as art first — good if the print is going in a bedroom or it's a surprise for someone less into music." },
+    { title: "Which design?", body: "Herbarium if the song is the heart of it — every leaf is a moment of the track. The Night Of if the date is — it shows the real moon over your wedding, and the song rings it." },
     { title: "Lyrics", body: "We don't print full song lyrics: they're copyrighted, and the designs are built around a single line of your own words instead. A title, artist and a short note are fine." },
     { title: "Paper anniversary", body: "A print-only order is literally paper — and the frame can come later. It's a good first-anniversary gift." },
   ],

@@ -16,16 +16,19 @@ export interface StudioProps {
   initialSize?: string;
 }
 
+// Old ?template= links and retired design ids land on the nearest current design.
 const LEGACY_TEMPLATE_MAP: Record<string, string> = {
   botanical: "herbarium",
   celestial: "night-of",
-  arch: "arch",
-  minimal: "in-memoriam",
-  modern_border: "liner-notes",
-  art_deco: "liner-notes",
-  luxury_marble: "arch",
-  vintage_grunge: "liner-notes",
-  abstract_geometric: "liner-notes",
+  arch: "night-of",
+  minimal: "herbarium",
+  modern_border: "night-of",
+  art_deco: "night-of",
+  luxury_marble: "night-of",
+  vintage_grunge: "herbarium",
+  abstract_geometric: "night-of",
+  "liner-notes": "night-of",
+  "in-memoriam": "herbarium",
 };
 
 function Step({ n, title, children, id }: { n: number; title: string; children: React.ReactNode; id: string }) {
@@ -67,7 +70,9 @@ export default function Studio({ initialDesign, initialOccasion, initialColorway
   const [photoId, setPhotoId] = useState<string | null>(null);
   const [photoBusy, setPhotoBusy] = useState(false);
 
-  const [showQr, setShowQr] = useState(true);
+  const [qrStyle, setQrStyle] = useState<"off" | "discreet" | "standard">("discreet");
+  const showQr = qrStyle !== "off";
+  const artQrStyle = qrStyle === "standard" ? "standard" : "discreet";
   const [sizeId, setSizeId] = useState(getPrintSize(initialSize)?.id ?? DEFAULT_SIZE_ID);
   const [format, setFormat] = useState<ProductFormat>("framed");
   const [frameFinish, setFrameFinish] = useState<string>("black");
@@ -182,7 +187,7 @@ export default function Studio({ initialDesign, initialOccasion, initialColorway
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ designId: design.id, colorwayId, fields, peaks, audioId, photoId, showQr, size: size.id, format, frameFinish }),
+        body: JSON.stringify({ designId: design.id, colorwayId, fields, peaks, audioId, photoId, showQr, qrStyle: artQrStyle, size: size.id, format, frameFinish }),
       });
       const data = await res.json();
       if (!res.ok || !data.checkoutUrl) throw new Error(data.error || "Something went wrong. Please try again.");
@@ -206,6 +211,7 @@ export default function Studio({ initialDesign, initialOccasion, initialColorway
             widthIn={size.widthIn}
             heightIn={size.heightIn}
             showQr={showQr}
+            qrStyle={artQrStyle}
             photoHref={design.supportsPhoto ? photoUrl : null}
             format={format}
             frameFinish={frameFinish}
@@ -221,6 +227,7 @@ export default function Studio({ initialDesign, initialOccasion, initialColorway
             widthIn={size.widthIn}
             heightIn={size.heightIn}
             showQr={showQr}
+            qrStyle={artQrStyle}
             photoHref={design.supportsPhoto ? photoUrl : null}
             idPrefix="studioflat"
             className="shadow-[0_12px_30px_rgba(40,30,20,.15)]"
@@ -267,7 +274,7 @@ export default function Studio({ initialDesign, initialOccasion, initialColorway
                 </button>
               ))}
             </div>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 gap-5 max-w-md">
               {DESIGNS.map((d) => (
                 <button key={d.id} onClick={() => chooseDesign(d.id)} className="group text-left" aria-pressed={d.id === design.id}>
                   <div className={`p-1 rounded-sm transition ${d.id === design.id ? "ring-2 ring-[#2D2A26]" : "ring-1 ring-transparent group-hover:ring-[#CFC6BA]"}`}>
@@ -374,13 +381,30 @@ export default function Studio({ initialDesign, initialOccasion, initialColorway
                   <span className="block text-xs text-[#9E968F] mt-1">A portrait photo with a simple background works best.</span>
                 </div>
               )}
-              <label className="flex items-start gap-3 pt-1">
-                <input type="checkbox" checked={showQr} onChange={(e) => setShowQr(e.target.checked)} className="mt-1 accent-[#2D2A26]" />
-                <span className="text-sm text-[#2D2A26]">
-                  Include a scan-to-listen code
-                  <span className="block text-xs text-[#9E968F]">Point any phone camera at the print and the recording plays. No app.</span>
-                </span>
-              </label>
+              <div className="pt-1">
+                <span className="block text-sm text-[#2D2A26] mb-2">Scan-to-listen code</span>
+                <div className="grid grid-cols-3 gap-2">
+                  {(
+                    [
+                      ["discreet", "Discreet", "Tone-on-tone, no caption"],
+                      ["standard", "Standard", "Easiest to spot"],
+                      ["off", "None", "Art only"],
+                    ] as const
+                  ).map(([id, label, note]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setQrStyle(id)}
+                      aria-pressed={qrStyle === id}
+                      className={`text-left p-2.5 rounded-md border ${qrStyle === id ? "border-[#2D2A26] bg-white" : "border-[#DDD5CB]"}`}
+                    >
+                      <div className="text-sm text-[#2D2A26]">{label}</div>
+                      <div className="text-[11px] text-[#9E968F] leading-tight">{note}</div>
+                    </button>
+                  ))}
+                </div>
+                <span className="block text-xs text-[#9E968F] mt-1.5">Point any phone camera at the code and the recording plays. No app. The link is private and can&apos;t be guessed.</span>
+              </div>
             </div>
           </Step>
 

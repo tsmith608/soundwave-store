@@ -27,7 +27,7 @@ const req = (body: unknown) =>
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, `${audioId}.wav`), Buffer.alloc(64));
   const peaks = Array.from({ length: 400 }, (_, i) => Math.abs(Math.sin(i / 7)));
-  const good = { designId: "in-memoriam", colorwayId: "stone", fields: { names: "Rose Okafor", date: "1952 — 2026", message: "Call me" }, peaks, audioId, size: "12x16", format: "framed", frameFinish: "natural", showQr: true };
+  const good = { designId: "herbarium", colorwayId: "stone", fields: { title: "Rose Okafor", names: "Her grandchildren", date: "1952 — 2026", message: "Call me" }, peaks, audioId, size: "12x16", format: "framed", frameFinish: "natural", showQr: true, qrStyle: "discreet" };
 
   let r = await checkout(req(good));
   let j = await r.json();
@@ -36,20 +36,28 @@ const req = (body: unknown) =>
   check("price is framed 12x16 ($99)", j.value === 99, String(j.value));
   const order = await prisma.order.findUnique({ where: { id: j.orderId } });
   const spec = order?.artworkSpec ? JSON.parse(order.artworkSpec) : null;
-  check("artworkSpec stored", !!spec && spec.designId === "in-memoriam" && spec.widthIn === 12 && spec.heightIn === 16);
+  check("artworkSpec stored", !!spec && spec.designId === "herbarium" && spec.widthIn === 12 && spec.qrStyle === "discreet" && spec.heightIn === 16);
   check("listen token + QR url stored", !!order?.listenToken && spec?.qrUrl?.endsWith(`/l/${order?.listenToken}`));
   check("audio path is server-resolved", order?.audioPath === `storage/uploads/${audioId}.wav`);
   check("totalAmount in cents", order?.totalAmount === 9900);
 
   const o = await getOrder(new NextRequest(`http://localhost:3000/api/orders/${j.orderId}`), { params: Promise.resolve({ id: j.orderId }) });
   const oj = await o.json();
-  check("order API exposes artwork without file paths", oj.artwork?.designId === "in-memoriam" && !JSON.stringify(oj).includes("storage/"));
+  check("order API exposes artwork without file paths", oj.artwork?.designId === "herbarium" && !JSON.stringify(oj).includes("storage/"));
 
   r = await checkout(req({ ...good, designId: "x-record" }));
   check("exploration designs are not sellable", r.status === 400);
+  for (const retired of ["in-memoriam", "liner-notes", "arch"]) {
+    r = await checkout(req({ ...good, designId: retired }));
+    check(`retired design ${retired} not sellable`, r.status === 400);
+  }
+  r = await checkout(req({ ...good, qrStyle: "weird" }));
+  j = await r.json();
+  const oq = await prisma.order.findUnique({ where: { id: j.orderId } });
+  check("unknown qrStyle falls back to discreet", JSON.parse(oq!.artworkSpec!).qrStyle === "discreet");
   r = await checkout(req({ ...good, size: "16x20" }));
   check("legacy size rejected on curated path", r.status === 400);
-  r = await checkout(req({ ...good, fields: { date: "2020" } }));
+  r = await checkout(req({ ...good, fields: { names: "x", date: "2020" } }));
   check("missing required field rejected", r.status === 400);
   r = await checkout(req({ ...good, peaks: "nope" }));
   check("bad peaks rejected", r.status === 400);
@@ -63,7 +71,7 @@ const req = (body: unknown) =>
   r = await checkout(req({ ...good, fields: { ...good.fields, names: "x".repeat(500) } }));
   j = await r.json();
   const o2 = await prisma.order.findUnique({ where: { id: j.orderId } });
-  check("over-long names truncated to maxLength", JSON.parse(o2!.artworkSpec!).fields.names.length === 40);
+  check("over-long names truncated to maxLength", JSON.parse(o2!.artworkSpec!).fields.names.length === 30);
 
   fs.unlinkSync(path.join(dir, `${audioId}.wav`));
   console.log(`\nCurated checkout: ${pass} passed, ${fail} failed`);

@@ -13,6 +13,7 @@ interface OrderArtwork {
   fields: ArtFields;
   peaks: number[];
   showQr: boolean;
+  qrStyle?: "standard" | "discreet";
   format: "framed" | "print";
   frameFinish: string | null;
   widthIn: number;
@@ -266,6 +267,7 @@ export default function OrderStatusPage({
                       widthIn={order.artwork.widthIn}
                       heightIn={order.artwork.heightIn}
                       showQr={order.artwork.showQr}
+                      qrStyle={order.artwork.qrStyle ?? "standard"}
                       format={order.artwork.format}
                       frameFinish={order.artwork.frameFinish ?? "black"}
                       idPrefix="order"
@@ -317,7 +319,7 @@ export default function OrderStatusPage({
                     </div>
                     <div className="flex justify-between py-2 border-b border-[#EAE3DC]">
                       <span className="text-[#6B655F]">Audio Playback QR Code</span>
-                      <span className="text-[#2D2A26] font-medium">{order.artwork && !order.artwork.showQr ? "Not included" : "Included"}</span>
+                      <span className="text-[#2D2A26] font-medium">{order.artwork && !order.artwork.showQr ? "Not included" : order.artwork?.qrStyle === "discreet" ? "Included (discreet)" : "Included"}</span>
                     </div>
                     <div className="flex justify-between py-2">
                       <span className="text-[#6B655F]">Paper Quality</span>

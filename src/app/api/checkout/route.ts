@@ -59,6 +59,7 @@ async function curatedCheckout(request: NextRequest, body: any) {
     fields,
     peaks: peaks.map((p) => Math.round(p * 1000) / 1000),
     showQr: body.showQr !== false,
+    qrStyle: body.qrStyle === "standard" ? "standard" : "discreet",
     format,
     frameFinish: format === "framed" ? frameFinish : null,
     sizeId: size.id,

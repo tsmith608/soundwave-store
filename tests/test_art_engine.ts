@@ -4,7 +4,7 @@
  * Covers every sellable design × colourway × size, hostile input, text
  * fitting, the moon-phase maths, peak sanitising and the checkout contract.
  */
-import { DESIGNS, EXPLORATION_DESIGNS, cleanFields, getDesign, renderArtwork, sanitizePeaks, samplePeaks } from "../src/lib/art";
+import { DESIGNS, EXPLORATION_DESIGNS, RETIRED_DESIGNS, getSellableDesign, cleanFields, getDesign, renderArtwork, sanitizePeaks, samplePeaks } from "../src/lib/art";
 import { moonPhase, parseDate } from "../src/lib/art/dates";
 import { F, measure, fitWrap } from "../src/lib/art/fonts";
 import { PRINT_SIZES } from "../src/lib/catalog";
@@ -40,6 +40,19 @@ for (const d of DESIGNS) {
 for (const d of EXPLORATION_DESIGNS) {
   const svg = renderArtwork(d, d.sample, null, { widthIn: 12, heightIn: 16, showQr: true });
   check(`exploration ${d.id} renders`, svg.startsWith("<svg") && !/NaN/.test(svg));
+}
+
+// 2b. Pivot: only the moon and botanical are sold; retired designs still render for old orders
+check("sellable designs are night-of + herbarium", DESIGNS.map((d) => d.id).join(",") === "night-of,herbarium");
+for (const d of RETIRED_DESIGNS) {
+  check(`retired ${d.id} not sellable`, getSellableDesign(d.id) === undefined);
+  check(`retired ${d.id} still renders`, renderArtwork(d, d.sample, null, { widthIn: 12, heightIn: 16, showQr: true }).startsWith("<svg"));
+}
+// discreet QR has no caption and uses a blended (non-ink) colour
+for (const d of DESIGNS) for (const c of d.colorways) {
+  const std = renderArtwork(d, d.sample, null, { widthIn: 12, heightIn: 16, colorwayId: c.id, showQr: true, qrStyle: "standard" });
+  const dis = renderArtwork(d, d.sample, null, { widthIn: 12, heightIn: 16, colorwayId: c.id, showQr: true, qrStyle: "discreet" });
+  check(`${d.id}/${c.id} discreet drops caption`, !/SCAN TO LISTEN/.test(dis) && /SCAN TO LISTEN/.test(std));
 }
 
 // 3. Hostile input is escaped and never produces markup

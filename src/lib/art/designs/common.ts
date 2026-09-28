@@ -39,7 +39,23 @@ export function qrBlock(
   // Phone cameras expect dark modules on a light ground. On dark colourways the
   // code sits on a small light tile (with quiet zone) instead of being inverted.
   const paper = ctx.colorway.paper;
+  const discreet = ctx.opts.qrStyle === "discreet";
   let svg: string;
+  if (discreet) {
+    // Tone-on-tone: the code is a slightly darker (or, on dark paper, a
+    // slightly lighter tile) shade of the paper. Always dark modules on a
+    // lighter ground so phone cameras read it without inversion.
+    const t = ctx.opts.qrContrast ?? DISCREET_CONTRAST;
+    if (luminance(o.color) > luminance(paper)) {
+      const pad = size * 0.14;
+      const tile = mix(paper, o.color, t);
+      svg = `<rect x="${(left - pad).toFixed(2)}" y="${(o.y - pad).toFixed(2)}" width="${(size + pad * 2).toFixed(2)}" height="${(size + pad * 2).toFixed(2)}" rx="${(pad * 0.5).toFixed(2)}" fill="${tile}"/>`;
+      svg += qrPath(qrUrl(ctx), left, o.y, size, paper);
+    } else {
+      svg = qrPath(qrUrl(ctx), left, o.y, size, mix(paper, o.color, t));
+    }
+    return { svg, height: size, size };
+  }
   if (luminance(o.color) > luminance(paper)) {
     const pad = size * 0.14; // ≈4 modules of quiet zone for a version-3 code
     svg = `<rect x="${(left - pad).toFixed(2)}" y="${(o.y - pad).toFixed(2)}" width="${(size + pad * 2).toFixed(2)}" height="${(size + pad * 2).toFixed(2)}" rx="${(pad * 0.5).toFixed(2)}" fill="${o.color}"/>`;
@@ -89,4 +105,16 @@ export function luminance(hex: string): number {
     return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
   });
   return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+}
+
+/** Share of ink mixed into the paper colour for discreet codes (set from scan tests). */
+export const DISCREET_CONTRAST = 0.3;
+
+/** Linear mix of two #RRGGBB colours: t=0 → a, t=1 → b. */
+export function mix(a: string, b: string, t: number): string {
+  const pa = parseInt(a.replace("#", ""), 16);
+  const pb = parseInt(b.replace("#", ""), 16);
+  const ch = (n: number, sh: number) => (n >> sh) & 255;
+  const m = [16, 8, 0].map((sh) => Math.round(ch(pa, sh) + (ch(pb, sh) - ch(pa, sh)) * t));
+  return "#" + m.map((v) => v.toString(16).padStart(2, "0")).join("");
 }

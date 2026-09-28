@@ -8,7 +8,7 @@ import { DESIGNS } from "@/lib/art";
 
 export const metadata: Metadata = {
   title: "The Designs — SoundWave Art",
-  description: "Five finished designs for turning a song, vows or a voice into wall art: Liner Notes, The Arch, Herbarium, The Night Of and In Memoriam.",
+  description: "Two finished designs made from your recording: The Night Of (the real moon on your date) and Herbarium (a botanical grown from your sound).",
   alternates: { canonical: "/designs" },
 };
 
@@ -18,9 +18,9 @@ export default function DesignsPage() {
       <Navbar />
       <main className="flex-1">
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-6">
-          <h1 className="font-serif text-5xl sm:text-6xl tracking-tight max-w-3xl">Five designs, each one finished.</h1>
+          <h1 className="font-serif text-5xl sm:text-6xl tracking-tight max-w-3xl">Two designs, each one finished.</h1>
           <p className="mt-5 text-lg text-[#4A453F] max-w-2xl leading-relaxed">
-            We don&apos;t ask you to assemble borders and ornaments. Each design is a complete composition with its own typefaces and three colourways; your recording and your words fill in the rest.
+            We don&apos;t ask you to assemble borders and ornaments. The Night Of draws the real moon for your date, ringed by your recording. Herbarium grows your recording into a pressed botanical, one leaf per moment of sound. Your words fill in the rest.
           </p>
         </section>
         {DESIGNS.map((d, i) => (

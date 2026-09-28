@@ -78,7 +78,7 @@ export const nightOf: DesignDefinition = {
   tagline: "The moon exactly as it was on your date, ringed by your recording.",
   rationale:
     "Star maps are the best-reviewed adjacent category (The Night Sky: ~9.7k Trustpilot reviews on one product) because the image is true to a date. This keeps that truth — real moon phase and illumination — and replaces random stars with the customer's own sound.",
-  bestFor: ["The night we met", "Anniversary", "Birth announcement", "Proposal"],
+  bestFor: ["The night we met", "Wedding night", "Anniversary", "A birth", "A night to remember someone"],
   fields: [
     { key: "date", label: "The date", placeholder: "2025-06-14", maxLength: 24, required: true, hint: "Pick an exact date so we can draw the real moon." },
     { key: "names", label: "Names", placeholder: "Emma & James", maxLength: 36 },

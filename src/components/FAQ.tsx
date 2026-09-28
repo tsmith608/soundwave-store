@@ -16,12 +16,12 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     question: "Do I have to design anything?",
     answer:
-      "No. You choose one of five finished designs and type your words. The layout, typefaces and colours are already set, so there's nothing to arrange. What you see in the preview is exactly what we print.",
+      "No. You choose one of two finished designs — the moon or the botanical — and type your words. The layout, typefaces and colours are already set, so there's nothing to arrange. What you see in the preview is exactly what we print.",
   },
   {
     question: "How does the scan-to-listen code work?",
     answer:
-      "If you keep the code switched on, it's printed small on the artwork. Point any phone camera at it and your recording plays in the browser — no app, no account. The page is unlisted and only reachable through the code or the link we email you.",
+      "By default it's printed discreetly, tone-on-tone, so it reads as part of the design rather than a sticker (you can choose a bolder version, or none). Point any phone camera at it and your recording plays in the browser — no app, no account. The page is unlisted and only reachable through the code or the link we email you.",
   },
   {
     question: "How are the prints made?",

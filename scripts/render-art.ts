@@ -72,6 +72,7 @@ async function print(specPath: string, out: string, png?: string) {
     heightIn,
     colorwayId: spec.colorwayId,
     showQr: Boolean(spec.showQr),
+    qrStyle: spec.qrStyle === "discreet" ? "discreet" : "standard",
     qrUrl: spec.qrUrl,
     photoHref,
     embedFontsCss: embeddedFontCss(),

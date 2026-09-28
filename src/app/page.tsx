@@ -11,12 +11,12 @@ import { PRINT_SIZES, formatPrice } from "@/lib/catalog";
 import { SITE_HOST } from "@/lib/site";
 
 const EXAMPLES = [
-  { img: "/mockups/example-first-dance.jpg", label: "A first-dance song", design: "Liner Notes", href: "/create?occasion=wedding" },
-  { img: "/mockups/example-voicemail.jpg", label: "Dad's last voicemail", design: "In Memoriam", href: "/create?occasion=memorial" },
+  { img: "/mockups/example-first-dance.jpg", label: "A first-dance song", design: "Herbarium", href: "/create?occasion=wedding" },
+  { img: "/mockups/example-voicemail.jpg", label: "Dad's last voicemail", design: "Herbarium · Stone", href: "/create?occasion=memorial" },
   { img: "/mockups/example-night-we-met.jpg", label: "The night we met", design: "The Night Of", href: "/create?occasion=anniversary" },
-  { img: "/mockups/example-vows.jpg", label: "Wedding vows", design: "The Arch", href: "/create?occasion=vows" },
+  { img: "/mockups/example-vows.jpg", label: "Our wedding night", design: "The Night Of", href: "/create?occasion=vows" },
   { img: "/mockups/example-heartbeat.jpg", label: "A heartbeat at 20 weeks", design: "Herbarium", href: "/create?occasion=baby" },
-  { img: "/mockups/example-pet.jpg", label: "Biscuit's hello", design: "In Memoriam", href: "/create?occasion=pet" },
+  { img: "/mockups/example-pet.jpg", label: "Biscuit's hello", design: "Herbarium · Cyanotype", href: "/create?occasion=pet" },
 ];
 
 function VoiceMemoCard() {
@@ -40,7 +40,7 @@ function VoiceMemoCard() {
 }
 
 export default function Home() {
-  const memoriam = getDesign("in-memoriam")!;
+  const memoriam = getDesign("herbarium")!;
   const fromPrint = Math.min(...PRINT_SIZES.map((s) => s.price.print));
   const fromFramed = Math.min(...PRINT_SIZES.map((s) => s.price.framed));
 
@@ -63,7 +63,7 @@ export default function Home() {
                 Create yours
               </Link>
               <Link href="/designs" className="px-7 py-3.5 rounded-md border border-[#CFC6BA] hover:border-[#2D2A26] text-sm">
-                See the five designs
+                See the two designs
               </Link>
             </div>
             <p className="mt-5 text-sm text-[#7A736B]">
@@ -120,7 +120,9 @@ export default function Home() {
                 <div className="w-full max-w-[300px] shadow-[0_18px_40px_rgba(40,30,20,.18)]">
                   <Artwork
                     designId={memoriam.id}
-                    fields={{ names: "Rose Marie Okafor", date: "1952 — 2025", subtitle: "Voicemail · March 2021", message: "Call me when you get home, sweetheart.", title: "" }}
+                    colorwayId="stone"
+                    qrStyle="discreet"
+                    fields={{ title: "Rose Marie Okafor", subtitle: "Voicemail · March 2021", names: "Her grandchildren", date: "1952 — 2025", message: "Call me when you get home, sweetheart." }}
                     peaks={samplePeaks("voice-memo-demo", "voice")}
                     idPrefix="howto"
                   />
@@ -131,7 +133,7 @@ export default function Home() {
               <li>
                 <div className="font-mono text-xs text-[#9E968F]">01</div>
                 <div className="mt-2 font-serif text-2xl">Pick a finished design</div>
-                <p className="mt-2 text-[#4A453F]">Five designs, each complete — typeface, layout and colour already decided. No borders or clip art to assemble.</p>
+                <p className="mt-2 text-[#4A453F]">Two designs, each complete — layout, typefaces and colour already decided. No borders or clip art to assemble.</p>
               </li>
               <li>
                 <div className="font-mono text-xs text-[#9E968F]">02</div>
@@ -151,12 +153,12 @@ export default function Home() {
         <section className="py-16 lg:py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <h2 className="font-serif text-4xl sm:text-5xl">Five designs. All of them finished.</h2>
+              <h2 className="font-serif text-4xl sm:text-5xl">Two designs. Both made from your sound.</h2>
               <Link href="/designs" className="text-sm underline underline-offset-4">
                 About the designs
               </Link>
             </div>
-            <div className="mt-10 grid grid-cols-2 md:grid-cols-5 gap-5">
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl">
               {DESIGNS.map((d) => (
                 <Link key={d.id} href={`/create?design=${d.id}`} className="group">
                   <Image src={`/mockups/wall-${d.id}.jpg`} alt={`${d.name} design on a wall`} width={1000} height={1200} className="w-full h-auto" />
@@ -174,13 +176,13 @@ export default function Home() {
             <div>
               <h2 className="font-serif text-4xl sm:text-5xl">Scan it, and you hear them again.</h2>
               <p className="mt-5 text-[#4A453F] text-lg leading-relaxed">
-                Every print can carry a small code in the corner. Point any phone camera at it and the recording plays — no app, no account. The page is private to whoever has the print or the link.
+                Every print can carry a small, tone-on-tone code that sits quietly in the design. Point any phone camera at it and the recording plays — no app, no account. The link is private and can&apos;t be guessed.
               </p>
-              <p className="mt-4 text-sm text-[#7A736B]">Prefer the art on its own? Switch the code off in the studio.</p>
+              <p className="mt-4 text-sm text-[#7A736B]">Want it bolder, or not there at all? Choose Standard or None in the studio.</p>
             </div>
             <div className="grid grid-cols-2 gap-4 items-end">
               <div className="shadow-[0_14px_30px_rgba(40,30,20,.15)]">
-                <Artwork designId="night-of" fields={getDesign("night-of")!.sample} idPrefix="qr1" />
+                <Artwork designId="night-of" fields={getDesign("night-of")!.sample} qrStyle="discreet" idPrefix="qr1" />
               </div>
               <div className="rounded-[28px] border-[6px] border-[#2D2A26] bg-white p-4 aspect-[9/17] flex flex-col justify-end">
                 <div className="text-[11px] text-[#9E968F]">{SITE_HOST}</div>

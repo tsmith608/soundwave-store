@@ -11,6 +11,7 @@ export interface ArtworkProps {
   widthIn?: number;
   heightIn?: number;
   showQr?: boolean;
+  qrStyle?: "standard" | "discreet";
   photoHref?: string | null;
   className?: string;
   idPrefix?: string;
@@ -29,6 +30,7 @@ export default function Artwork({
   widthIn = 12,
   heightIn = 16,
   showQr = true,
+  qrStyle = "standard",
   photoHref,
   className = "",
   idPrefix = "p",
@@ -37,11 +39,11 @@ export default function Artwork({
   const svg = useMemo(() => {
     const design = getDesign(designId);
     if (!design) return "";
-    return renderArtwork(design, fields, peaks, { widthIn, heightIn, colorwayId, showQr, photoHref, idPrefix }).replace(
+    return renderArtwork(design, fields, peaks, { widthIn, heightIn, colorwayId, showQr, qrStyle, photoHref, idPrefix }).replace(
       /width="[\d.]+in" height="[\d.]+in"/,
       'width="100%" height="100%"'
     );
-  }, [designId, fields, peaks, colorwayId, widthIn, heightIn, showQr, photoHref, idPrefix]);
+  }, [designId, fields, peaks, colorwayId, widthIn, heightIn, showQr, qrStyle, photoHref, idPrefix]);
 
   return (
     <div

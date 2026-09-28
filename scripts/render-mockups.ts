@@ -19,6 +19,7 @@ function art(designId: string, colorwayId?: string, fields?: ArtFields, kind?: "
     heightIn: h,
     colorwayId,
     showQr: true,
+    qrStyle: "discreet",
     idPrefix: `m${Math.random().toString(36).slice(2, 7)}`,
   }).replace(/width="[\d.]+in" height="[\d.]+in"/, 'width="100%" height="100%"');
 }
@@ -101,21 +102,21 @@ async function main() {
   const examples: { file: string; design: string; colorway?: string; kind: "voice" | "song" | "heartbeat"; fields: ArtFields; finish: string; wall: string }[] = [
     {
       file: "example-first-dance.jpg",
-      design: "liner-notes",
-      colorway: "clay",
+      design: "herbarium",
+      colorway: "herbarium",
       kind: "song",
       finish: "natural",
       wall: "#E3DCD1",
-      fields: { title: "Can't Help Falling in Love", subtitle: "Elvis Presley", names: "Priya & Daniel", date: "2024-09-21", message: "First dance, and every kitchen dance since." },
+      fields: { title: "Our first dance", subtitle: "“Can't Help Falling in Love”", names: "Priya & Daniel", date: "2024-09-21", message: "And every kitchen dance since." },
     },
     {
       file: "example-voicemail.jpg",
-      design: "in-memoriam",
-      colorway: "linen",
+      design: "herbarium",
+      colorway: "stone",
       kind: "voice",
       finish: "white",
       wall: "#DDD7CE",
-      fields: { names: "Walter James Brennan", date: "1938 — 2025", subtitle: "Voicemail · 11 March 2021", message: "Hey kiddo, it's Dad. Nothing important. Just wanted to hear your voice.", title: "" },
+      fields: { title: "Walter James Brennan", subtitle: "Voicemail · 11 March 2021", names: "His children", date: "1938 — 2025", message: "Hey kiddo, it's Dad. Just wanted to hear your voice." },
     },
     {
       file: "example-night-we-met.jpg",
@@ -137,21 +138,21 @@ async function main() {
     },
     {
       file: "example-vows.jpg",
-      design: "arch",
-      colorway: "sage",
+      design: "night-of",
+      colorway: "dawn",
       kind: "voice",
       finish: "natural",
       wall: "#E6E1D8",
-      fields: { names: "Maya & Theo", date: "2025-05-31", title: "Our vows", subtitle: "Big Sur, California", message: "Home is wherever you're standing." },
+      fields: { date: "2025-05-31", names: "Maya & Theo", title: "Our vows", message: "Home is wherever you're standing.", subtitle: "" },
     },
     {
       file: "example-pet.jpg",
-      design: "in-memoriam",
-      colorway: "stone",
+      design: "herbarium",
+      colorway: "cyanotype",
       kind: "voice",
-      finish: "black",
+      finish: "white",
       wall: "#DCD5CA",
-      fields: { names: "Biscuit", date: "2011 — 2026", subtitle: "Recorded on the back porch", message: "The best boy. The loudest hello.", title: "" },
+      fields: { title: "Biscuit", subtitle: "Recorded on the back porch", names: "The Alvarez family", date: "2011 — 2026", message: "The best boy. The loudest hello." },
     },
   ];
   for (const ex of examples) {
@@ -167,8 +168,8 @@ async function main() {
   {
     const W = 1800;
     const H = 945;
-    const trio = ["liner-notes", "herbarium", "night-of"]
-      .map((id, i) => `<div style="position:absolute;left:${230 + i * 470}px;top:90px">${frame(art(id), 400, ["black", "natural", "black"][i])}</div>`)
+    const trio = ([["night-of", "midnight"], ["herbarium", "herbarium"], ["night-of", "dawn"]] as const)
+      .map(([id, cwId], i) => `<div style="position:absolute;left:${230 + i * 470}px;top:90px">${frame(art(id, cwId), 400, ["black", "natural", "white"][i])}</div>`)
       .join("");
     await htmlToPng(browser, page(trio, "#E4DDD2", W, H), W, H, path.join(out, "trio.jpg"));
     fs.copyFileSync(path.join(out, "trio.jpg"), path.join("public", "og.jpg"));

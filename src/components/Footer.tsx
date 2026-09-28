@@ -20,7 +20,7 @@ export default function Footer() {
           <div className="text-xs uppercase tracking-[0.18em] text-[#9E968F] mb-3">Make one</div>
           <ul className="space-y-2">
             <li><Link href="/create" className="hover:text-[#2D2A26]">Create yours</Link></li>
-            <li><Link href="/designs" className="hover:text-[#2D2A26]">The five designs</Link></li>
+            <li><Link href="/designs" className="hover:text-[#2D2A26]">The designs</Link></li>
             <li><Link href="/wedding-song-art" className="hover:text-[#2D2A26]">Wedding song art</Link></li>
             <li><Link href="/voicemail-memorial-art" className="hover:text-[#2D2A26]">Voicemail memorial art</Link></li>
             <li><Link href="/anniversary-sound-wave-gift" className="hover:text-[#2D2A26]">Anniversary gift</Link></li>

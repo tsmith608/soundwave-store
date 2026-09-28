@@ -6,6 +6,8 @@ Renders of every design discussed here are in [`docs/review/designs/`](review/de
 
 ---
 
+> **Update, 28 Sep 2026:** the owner chose to focus the company on **The Night Of** and **Herbarium**, the two highest-scoring and most distinctive designs. The other three are retired (still renderable). Herbarium gained a Stone colourway for memorial orders. QR codes default to a discreet tone-on-tone style (30% ink over paper, no caption); see owner-review §0.
+
 ## 1. Why the old product looked cheap
 
 See [old print previews](review/old/old_print_previews.jpg) and the [old customizer](review/old/customizer.png).

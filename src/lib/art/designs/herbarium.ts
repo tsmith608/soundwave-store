@@ -153,7 +153,7 @@ export const herbarium: DesignDefinition = {
   tagline: "Your recording grown into a pressed botanical specimen — every leaf is a moment of sound.",
   rationale:
     "Answers the brief's test directly: remove the recording and it is still a legitimate botanical print. The waveform is encoded in the leaf lengths instead of drawn as bars, which no competitor does. Herbarium sheets and cyanotypes are long-established wall-art genres.",
-  bestFor: ["Anniversary", "Mother's Day", "New baby", "Garden lovers"],
+  bestFor: ["First dance song", "Anniversary", "In memory of someone", "New baby", "Pet memorial"],
   fields: [
     { key: "title", label: "Title", placeholder: "Our first dance", maxLength: 40, required: true },
     { key: "subtitle", label: "Second line", placeholder: "“At Last”, Etta James", maxLength: 44 },
@@ -165,6 +165,7 @@ export const herbarium: DesignDefinition = {
     cw("herbarium", "Herbarium", "#EFE9DC", "#2B3527", "#6F7462", "#2B3527", "#5F7153"),
     cw("blush", "Blush", "#F5EDE6", "#3F2D2A", "#86726C", "#3F2D2A", "#C3928A"),
     cw("cyanotype", "Cyanotype", "#1F3A5C", "#EEF1F0", "#A9B8C8", "#EEF1F0", "#E4EAEC"),
+    cw("stone", "Stone", "#EEECE7", "#2A2A28", "#77736C", "#2A2A28", "#8E968A"),
   ],
   sample: {
     title: "Our first dance",

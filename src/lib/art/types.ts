@@ -56,6 +56,15 @@ export interface RenderOptions {
   heightIn: number;
   colorwayId?: string;
   showQr: boolean;
+  /**
+   * "standard": full-contrast code with a caption.
+   * "discreet": tone-on-tone code with no caption, blended into the paper.
+   * Contrast is tuned so ZXing/OpenCV still decode a simulated phone photo
+   * (see tests/test_qr_discreet.py).
+   */
+  qrStyle?: "standard" | "discreet";
+  /** Override discreet contrast (0..1 share of ink mixed into paper). Experiments only. */
+  qrContrast?: number;
   /** URL the QR code resolves to. */
   qrUrl?: string;
   /** Optional photo (data URI or absolute URL). Only designs with supportsPhoto use it. */

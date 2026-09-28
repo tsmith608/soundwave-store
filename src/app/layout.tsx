@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: "SoundWave Art — Your song, vows or a voice you love, as art for the wall",
   description:
-    "Turn a first-dance song, wedding vows or a voicemail into a finished art print. Five designs, archival paper, optional frame, and a code that plays the recording back.",
+    "Turn a first-dance song, wedding vows or a voicemail into a finished art print. Two finished designs — the moon on your date, or a botanical grown from your sound — archival paper, optional frame, and a code that plays the recording back.",
   keywords: [
     "sound wave art",
     "soundwave wall art",

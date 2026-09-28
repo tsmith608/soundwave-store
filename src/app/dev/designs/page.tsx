@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import Artwork from "@/components/art/Artwork";
-import { DESIGNS, EXPLORATION_DESIGNS } from "@/lib/art";
+import { DESIGNS, EXPLORATION_DESIGNS, RETIRED_DESIGNS } from "@/lib/art";
 
 export const metadata = { robots: { index: false, follow: false }, title: "Design explorations (internal)" };
 
@@ -17,7 +17,8 @@ export default function DevDesigns() {
       <p className="text-sm mt-2 max-w-2xl">Sellable designs first, then explorations kept for reference. Critique and scoring: docs/art-direction-2026.md.</p>
       {[
         ["Sold", DESIGNS],
-        ["Explorations (not sold)", EXPLORATION_DESIGNS],
+        ["Retired (still renders for existing orders)", RETIRED_DESIGNS],
+        ["Explorations (never sold)", EXPLORATION_DESIGNS],
       ].map(([label, list]) => (
         <section key={label as string} className="mt-10">
           <h2 className="font-serif text-2xl">{label as string}</h2>

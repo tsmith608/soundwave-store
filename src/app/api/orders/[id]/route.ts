@@ -35,6 +35,7 @@ export async function GET(
           fields: spec.fields,
           peaks: spec.peaks,
           showQr: spec.showQr,
+          qrStyle: spec.qrStyle ?? "standard",
           format: spec.format,
           frameFinish: spec.frameFinish,
           widthIn: spec.widthIn,

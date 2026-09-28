@@ -11,13 +11,22 @@ import type { ArtFields, DesignDefinition, RenderOptions } from "./types";
 export * from "./types";
 export { samplePeaks, sanitizePeaks, decodePeaksFromBlob, PEAK_RESOLUTION } from "./peaks";
 
-/** Designs sold in the store, in display order. */
-export const DESIGNS: DesignDefinition[] = [linerNotes, arch, herbarium, nightOf, inMemoriam];
+/**
+ * Designs sold in the store, in display order.
+ * Sep 2026 pivot: the company focuses on these two (see docs/owner-review.md).
+ */
+export const DESIGNS: DesignDefinition[] = [nightOf, herbarium];
 
-/** Rendered and critiqued but not sold. Visible only at /dev/designs. */
+/**
+ * Previously sold, now retired from the storefront. Kept fully renderable so
+ * any existing order still prints, and so they can be brought back.
+ */
+export const RETIRED_DESIGNS: DesignDefinition[] = [linerNotes, arch, inMemoriam];
+
+/** Rendered and critiqued but never sold. Visible only at /dev/designs. */
 export const EXPLORATION_DESIGNS: DesignDefinition[] = EXPLORATIONS;
 
-const ALL = [...DESIGNS, ...EXPLORATION_DESIGNS];
+const ALL = [...DESIGNS, ...RETIRED_DESIGNS, ...EXPLORATION_DESIGNS];
 
 export function getDesign(id: string | null | undefined): DesignDefinition | undefined {
   if (!id) return undefined;
