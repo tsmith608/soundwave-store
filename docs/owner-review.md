@@ -1,5 +1,7 @@
 # Owner Review — read this first
 
+> **Update, 28 Sep 2026:** the memory-first pivot and the 2026 redesign are reviewed in [`owner-review-memory-pivot.md`](owner-review-memory-pivot.md). Where the two disagree, the newer document wins.
+
 **Date:** 28 Sep 2026 · **Branch:** `claude/intelligent-fermi-n7ian7` · Nothing has been deployed, no money spent, no campaigns created.
 
 ---

@@ -7,6 +7,34 @@ Earlier documents (`CONTENT_SCRIPTS.md`, `docs/UGC_SCRIPTS_50.md`) were written 
 
 ---
 
+## 0. Memory-first pivot (September 2026) — read this first
+
+The product now turns **the sound from the customer's own recordings and videos** into art. That changes the content rules:
+
+- **Show a real personal recording, never a commercial track.** A voicemail, a phone video from the wedding, a voice memo, a baby laughing, a dog barking. Don't play a studio recording of a song as the "source" — we don't make art from streaming audio, and using it in content also raises music-licensing problems on the platforms.
+- **A song can be mentioned, not sold.** "The song was *At Last*, but the art is made from the video Aunt Jo filmed" is fine.
+- **Use only real customers' recordings with written permission,** or your own. Don't invent customers or quotes; label demos as demos.
+- **Show the phone.** The camera roll, the voicemail screen, the upload → preview is the most persuasive shot we have.
+
+### Hook bank (memory-first)
+
+1. "I turned my dad's old voicemail into this."
+2. "This is what my wedding video *sounds* like."
+3. "Don't delete that voicemail. Here's why."
+4. "Our vows, from the video my brother took in the second row."
+5. "My grandma singing in the kitchen, framed."
+6. "Every video of your dog has this in it."
+7. "The first time she laughed — 6 seconds — on the nursery wall."
+8. "You have a memory like this in your camera roll right now."
+9. "I scanned the frame and heard her say it again."
+10. "The Snapchat memory from the night we met, as art."
+11. "How to get the audio out of a video — without sending anyone the video."
+12. "A song may remind you of the moment. The recording *is* the moment."
+
+Each hook maps to an existing concept below (c01, c02, c05, c08, c09) or a how-to (section C). Record the screen of the real studio; don't mock the UI.
+
+---
+
 ## 1. What the platforms reward right now
 
 | Signal | Evidence | Implication for us |
@@ -57,19 +85,20 @@ Each has an ID for UTM tracking (`utm_content=c01`, etc.).
 
 **c01 — "This is what my mom's voicemail looks like"** · Memorial · 14 s
 - **Hook (0–2 s):** play 3 seconds of a real voicemail over black; text "this is what my mom's voicemail looks like."
-- **Shots:** SR upload → In Memoriam preview draws → CU of the framed print on a shelf.
+- **Shots:** SR upload → Herbarium (Stone) preview grows → CU of the framed print on a shelf.
 - **CTA:** "Link in bio if you have one you want to keep."
 - **Emotion:** tenderness.
 
-**c02 — "Our first dance, but make it a record sleeve"** · Wedding · 12 s
-- **Hook:** first line of the song + text "our first dance song → wall art."
-- **Shots:** SR typing song and names into Liner Notes; the waveform snaps to the real song shape; CU of the black frame.
+**c02 — "Our first dance, filmed from table six"** · Wedding · 12 s
+- **Hook:** 2 seconds of a shaky guest video of the first dance (the couple's own clip, room noise and cheering included) + text "we turned the wedding video into this."
+- **Shots:** SR upload of the video → "Video (sound only)" → The Night Of preview draws; CU of the black frame.
 - **CTA:** "Makes a good first anniversary gift (it's paper)."
+- **Rule:** never play the studio track on its own; the audio is the guest's recording of the room. Name the song as context only.
 
-**c03 — "Every leaf is a moment of the song"** · Anniversary / botanical · 18 s
+**c03 — "Every leaf is a moment of our vows" · Anniversary / botanical · 18 s
 - **Hook:** macro CU tracing one leaf; VO "this leaf is the word 'forever'."
 - **Shots:** SR side by side, a recording scrubbing → leaves growing; pull back to the framed Herbarium.
-- **CTA:** "Pick your song, we grow the plant."
+- **CTA:** "Upload the vows, we grow the plant."
 
 **c04 — "The moon on the night we met"** · Anniversary · 15 s
 - **Hook:** text "what did the moon look like the night you met?"
@@ -81,9 +110,9 @@ Each has an ID for UTM tracking (`utm_content=c01`, etc.).
 - **Shots:** SR upload → fine line appears → text "four seconds."
 - **CTA:** "You don't need a long one."
 
-**c06 — "Same song, five designs"** · Wedding · 15 s
-- **Hook:** one song playing.
-- **Shots:** SR tap through all 5 designs with the same recording; quick cuts on the beat.
+**c06 — "Same vows, two designs"** · Wedding · 15 s
+- **Hook:** the couple's own vows clip playing.
+- **Shots:** SR switching between The Night Of and Herbarium, and through the colourways, with the same recording.
 - **CTA:** "Which one would you hang?" (comment prompt).
 
 **c07 — "Baby's heartbeat → nursery print"** · Baby · 14 s
@@ -93,13 +122,13 @@ Each has an ID for UTM tracking (`utm_content=c01`, etc.).
 
 **c08 — "Dog's bark on the wall"** · Pet · 12 s
 - **Hook:** a single bark (owner's pet).
-- **Shots:** SR upload → In Memoriam Linen with the pet's name → CU.
+- **Shots:** SR upload of a phone video → Herbarium Stone with the pet's name → CU.
 - **CTA:** "Every video of your dog has this in it."
 
 ### B. The QR moment
 
 **c09 — "Scan it"** · All · 10 s
-- **Hook:** a phone camera pointed at the frame; the recording starts playing out loud (a first-dance song).
+- **Hook:** a phone camera pointed at the frame; the recording starts playing out loud (the couple's vows, from their own video).
 - **Shots:** one continuous take.
 - **Text:** "no app."
 - **CTA:** "It plays from any phone."
@@ -154,15 +183,15 @@ Each has an ID for UTM tracking (`utm_content=c01`, etc.).
 
 **c20 — Comment reply: "Here's the moon on your date"** · Engagement · 10 s each, a series
 - Reply to comments from c04 with The Night Of for their date.
-- **CTA:** "Add your song and it's yours."
+- **CTA:** "Add your recording and it's yours."
 
-**c21 — "Designing the In Memoriam layout"** · Brand / story · 30 s · SR of code/design + FTC
+**c21 — "Designing the Herbarium specimen label"** · Brand / story · 30 s · SR of code/design + FTC
 - **Hook:** "I refused to put hearts or doves on it."
 - Explain the quiet design choice.
 
 ### E. Process and trust
 
-**c22 — "Packing a Liner Notes order"** · ASMR · 20 s
+**c22 — "Packing a Night Of order"** · ASMR · 20 s
 - Tissue, corner protectors, rigid box, note card. No talking.
 - (Needs a real or sample order.)
 
@@ -224,7 +253,7 @@ Each has an ID for UTM tracking (`utm_content=c01`, etc.).
 6. c03 (leaves)
 7. c17 (why it looks cheap)
 8. c14 (wedding video audio)
-9. c06 (five designs)
+9. c06 (two designs)
 10. c15 (Grandma this Thanksgiving)
 11. c08 (pet)
 12. c24 (day in the life)
