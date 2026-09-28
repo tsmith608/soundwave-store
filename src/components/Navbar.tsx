@@ -2,58 +2,68 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { BRAND_NAME } from "@/lib/site";
 
 const LINKS = [
-  { href: "/designs", label: "Designs" },
-  { href: "/#occasions", label: "Occasions" },
+  { href: "/designs", label: "The art" },
   { href: "/#how-it-works", label: "How it works" },
+  { href: "/#occasions", label: "Occasions" },
   { href: "/#faq", label: "FAQ" },
 ];
+
+function Mark() {
+  // A tiny recording envelope — the brand motif at logo size.
+  return (
+    <svg width="26" height="22" viewBox="0 0 26 22" aria-hidden>
+      {[5, 11, 7, 18, 10, 14, 6, 9].map((h, i) => (
+        <rect key={i} x={1 + i * 3.1} y={11 - h / 2} width="2" height={h} rx="1" fill="currentColor" />
+      ))}
+    </svg>
+  );
+}
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#FAF7F2]/92 backdrop-blur-md border-b border-[#E6DFD6]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="SoundWave Art home">
-          <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-            {[4, 10, 6, 14, 8, 11, 5].map((h, i) => (
-              <line key={i} x1={2 + i * 3} x2={2 + i * 3} y1={11 - h / 2} y2={11 + h / 2} stroke="#2D2A26" strokeWidth="1.6" strokeLinecap="round" />
-            ))}
-          </svg>
-          <span className="font-serif text-[22px] tracking-tight text-[#2D2A26]">SoundWave Art</span>
+    <header className="sticky top-0 z-50 w-full border-b-2 border-ink bg-paper/95 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8">
+        <Link href="/" className="flex min-h-[44px] items-center gap-2" aria-label={`${BRAND_NAME} home`}>
+          <Mark />
+          <span className="display text-[22px] !leading-none !tracking-[-0.03em]">{BRAND_NAME}</span>
         </Link>
-
-        <nav className="hidden md:flex items-center gap-8 text-sm text-[#4A453F]">
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
           {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="hover:text-[#2D2A26] transition-colors">
+            <Link key={l.href} href={l.href} className="inline-flex min-h-[44px] items-center rounded-full px-3.5 text-[15px] font-medium hover:bg-ink hover:text-paper">
               {l.label}
             </Link>
           ))}
         </nav>
-
         <div className="hidden md:block">
-          <Link href="/create" className="px-5 py-2.5 rounded-md text-sm bg-[#2D2A26] hover:bg-black text-white transition-colors">
-            Create yours
+          <Link href="/create" className="btn btn-signal !min-h-[44px] !text-sm !shadow-[3px_3px_0_#151412]">
+            <span>Create yours</span>
+            <span className="btn-arrow !w-10" aria-hidden>
+              →
+            </span>
           </Link>
         </div>
-
-        <button type="button" onClick={() => setOpen(!open)} className="md:hidden p-2 text-[#4A453F]" aria-label="Toggle navigation menu" aria-expanded={open}>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {open ? <path strokeLinecap="round" strokeWidth={1.6} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeWidth={1.6} d="M4 7h16M4 12h16M4 17h16" />}
+        <button type="button" onClick={() => setOpen(!open)} className="flex h-11 w-11 items-center justify-center md:hidden" aria-label="Menu" aria-expanded={open}>
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {open ? <path strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />}
           </svg>
         </button>
       </div>
-
       {open && (
-        <div className="md:hidden px-4 pt-2 pb-6 bg-[#FAF7F2] border-b border-[#E6DFD6] space-y-1">
+        <div className="border-t-2 border-ink bg-paper px-4 pb-6 pt-2 md:hidden">
           {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2.5 text-base text-[#2D2A26]">
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="display block py-2.5 text-3xl">
               {l.label}
             </Link>
           ))}
-          <Link href="/create" onClick={() => setOpen(false)} className="mt-3 block text-center py-3 rounded-md bg-[#2D2A26] text-white text-sm">
-            Create yours
+          <Link href="/create" onClick={() => setOpen(false)} className="btn btn-signal mt-4 w-full justify-between">
+            <span>Create yours</span>
+            <span className="btn-arrow" aria-hidden>
+              →
+            </span>
           </Link>
         </div>
       )}

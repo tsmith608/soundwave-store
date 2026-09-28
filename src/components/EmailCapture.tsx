@@ -23,7 +23,7 @@ export default function EmailCapture({ source, heading, blurb, dark = false }: {
   };
   return (
     <div>
-      <div className={`font-serif text-2xl ${dark ? "text-white" : "text-[#2D2A26]"}`}>{heading}</div>
+      <div className={`display text-3xl ${dark ? "text-paper" : "text-ink"}`}>{heading}</div>
       <p className={`mt-1 text-sm ${dark ? "text-white/70" : "text-[#6B655F]"}`}>{blurb}</p>
       {state === "done" ? (
         <p className="mt-3 text-sm text-[#3F6B45]">Thanks — we&apos;ll be in touch. Unsubscribe any time.</p>
@@ -36,9 +36,9 @@ export default function EmailCapture({ source, heading, blurb, dark = false }: {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             aria-label="Email address"
-            className="flex-1 min-w-0 rounded-md border border-[#DDD5CB] bg-white px-3 py-2.5 text-[15px] focus:outline-none focus:border-[#2D2A26]"
+            className="flex-1 min-w-0 h-12 border-2 border-current bg-transparent px-3 text-[15px] placeholder:opacity-50 focus:outline-none"
           />
-          <button disabled={state === "busy"} className="px-4 py-2.5 rounded-md bg-[#2D2A26] text-white text-sm disabled:opacity-60">
+          <button disabled={state === "busy"} className="h-12 border-2 border-current bg-signal px-4 text-sm font-semibold text-ink disabled:opacity-60">
             {state === "busy" ? "…" : "Remind me"}
           </button>
         </form>

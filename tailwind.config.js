@@ -9,10 +9,21 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        display: ["Bricolage Grotesque Variable", "Inter", "system-ui", "sans-serif"],
+        accent: ["Instrument Serif", "Georgia", "serif"],
+        mono: ["IBM Plex Mono", "ui-monospace", "monospace"],
+        ui: ["Inter", "system-ui", "sans-serif"],
         serif: ["var(--font-serif)", "Cormorant Garamond", "Georgia", "serif"],
         sans: ["var(--font-sans)", "Inter", "-apple-system", "sans-serif"],
       },
       colors: {
+        paper: { DEFAULT: "#F2EDE3", 2: "#E9E2D4" },
+        ink: { DEFAULT: "#151412", soft: "#57524B" },
+        signal: "#FF5B2E",
+        night: { DEFAULT: "#0F1627", ink: "#E8E6DF", soft: "#9AA3B5", moon: "#EFE6D0" },
+        botanical: { DEFAULT: "#DFE6CF", ink: "#213520", leaf: "#4F6B45" },
+        romantic: { DEFAULT: "#ECD3CD", wine: "#5A1E2B" },
+        film: { DEFAULT: "#F1D9A5", amber: "#D8913B" },
         "bg-primary": "#FAF7F2",
         "bg-secondary": "#F4EFEB",
         "bg-card": "#FFFFFF",

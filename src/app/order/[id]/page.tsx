@@ -131,12 +131,12 @@ export default function OrderStatusPage({
   const activeIndex = currentStepIndex >= 0 ? currentStepIndex : 1;
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#2D2A26] flex flex-col">
+    <div className="min-h-screen bg-[#F2EDE3] text-[#2D2A26] flex flex-col">
       {/* Header */}
       <header className="border-b border-[#EAE3DC] bg-white/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#B76E79] flex items-center justify-center text-white font-serif font-bold text-xs shadow-sm">
+            <div className="w-8 h-8 rounded-lg bg-[#151412] flex items-center justify-center text-white font-serif font-bold text-xs shadow-sm">
               SW
             </div>
             <span className="font-serif text-lg font-bold text-[#2D2A26] tracking-wide">
@@ -146,7 +146,7 @@ export default function OrderStatusPage({
 
           <Link
             href="/create"
-            className="text-xs uppercase font-semibold tracking-wider text-[#B76E79] hover:underline"
+            className="text-xs uppercase font-semibold tracking-wider text-[#151412] hover:underline"
           >
             Create another →
           </Link>
@@ -157,7 +157,7 @@ export default function OrderStatusPage({
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {loading ? (
           <div className="py-24 text-center space-y-4">
-            <div className="w-10 h-10 border-2 border-[#B76E79] border-t-transparent rounded-full animate-spin mx-auto" />
+            <div className="w-10 h-10 border-2 border-[#151412] border-t-transparent rounded-full animate-spin mx-auto" />
             <p className="text-[#6B655F] text-sm">Locating your custom order details...</p>
           </div>
         ) : error ? (
@@ -169,7 +169,7 @@ export default function OrderStatusPage({
             <p className="text-[#6B655F] text-sm">{error}</p>
             <Link
               href="/"
-              className="inline-block mt-4 px-6 py-2.5 rounded-xl bg-[#B76E79] text-white font-semibold text-sm"
+              className="inline-block mt-4 px-6 py-2.5 rounded-xl bg-[#151412] text-white font-semibold text-sm"
             >
               Return Home
             </Link>
@@ -177,9 +177,9 @@ export default function OrderStatusPage({
         ) : order ? (
           <div className="space-y-8">
             {/* Order Confirmation Banner */}
-            <div className="bg-white border border-[#EAE3DC] rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+            <div className="bg-white border border-[#EAE3DC] rounded-none border-2 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-widest text-[#B76E79] bg-[#B76E79]/10 px-2.5 py-0.5 rounded border border-[#B76E79]/20">
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#151412] bg-[#151412]/10 px-2.5 py-0.5 rounded border border-[#151412]/20">
                   {order.statusLabel || "Payment Confirmed"}
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-serif text-[#2D2A26] mt-2">
@@ -209,7 +209,7 @@ export default function OrderStatusPage({
             )}
 
             {/* Stepper Progression */}
-            <div className="bg-white border border-[#EAE3DC] rounded-2xl p-6 sm:p-8 shadow-sm">
+            <div className="bg-white border border-[#EAE3DC] rounded-none border-2 p-6 sm:p-8 shadow-sm">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-[#2D2A26] mb-6">
                 Fulfillment Status
               </h2>
@@ -224,9 +224,9 @@ export default function OrderStatusPage({
                       <div
                         className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
                           isDone
-                            ? "bg-[#B76E79] text-white shadow-md shadow-[#B76E79]/20"
-                            : "bg-[#FAF7F2] border border-[#EAE3DC] text-[#9E968F]"
-                        } ${isCurrent ? "ring-4 ring-[#B76E79]/30 scale-110" : ""}`}
+                            ? "bg-[#151412] text-white shadow-md shadow-[#151412]/20"
+                            : "bg-[#F2EDE3] border border-[#EAE3DC] text-[#9E968F]"
+                        } ${isCurrent ? "ring-4 ring-[#151412]/30 scale-110" : ""}`}
                       >
                         {isDone ? (
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -238,7 +238,7 @@ export default function OrderStatusPage({
                       </div>
                       <span
                         className={`text-xs font-medium ${
-                          isCurrent ? "text-[#B76E79] font-bold" : isDone ? "text-[#2D2A26]" : "text-[#9E968F]"
+                          isCurrent ? "text-[#151412] font-bold" : isDone ? "text-[#2D2A26]" : "text-[#9E968F]"
                         }`}
                       >
                         {step.label}
@@ -252,7 +252,7 @@ export default function OrderStatusPage({
             {/* Artwork Preview & Specs Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Artwork Preview Card */}
-              <div className="lg:col-span-6 bg-white border border-[#EAE3DC] rounded-2xl p-6 flex flex-col items-center justify-center shadow-sm">
+              <div className="lg:col-span-6 bg-white border border-[#EAE3DC] rounded-none border-2 p-6 flex flex-col items-center justify-center shadow-sm">
                 <span className="text-xs uppercase tracking-wider text-[#6B655F] font-semibold mb-4 self-start">
                   Artwork Proof Preview
                 </span>
@@ -299,7 +299,7 @@ export default function OrderStatusPage({
 
               {/* Order Details & Specifications */}
               <div className="lg:col-span-6 space-y-6">
-                <div className="bg-white border border-[#EAE3DC] rounded-2xl p-6 space-y-4 shadow-sm">
+                <div className="bg-white border border-[#EAE3DC] rounded-none border-2 p-6 space-y-4 shadow-sm">
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-[#2D2A26]">
                     Art Specifications
                   </h3>
@@ -329,7 +329,7 @@ export default function OrderStatusPage({
                 </div>
 
                 {/* Delivery Information */}
-                <div className="bg-white border border-[#EAE3DC] rounded-2xl p-6 space-y-3 shadow-sm">
+                <div className="bg-white border border-[#EAE3DC] rounded-none border-2 p-6 space-y-3 shadow-sm">
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-[#2D2A26]">
                     Shipping & Tracking
                   </h3>
@@ -347,7 +347,7 @@ export default function OrderStatusPage({
                     {order.partnerOrderId && (
                       <p>
                         <strong className="text-[#2D2A26]">Partner Ref:</strong>{" "}
-                        <span className="font-mono text-[#B76E79] font-medium">{order.partnerOrderId}</span>
+                        <span className="font-mono text-[#151412] font-medium">{order.partnerOrderId}</span>
                       </p>
                     )}
                   </div>

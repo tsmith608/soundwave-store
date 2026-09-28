@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { CTA } from "@/components/brand/Button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -55,35 +55,35 @@ export default function Page() {
     step: steps.flatMap((s) => s.items.map((t) => ({ "@type": "HowToStep", text: t }))),
   };
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#2D2A26]">
+    <div className="flex min-h-screen flex-col">
       <Navbar />
       <main className="flex-1">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#7A736B]">Guide</p>
-          <h1 className="mt-4 font-serif text-5xl leading-[1.05] tracking-tight">How to save a voicemail before it&apos;s deleted</h1>
-          <p className="mt-6 text-lg text-[#4A453F] leading-relaxed">
+          <p className="meta">Guide</p>
+          <h1 className="display mt-4 text-[12vw] sm:text-7xl">How to save a voicemail before it&apos;s deleted</h1>
+          <p className="mt-6 text-lg text-ink-soft leading-relaxed">
             For a lot of families, a voicemail is the only recording of someone&apos;s everyday voice. Voicemails live on your carrier&apos;s servers or in your phone&apos;s app — not in your photos — and they
             can disappear when a line is cancelled, a number is ported or a phone is replaced. Here&apos;s how to get a copy you control.
           </p>
           {steps.map((s) => (
             <section key={s.h} className="mt-10">
-              <h2 className="font-serif text-3xl">{s.h}</h2>
-              <ol className="mt-4 space-y-3 list-decimal pl-5 text-[#4A453F] leading-relaxed">
+              <h2 className="display text-4xl">{s.h}</h2>
+              <ol className="mt-4 space-y-3 list-decimal pl-5 text-ink-soft leading-relaxed">
                 {s.items.map((t) => (
                   <li key={t}>{t}</li>
                 ))}
               </ol>
             </section>
           ))}
-          <section className="mt-14 border-t border-[#E6DFD6] pt-10">
-            <h2 className="font-serif text-3xl">If you&apos;d like to keep it on the wall</h2>
-            <p className="mt-3 text-[#4A453F] leading-relaxed">
-              Once you have the file, you can turn it into a quiet memorial print — their name, their voice drawn as a single line, the words they said — with a code that plays the message from any phone.
+          <section className="mt-14 border-t-2 border-ink pt-10">
+            <h2 className="display text-4xl">If you&apos;d like to keep it on the wall</h2>
+            <p className="mt-3 text-ink-soft leading-relaxed">
+              Once you have the file, you can turn its sound into a quiet keepsake — a botanical specimen grown from their voice, with their name and the words they said — and a code that plays the message from any phone.
             </p>
-            <Link href="/voicemail-memorial-art" className="mt-6 inline-block px-6 py-3 rounded-md bg-[#2D2A26] hover:bg-black text-white text-sm">
-              See voicemail memorial prints
-            </Link>
+            <div className="mt-6">
+              <CTA href="/voicemail-memorial-art">See voicemail keepsakes</CTA>
+            </div>
           </section>
         </article>
       </main>

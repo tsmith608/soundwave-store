@@ -12,10 +12,15 @@ export const metadata: Metadata = {
 
 export default function CreatePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#2D2A26]">
+    <div className="flex min-h-screen flex-col pb-[72px] lg:pb-0">
       <Navbar />
-      <main className="flex-1 pb-20 lg:pb-0">
-        <Suspense fallback={<div className="py-32 text-center text-sm text-[#6B655F]">Loading the studio…</div>}>
+      <main className="flex-1">
+        <div className="mx-auto max-w-[1440px] px-4 pt-8 sm:px-8">
+          <h1 className="display text-[13vw] sm:text-[8vw] lg:text-[88px]">
+            Make your <span className="accent !font-normal">piece.</span>
+          </h1>
+        </div>
+        <Suspense fallback={<div className="py-32 text-center meta">Loading the studio…</div>}>
           <StudioFromParams />
         </Suspense>
       </main>

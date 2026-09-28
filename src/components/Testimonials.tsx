@@ -10,21 +10,21 @@ export default function Testimonials() {
   if (REVIEWS.length === 0) return null;
   const avg = REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length;
   return (
-    <section id="reviews" className="py-20 border-t border-[#E6DFD6]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="font-serif text-3xl sm:text-4xl text-[#2D2A26]">From people who&apos;ve hung one</h2>
-        <p className="mt-2 text-sm text-[#6B655F]">
+    <section id="reviews" className="border-t-2 border-ink py-20">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-8">
+        <h2 className="display text-5xl sm:text-7xl">From people who&apos;ve <span className="accent !font-normal">hung one.</span></h2>
+        <p className="meta mt-4">
           {avg.toFixed(1)} out of 5 from {REVIEWS.length} review{REVIEWS.length === 1 ? "" : "s"} of delivered orders.
         </p>
-        <div className="mt-8 grid md:grid-cols-3 gap-6">
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {REVIEWS.map((r) => (
-            <figure key={r.orderId} className="bg-white border border-[#E6DFD6] p-6">
-              <div aria-label={`${r.rating} out of 5`} className="text-[#2D2A26] tracking-widest text-sm">
+            <figure key={r.orderId} className="border-2 border-ink bg-paper p-6 shadow-[4px_4px_0_#151412]">
+              <div aria-label={`${r.rating} out of 5`} className="tracking-widest text-sm text-signal">
                 {"★".repeat(r.rating)}
-                <span className="text-[#D8D0C6]">{"★".repeat(5 - r.rating)}</span>
+                <span className="opacity-25">{"★".repeat(5 - r.rating)}</span>
               </div>
-              <blockquote className="mt-3 text-[15px] leading-relaxed text-[#2D2A26]">{r.text}</blockquote>
-              <figcaption className="mt-4 text-xs text-[#7A736B]">
+              <blockquote className="accent mt-3 text-2xl leading-snug">{r.text}</blockquote>
+              <figcaption className="meta mt-4">
                 {r.name}
                 {r.location ? `, ${r.location}` : ""} · {getDesign(r.designId)?.name ?? ""}
               </figcaption>

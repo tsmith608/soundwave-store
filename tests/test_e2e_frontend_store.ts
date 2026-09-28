@@ -107,12 +107,12 @@ function runTier1() {
 
   // 1.4 Homepage exports valid React component and uses luxury cream tokens
   const homeValid = homeCode !== null && (homeCode.includes("export default function") || homeCode.includes("export default"));
-  const homeHasLuxuryTokens = homeCode !== null && (homeCode.includes("#FAF7F2") || homeCode.includes("bg-[#FAF7F2]") || homeCode.includes("bg-cream"));
+  const homeHasLuxuryTokens = homeCode !== null && (homeCode.includes("#FAF7F2") || homeCode.includes("bg-[#FAF7F2]") || homeCode.includes("bg-cream") || homeCode.includes("bg-paper"));
   record(
     "Tier 1",
     "F1.4: Homepage exports default component with luxury cream token styling",
     Boolean(homeValid && homeHasLuxuryTokens),
-    "Default export with luxury styling #FAF7F2",
+    "Default export with paper token styling (bg-paper / #FAF7F2)",
     `Export: ${homeValid}, Token styling: ${homeHasLuxuryTokens}`
   );
 

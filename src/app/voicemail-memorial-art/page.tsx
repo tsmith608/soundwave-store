@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const c: IntentContent = {
+  world: "romantic",
   eyebrow: "Voicemail & voice memorial",
   h1: "Keep their voice where you can see it.",
   intro: [

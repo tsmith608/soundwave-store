@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const c: IntentContent = {
+  world: "botanical",
   eyebrow: "Pet memorial",
   h1: "The sound that meant they were home.",
   intro: [

@@ -63,7 +63,7 @@ a {
 button {
   font-family: inherit;
   cursor: pointer;
-  border: none;
+  border-width: 0;
   background: none;
 }
 
@@ -90,3 +90,220 @@ button {
   box-shadow: 0 4px 20px -2px rgba(90, 75, 60, 0.05);
 }
 
+
+/* ==========================================================================
+   2026 system — "Digital Memory Archive × Boutique Art Editorial"
+   Stable type/UI; each section may switch to a colour "world".
+   ========================================================================== */
+:root {
+  --paper: #f2ede3;
+  --paper-2: #e9e2d4;
+  --ink: #151412;
+  --ink-soft: #57524b;
+  --line: rgba(21, 20, 18, 0.14);
+  --signal: #ff5b2e;
+  --signal-ink: #151412;
+  /* worlds */
+  --night: #0f1627;
+  --night-ink: #e8e6df;
+  --night-soft: #9aa3b5;
+  --moon: #efe6d0;
+  --botanical: #dfe6cf;
+  --botanical-ink: #213520;
+  --leaf: #4f6b45;
+  --romantic: #ecd3cd;
+  --wine: #5a1e2b;
+  --film: #f1d9a5;
+  --amber: #d8913b;
+}
+
+body {
+  background-color: var(--paper);
+}
+
+/* Paper grain: a tiny inline SVG noise tile, printed very lightly over the page. */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.display {
+  font-family: "Bricolage Grotesque Variable", "Inter", system-ui, sans-serif;
+  font-weight: 800;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+}
+.accent {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.meta {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+/* Tactile buttons: 2px ink border + hard offset shadow; press sinks into it. */
+.btn {
+  display: inline-flex;
+  align-items: stretch;
+  min-height: 48px;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.2s ease;
+}
+.btn > span:first-child {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+.btn .btn-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  border-left: 2px solid var(--ink);
+  transition: transform 0.2s ease;
+}
+.btn:hover .btn-arrow svg {
+  transform: translateX(3px);
+}
+.btn .btn-arrow svg {
+  transition: transform 0.2s ease;
+}
+.btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+}
+.btn-signal {
+  background: var(--signal);
+}
+.btn-ink {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.btn-ink .btn-arrow {
+  border-left-color: rgba(255, 255, 255, 0.35);
+}
+.on-dark .btn {
+  border-color: var(--night-ink);
+  box-shadow: 4px 4px 0 var(--night-ink);
+}
+.on-dark .btn .btn-arrow {
+  border-left-color: var(--night-ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 3px;
+}
+
+/* Motion (all of it is decorative; content never waits for it) */
+@keyframes draw {
+  from {
+    stroke-dashoffset: var(--len, 1200);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes playhead {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-8px) rotate(var(--rot, 0deg));
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes grow-up {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.anim-draw {
+  stroke-dasharray: var(--len, 1200);
+  animation: draw 2.6s cubic-bezier(0.6, 0, 0.2, 1) 0.3s both;
+}
+.anim-playhead {
+  transform-origin: left;
+  animation: playhead 13.4s linear infinite;
+}
+.anim-float {
+  animation: floaty 7s ease-in-out infinite;
+}
+.anim-blink {
+  animation: blink 1.2s steps(2) infinite;
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+.grow-up.is-in {
+  animation: grow-up 1.8s cubic-bezier(0.6, 0, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .anim-draw,
+  .anim-playhead,
+  .anim-float,
+  .anim-blink,
+  .grow-up.is-in {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .btn,
+  .btn .btn-arrow svg {
+    transition: none;
+  }
+}
+
+/* Headings take their section's colour (worlds switch text colour). */
+h1, h2, h3, h4, h5, h6 {
+  color: inherit;
+}

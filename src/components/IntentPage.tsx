@@ -1,8 +1,10 @@
 import React from "react";
-import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FramedArtwork from "@/components/art/FramedArtwork";
+import { CTA } from "@/components/brand/Button";
+import Reveal from "@/components/brand/Reveal";
+import { WaveEdge } from "@/components/brand/shapes";
 import { getDesign, samplePeaks, type ArtFields } from "@/lib/art";
 import { PRINT_SIZES, formatPrice } from "@/lib/catalog";
 
@@ -16,9 +18,12 @@ export interface IntentExample {
   frame?: string;
 }
 
+export type World = "paper" | "night" | "botanical" | "romantic" | "film";
+
 export interface IntentContent {
   eyebrow: string;
   h1: string;
+  world?: World;
   intro: string[];
   occasion: string;
   examples: IntentExample[];
@@ -29,12 +34,21 @@ export interface IntentContent {
   ctaLabel: string;
 }
 
+const WORLDS: Record<World, { bg: string; text: string; fill: string; dark?: boolean }> = {
+  paper: { bg: "bg-paper-2", text: "text-ink", fill: "var(--paper-2)" },
+  night: { bg: "bg-night", text: "text-night-ink", fill: "var(--night)", dark: true },
+  botanical: { bg: "bg-botanical", text: "text-botanical-ink", fill: "var(--botanical)" },
+  romantic: { bg: "bg-romantic", text: "text-romantic-wine", fill: "var(--romantic)" },
+  film: { bg: "bg-film", text: "text-ink", fill: "var(--film)" },
+};
+
 /**
  * Template for search-intent landing pages. Each page supplies its own copy,
  * examples and FAQs — the template only handles layout — so pages are
  * genuinely different documents rather than keyword-swapped doorways.
  */
 export default function IntentPage({ c }: { c: IntentContent }) {
+  const w = WORLDS[c.world ?? "paper"];
   const fromPrint = Math.min(...PRINT_SIZES.map((s) => s.price.print));
   const fromFramed = Math.min(...PRINT_SIZES.map((s) => s.price.framed));
   const jsonLd = {
@@ -42,98 +56,96 @@ export default function IntentPage({ c }: { c: IntentContent }) {
     "@type": "FAQPage",
     mainEntity: c.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
   };
+  const hero = c.examples[0];
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#2D2A26]">
+    <div className="flex min-h-screen flex-col overflow-x-clip">
       <Navbar />
       <main className="flex-1">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-10 grid lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-[#7A736B]">{c.eyebrow}</p>
-            <h1 className="mt-4 font-serif text-5xl sm:text-6xl leading-[1.03] tracking-tight">{c.h1}</h1>
-            {c.intro.map((p, i) => (
-              <p key={i} className="mt-5 text-lg text-[#4A453F] leading-relaxed">
-                {p}
-              </p>
-            ))}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link href={`/create?occasion=${c.occasion}`} className="px-7 py-3.5 rounded-md bg-[#2D2A26] hover:bg-black text-white text-sm">
-                {c.ctaLabel}
-              </Link>
-              <span className="text-sm text-[#7A736B]">
-                Prints from {formatPrice(fromPrint)} · framed from {formatPrice(fromFramed)}
-              </span>
+        <section className={`${w.bg} ${w.text} ${w.dark ? "on-dark" : ""}`}>
+          <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-4 pb-16 pt-12 sm:px-8 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <p className="meta opacity-75">{c.eyebrow}</p>
+              <h1 className="display mt-5 text-[13vw] sm:text-[9vw] lg:text-[96px]">{c.h1}</h1>
+              {c.intro.map((p, i) => (
+                <p key={i} className="mt-6 max-w-2xl text-lg leading-relaxed opacity-90">
+                  {p}
+                </p>
+              ))}
+              <div className="mt-9 flex flex-wrap items-center gap-5">
+                <CTA href={`/create?occasion=${c.occasion}`}>{c.ctaLabel}</CTA>
+                <span className="meta opacity-75">
+                  Prints from {formatPrice(fromPrint)} · framed from {formatPrice(fromFramed)}
+                </span>
+              </div>
+            </div>
+            <div className="lg:col-span-5">
+              <div className="mx-auto w-[78%] max-w-[440px] rotate-[1.5deg]">
+                <FramedArtwork designId={hero.designId} colorwayId={hero.colorwayId} fields={hero.fields} peaks={samplePeaks(hero.seed, hero.kind)} frameFinish={hero.frame ?? "black"} qrStyle="discreet" idPrefix="intent-hero" />
+              </div>
             </div>
           </div>
-          <div className="bg-[#EDE8E1] px-[12%] py-[9%]">
-            {(() => {
-              const e = c.examples[0];
-              return (
-                <FramedArtwork designId={e.designId} colorwayId={e.colorwayId} fields={e.fields} peaks={samplePeaks(e.seed, e.kind)} frameFinish={e.frame ?? "black"} idPrefix="intent-hero" />
-              );
-            })()}
-          </div>
         </section>
+        <WaveEdge seed={`intent-${c.occasion}`} fill={w.fill} flip />
 
         {c.examples.length > 1 && (
-          <section className="border-t border-[#E6DFD6] py-14">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="font-serif text-3xl sm:text-4xl">Examples</h2>
-              <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {c.examples.slice(1).map((e, i) => (
-                  <figure key={i}>
-                    <div className="bg-[#EDE8E1] px-[14%] py-[10%]">
-                      <FramedArtwork designId={e.designId} colorwayId={e.colorwayId} fields={e.fields} peaks={samplePeaks(e.seed, e.kind)} frameFinish={e.frame ?? "black"} idPrefix={`intent-${i}`} />
-                    </div>
-                    <figcaption className="mt-3 text-sm text-[#4A453F]">
-                      <span className="font-medium">{getDesign(e.designId)?.name}</span> — {e.caption}
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
+          <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8">
+            <p className="meta mb-8">Examples · demo recordings</p>
+            <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+              {c.examples.slice(1).map((e, i) => (
+                <Reveal as="figure" key={i} delay={i * 120}>
+                  <div className="bg-paper-2 px-[14%] py-[10%]">
+                    <FramedArtwork designId={e.designId} colorwayId={e.colorwayId} fields={e.fields} peaks={samplePeaks(e.seed, e.kind)} frameFinish={e.frame ?? "black"} qrStyle="discreet" idPrefix={`intent-${i}`} />
+                  </div>
+                  <figcaption className="mt-4">
+                    <span className="display text-2xl">{getDesign(e.designId)?.name}</span>
+                    <span className="mt-1 block text-ink-soft">{e.caption}</span>
+                  </figcaption>
+                </Reveal>
+              ))}
             </div>
           </section>
         )}
 
-        <section className="bg-[#F1ECE4] py-14">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="font-serif text-3xl sm:text-4xl">{c.howToTitle}</h2>
-            <div className="mt-8 grid md:grid-cols-3 gap-8">
+        <section className="border-y-2 border-ink">
+          <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8">
+            <h2 className="display text-[11vw] sm:text-[7vw] lg:text-[72px]">{c.howToTitle}</h2>
+            <ol className="mt-10 grid gap-10 md:grid-cols-3">
               {c.howTo.map((h, i) => (
-                <div key={i}>
-                  <div className="font-mono text-xs text-[#9E968F]">0{i + 1}</div>
-                  <div className="mt-2 font-serif text-2xl">{h.title}</div>
-                  <p className="mt-2 text-[15px] leading-relaxed text-[#4A453F]">{h.body}</p>
-                </div>
+                <li key={i} className="border-t-2 border-ink pt-4">
+                  <span className="display text-5xl text-signal">{i + 1}</span>
+                  <span className="display mt-2 block text-3xl">{h.title}</span>
+                  <p className="mt-3 text-lg leading-relaxed text-ink-soft">{h.body}</p>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </section>
 
-        <section className="py-14">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="font-serif text-3xl sm:text-4xl">Before you order</h2>
-            <dl className="mt-6 space-y-6">
+        <section className="mx-auto grid max-w-[1440px] gap-12 px-4 py-16 sm:px-8 lg:grid-cols-2">
+          <div>
+            <h2 className="display text-5xl sm:text-6xl">Before you order</h2>
+            <dl className="mt-8 space-y-6">
               {c.considerations.map((k, i) => (
-                <div key={i}>
-                  <dt className="font-medium">{k.title}</dt>
-                  <dd className="mt-1 text-[#4A453F] leading-relaxed">{k.body}</dd>
+                <div key={i} className="border-t-2 border-ink pt-3">
+                  <dt className="text-xl font-semibold">{k.title}</dt>
+                  <dd className="mt-2 text-lg leading-relaxed text-ink-soft">{k.body}</dd>
                 </div>
               ))}
             </dl>
-            <h2 className="mt-14 font-serif text-3xl sm:text-4xl">Questions</h2>
-            <dl className="mt-6 space-y-6">
+          </div>
+          <div>
+            <h2 className="display text-5xl sm:text-6xl">Questions</h2>
+            <dl className="mt-8 space-y-6">
               {c.faqs.map((f, i) => (
-                <div key={i}>
-                  <dt className="font-medium">{f.q}</dt>
-                  <dd className="mt-1 text-[#4A453F] leading-relaxed">{f.a}</dd>
+                <div key={i} className="border-t-2 border-ink pt-3">
+                  <dt className="text-xl font-semibold">{f.q}</dt>
+                  <dd className="mt-2 text-lg leading-relaxed text-ink-soft">{f.a}</dd>
                 </div>
               ))}
             </dl>
             <div className="mt-12">
-              <Link href={`/create?occasion=${c.occasion}`} className="inline-block px-7 py-3.5 rounded-md bg-[#2D2A26] hover:bg-black text-white text-sm">
-                {c.ctaLabel}
-              </Link>
+              <CTA href={`/create?occasion=${c.occasion}`}>{c.ctaLabel}</CTA>
             </div>
           </div>
         </section>
