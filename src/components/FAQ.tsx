@@ -7,36 +7,41 @@ interface FAQItem {
   answer: string;
 }
 
-const FAQ_ITEMS: FAQItem[] = [
+export const FAQ_ITEMS: FAQItem[] = [
   {
-    question: "How does SoundWave Art work?",
+    question: "What can I turn into a print?",
     answer:
-      "When you record audio or upload a sound file, our audio engine extracts thousands of amplitude points from your audio frequencies. We transform those peaks into discrete, elegant rounded sound wave pill bars rendered in your chosen palette, creating a one-of-a-kind visual representation of your exact voice or song.",
+      "Any recording with a sound you care about: your first-dance song, vows from a wedding video, a voicemail, a baby's heartbeat from a scan video, a pet's bark, a voice note. MP3, M4A, WAV and WebM files up to 50 MB all work, and you can record directly in the browser.",
   },
   {
-    question: "Can I combine a personal photo with my sound wave?",
+    question: "Do I have to design anything?",
     answer:
-      "Yes! Our interactive studio lets you upload any personal photo (.jpg, .jpeg, or .png) — such as wedding portraits, baby sonograms, family photos, or pet memories. We composite your photo alongside your soundwave with your choice of decorative style (Floral Botanical, Modern Double Border, Elegant Arch, or Clean Minimal).",
+      "No. You choose one of five finished designs and type your words. The layout, typefaces and colours are already set, so there's nothing to arrange. What you see in the preview is exactly what we print.",
   },
   {
-    question: "What audio formats can I upload?",
+    question: "How does the scan-to-listen code work?",
     answer:
-      "We support all standard audio formats including MP3, WAV, WebM, M4A, and AAC files up to 50MB. You can also record your voice directly in your browser with our built-in live microphone studio.",
+      "If you keep the code switched on, it's printed small on the artwork. Point any phone camera at it and your recording plays in the browser — no app, no account. The page is unlisted and only reachable through the code or the link we email you.",
   },
   {
-    question: "How long does fulfillment and delivery take?",
+    question: "How are the prints made?",
     answer:
-      "All orders enter our automated fulfillment pipeline immediately upon checkout. Your 300 DPI print-ready artwork is compiled, printed on museum-grade paper, custom framed, and shipped via FedEx or USPS within 2 to 4 business days. Standard US delivery takes 3 to 5 business days.",
+      "Printed to order with pigment inks on heavyweight archival matte fine-art paper. Framed prints come in a solid wood frame with a white mount and shatterproof acrylic glazing, with hanging hardware fitted. The artwork is sent to the printer as a vector file, so type and linework stay sharp at every size.",
   },
   {
-    question: "Can I scan the QR code to play the sound?",
+    question: "How long does it take?",
     answer:
-      "Yes! Every print includes an elegantly integrated QR code discreetly positioned in the corner. Anyone can scan the QR code using any smartphone camera to instantly play back the original audio recording with crystal clear clarity.",
+      "Each print is made to order in 3–5 business days, then delivered by tracked US shipping, usually 5–9 business days from your order in total. For Christmas delivery in the US, order by December 10.",
   },
   {
-    question: "What paper and framing materials do you use?",
+    question: "What if something's wrong?",
     answer:
-      "We use 240+ GSM museum-grade archival fine-art matte paper with genuine pigment inks that will not fade for over 100 years. Each frame is crafted from 100% solid real wood with a satin matte finish and fitted with shatterproof optical acrylic.",
+      "If your print arrives damaged, or we've printed something differently from your preview, email us a photo and we'll reprint it free. Because every piece is personalised, we can't accept returns for a change of mind — so please check spelling and dates in the preview.",
+  },
+  {
+    question: "Is my recording private?",
+    answer:
+      "Yes. We use it to draw your artwork and, if you choose, to play it back from the code. We never publish it, share it, or use it for anything else, and we'll delete it on request.",
   },
 ];
 
@@ -52,17 +57,9 @@ export default function FAQ() {
   return (
     <section id="faq" className="py-20 md:py-28 bg-[#F4EFEB] border-b border-[#EAE3DC] scroll-mt-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#B76E79] bg-[#B76E79]/10 px-3.5 py-1 rounded-full border border-[#B76E79]/20">
-            Good Questions
-          </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-[#2D2A26] mt-3">
-            Everything You&apos;d Want to{" "}
-            <span className="rosegold-gradient-text italic">Know Before You Order</span>
-          </h2>
-          <p className="text-[#6B655F] text-sm sm:text-base mt-3">
-            On materials, audio formats, turnaround times, and how the QR playback works — answered plainly.
-          </p>
+        <div className="mb-10">
+          <h2 className="text-4xl sm:text-5xl font-serif text-[#2D2A26]">Questions</h2>
+          <p className="text-[#6B655F] mt-3">Materials, recordings, delivery and privacy, answered plainly.</p>
         </div>
 
         <div className="space-y-4">
@@ -71,7 +68,7 @@ export default function FAQ() {
             return (
               <div
                 key={idx}
-                className="rounded-2xl bg-white border border-[#EAE3DC] overflow-hidden shadow-sm transition-colors"
+                className="rounded-md bg-white border border-[#E6DFD6] overflow-hidden transition-colors"
               >
                 <button
                   type="button"
@@ -82,7 +79,7 @@ export default function FAQ() {
                     {item.question}
                   </span>
                   <span
-                    className={`w-8 h-8 rounded-full bg-[#FAF7F2] border border-[#EAE3DC] flex items-center justify-center shrink-0 text-[#B76E79] transition-transform duration-200 ${
+                    className={`w-8 h-8 rounded-full bg-[#FAF7F2] border border-[#EAE3DC] flex items-center justify-center shrink-0 text-[#2D2A26] transition-transform duration-200 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   >

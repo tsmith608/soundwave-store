@@ -1,6 +1,18 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
+import "@fontsource/instrument-serif/400.css";
+import "@fontsource/instrument-serif/400-italic.css";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/400-italic.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/500-italic.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
 import "./globals.css";
+import Analytics from "@/components/Analytics";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -17,9 +29,10 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "SoundWave Art — Turn Any Sound into Custom Framed Wall Art",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  title: "SoundWave Art — Your song, vows or a voice you love, as art for the wall",
   description:
-    "Transform wedding vows, baby heartbeats, or favorite songs into museum-quality framed sound wave wall art. Gift-ready, handcrafted custom prints starting from $49.",
+    "Turn a first-dance song, wedding vows or a voicemail into a finished art print. Five designs, archival paper, optional frame, and a code that plays the recording back.",
   keywords: [
     "sound wave art",
     "soundwave wall art",
@@ -51,6 +64,7 @@ export default function RootLayout({
     <html lang="en" className="light">
       <body className={`${inter.variable} ${cormorant.variable} bg-[#FAF7F2] text-[#2D2A26] min-h-screen flex flex-col antialiased`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );

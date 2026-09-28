@@ -45,12 +45,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://soundwaveart.com";
-  const canonicalUrl = `${appUrl}/gifts/${occasion.slug}`;
+  // Consolidation (docs/positioning.md → SEO): overlapping pages point at the
+  // dedicated intent page; thin anniversary-year variants are kept for users
+  // but not indexed, to stay clear of Google's scaled-content/doorway policies.
+  const consolidated: Record<string, string> = {
+    "first-dance-song-soundwave-art": "/wedding-song-art",
+    "wedding-vow-soundwave-art": "/wedding-song-art",
+    "pet-memorial-soundwave-art": "/pet-memorial-sound-art",
+    "celebration-of-life-memorial-soundwave-art": "/voicemail-memorial-art",
+    "1st-paper-anniversary-soundwave-art": "/anniversary-sound-wave-gift",
+  };
+  const indexable = new Set(["first-baby-heartbeat-soundwave-art", "baby-first-laugh-soundwave-art", "proposal-audio-soundwave-art"]);
+  const canonicalUrl = consolidated[occasion.slug] ? `${appUrl}${consolidated[occasion.slug]}` : `${appUrl}/gifts/${occasion.slug}`;
+  const robots = consolidated[occasion.slug] || indexable.has(occasion.slug) ? undefined : { index: false, follow: true };
 
   return {
     title: `${occasion.metaTitle} | SoundWave Art`,
     description: occasion.metaDescription,
     keywords: occasion.keywords,
+    robots,
     alternates: {
       canonical: canonicalUrl,
     },

@@ -8,6 +8,7 @@ import {
   isWebhookProcessed,
   prisma,
 } from "@/lib/db";
+import { forwardConversion } from "@/lib/serverEvents";
 
 const DEFAULT_STRIPE_WEBHOOK_SECRET = "whsec_test_secret_32chars_long_1234567890";
 
@@ -119,12 +120,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const secret =
-      process.env.STRIPE_WEBHOOK_SECRET ||
-      DEFAULT_STRIPE_WEBHOOK_SECRET;
+    const isProduction = process.env.NODE_ENV === "production";
+    if (isProduction && !process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error("STRIPE_WEBHOOK_SECRET is not set; refusing webhook.");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+    }
+    const secret = process.env.STRIPE_WEBHOOK_SECRET || DEFAULT_STRIPE_WEBHOOK_SECRET;
 
     // Verify signature
     const verification = verifyStripeSignature(rawBody, sigHeader, secret);
+    if (!verification.valid && isProduction) {
+      // Test secrets are public in this repository and must never be accepted in production.
+      return NextResponse.json({ error: verification.reason || "Invalid signature" }, { status: 400 });
+    }
     if (!verification.valid) {
       // In development / testing, check if fallback secret also fails
       const fallbackVerification = verifyStripeSignature(rawBody, sigHeader, "whsec_test_secret");
@@ -212,6 +220,22 @@ export async function POST(request: NextRequest) {
 
           // Trigger automated fulfillment runner pipeline
           triggerFulfillmentRunner(order.id);
+
+          // Server-side purchase conversion (deduplicated with the browser pixel by order id)
+          let designId: string | undefined;
+          try {
+            designId = order.artworkSpec ? JSON.parse(order.artworkSpec).designId : undefined;
+          } catch {}
+          void forwardConversion({
+            name: "Purchase",
+            eventId: `purchase_${order.id}`,
+            value: (session.amount_total ?? order.totalAmount) / 100,
+            currency: (session.currency || "usd").toUpperCase(),
+            email: customerEmail,
+            orderId: order.id,
+            designId,
+            url: process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}` : undefined,
+          });
         }
       }
 
