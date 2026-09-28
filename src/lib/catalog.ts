@@ -129,6 +129,7 @@ export const OCCASIONS: Occasion[] = [
     colorwayId: "blush",
     recordingPrompt: "A heartbeat from a scan video, a first laugh, a first word — phone videos are perfect.",
     sampleKind: "heartbeat",
+    landing: "/gifts/first-baby-heartbeat-soundwave-art",
   },
   {
     id: "pet",

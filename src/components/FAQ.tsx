@@ -17,7 +17,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     question: "Can I upload a video?",
     answer:
-      "Yes. Your browser extracts the video's soundtrack and only the sound is uploaded — the footage never leaves your device. Videos up to 15 minutes long work; for longer ones, trim to the moment you want.",
+      "Yes. Your browser extracts the video's soundtrack and only the sound is uploaded — the footage never leaves your device. Videos up to 3 minutes long work; for longer ones, trim to the moment you want in your Photos app first.",
   },
   {
     question: "Can I use a Snapchat memory?",
@@ -57,7 +57,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     question: "Is my upload private?",
     answer:
-      "We use your recording to make your artwork and, if you choose the playback option, to play it from your printed code's private link. We don't publish it or use it for anything else. To have it deleted, email us and we'll remove it.",
+      "We use your recording to make your artwork and, if you choose the playback option, to play it from your printed code's private link. We don't publish it or use it for anything else. Recordings behind a printed code are kept so the code keeps working; without a code, we delete it 90 days after delivery. Email us any time and we'll remove it — the details are in our Privacy Policy.",
   },
 ];
 

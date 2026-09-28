@@ -11,6 +11,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/anniversary-sound-wave-gift",
     "/pet-memorial-sound-art",
     "/how-to-save-a-voicemail",
+    "/terms",
+    "/privacy",
     "/gifts/first-baby-heartbeat-soundwave-art",
     "/gifts/baby-first-laugh-soundwave-art",
     "/gifts/proposal-audio-soundwave-art",

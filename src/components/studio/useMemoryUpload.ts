@@ -9,9 +9,11 @@ import { blobToWav } from "@/lib/art/peaks";
  * and uploads only the sound. See docs/video-upload-support.md.
  */
 
-export const MAX_DURATION_S = 15 * 60;
+export const MAX_DURATION_S = 3 * 60;
 export const MAX_FILE_BYTES = 400 * 1024 * 1024;
-const SERVER_AUDIO_LIMIT = 45 * 1024 * 1024; // server accepts 50 MB; keep headroom
+// Anything bigger is re-encoded to mono 22 kHz WAV (~8 MB for 3 min) so stored
+// recordings stay small — they are kept for as long as the QR code plays them.
+const DIRECT_UPLOAD_LIMIT = 10 * 1024 * 1024;
 const DIRECT_EXT = /\.(mp3|wav|webm|m4a)$/i;
 const AUDIO_EXT = /\.(mp3|wav|webm|m4a|aac|ogg|oga|flac)$/i;
 const VIDEO_EXT = /\.(mp4|mov|m4v|webm|3gp)$/i;
@@ -70,7 +72,7 @@ export function useMemoryUpload(onReady: (r: { peaks: number[]; audioId: string;
     async (blob: Blob, name: string, source: MemoryInfo["source"], peaks: number[], duration: number) => {
       setState({ phase: "uploading", name });
       try {
-        const direct = source !== "video" && blob.size <= SERVER_AUDIO_LIMIT && (DIRECT_EXT.test(name) || /webm|wav|mpeg/.test(blob.type));
+        const direct = source !== "video" && blob.size <= DIRECT_UPLOAD_LIMIT && (DIRECT_EXT.test(name) || /webm|wav|mpeg/.test(blob.type));
         // Videos and unusual/large audio are re-encoded to a compact WAV in the browser:
         // only the sound is sent, the footage never leaves the device.
         const file = direct ? new File([blob], name, { type: blob.type || "audio/webm" }) : new File([await blobToWav(blob)], "memory.wav", { type: "audio/wav" });
@@ -116,7 +118,7 @@ export function useMemoryUpload(onReady: (r: { peaks: number[]; audioId: string;
       setState({ phase: "reading", name });
       const probed = await probeDuration(blob, isVideo);
       if (probed > MAX_DURATION_S) {
-        setState({ phase: "error", name, code: "too_long", message: `That recording is ${Math.round(probed / 60)} minutes long. Please trim it to under 15 minutes — the moment you want is plenty.` });
+        setState({ phase: "error", name, code: "too_long", message: `That recording is ${formatLength(probed)} long. Please trim it to under 3 minutes — the moment you want is plenty.` });
         return;
       }
       setState({ phase: "extracting", name });
@@ -135,7 +137,7 @@ export function useMemoryUpload(onReady: (r: { peaks: number[]; audioId: string;
         return;
       }
       if (decoded.duration > MAX_DURATION_S) {
-        setState({ phase: "error", name, code: "too_long", message: "That recording is longer than 15 minutes. Please trim it to the moment you want." });
+        setState({ phase: "error", name, code: "too_long", message: "That recording is longer than 3 minutes. Please trim it to the moment you want." });
         return;
       }
       if (decoded.duration < 0.5) {

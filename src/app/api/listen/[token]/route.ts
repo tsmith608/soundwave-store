@@ -9,8 +9,9 @@ const MIME: Record<string, string> = { ".mp3": "audio/mpeg", ".wav": "audio/wav"
 export async function GET(req: NextRequest, ctx: { params: Promise<{ token: string }> }) {
   const { token } = await ctx.params;
   if (!/^[A-Za-z0-9_-]{10,40}$/.test(token)) return new NextResponse(null, { status: 404 });
-  const order = await prisma.order.findUnique({ where: { listenToken: token }, select: { audioPath: true, status: true } }).catch(() => null);
+  const order = await prisma.order.findUnique({ where: { listenToken: token }, select: { audioPath: true, status: true, artworkSpec: true } }).catch(() => null);
   if (!order || order.status === "cancelled") return new NextResponse(null, { status: 404 });
+  if (order.artworkSpec?.includes('"recordingRemovedAt"')) return new NextResponse(null, { status: 410 });
   const storage = path.resolve(process.cwd(), "storage") + path.sep;
   const file = path.resolve(process.cwd(), order.audioPath);
   if (!file.startsWith(storage) || !fs.existsSync(file)) return new NextResponse(null, { status: 404 });

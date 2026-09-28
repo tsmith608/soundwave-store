@@ -1,3 +1,9 @@
+/**
+ * DEPRECATED (Sep 2026): the /gifts/[slug] pages built from this data were
+ * removed in the memory-first pivot (song-led copy). The data is kept only
+ * because tests/test_sprint2_unified.ts covers it; do not render it again
+ * without rewriting it to docs/seo-memory-positioning.md.
+ */
 import { OccasionData } from "./types";
 import { ANNIVERSARY_OCCASIONS } from "./anniversaries";
 import { MEMORIAL_OCCASIONS } from "./memorials";

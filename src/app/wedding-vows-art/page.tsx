@@ -27,7 +27,7 @@ const c: IntentContent = {
   howToTitle: "Getting the sound of your day",
   howTo: [
     { title: "Find the clip", body: "Your photographer’s video, a guest’s phone, a clip in the group chat — any video from the day. Save it to your phone first." },
-    { title: "Upload the video", body: "No need to convert it. Your browser pulls out the soundtrack and only the sound is uploaded. Trim to the moment if it’s longer than 15 minutes." },
+    { title: "Upload the video", body: "No need to convert it. Your browser pulls out the soundtrack and only the sound is uploaded. Trim to the moment if it’s longer than 3 minutes." },
     { title: "Add your words", body: "Names, the date, a short line. If a song is part of the story, add its title — it’s printed as context, and your code can open it on Spotify or Apple Music." },
   ],
   considerations: [

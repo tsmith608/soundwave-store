@@ -26,7 +26,11 @@ We don't have keyword-volume tools in this environment. The priorities below com
 | `/anniversary-sound-wave-gift` | anniversary sound wave gift, paper anniversary | "Anniversary Sound Wave Gift — Your Voice, Vows or Video as Art" | Rewritten memory-first |
 | `/pet-memorial-sound-art` | pet memorial sound art, dog bark print | "Pet Memorial Sound Art — Their Bark or Purr as a Print" | Examples switched to voice/pet recordings |
 | `/designs` | the product (The Night Of, Herbarium) | "The Art — The Night Of & Herbarium" | Rewritten |
-| `/gifts/*` (pSEO) | long-tail occasions | unchanged | Legacy — see §4 |
+| `/gifts/first-baby-heartbeat-soundwave-art` | baby heartbeat art, ultrasound keepsake | "Baby Heartbeat Art — From Your Scan Video" | Rewritten on the intent template (same URL) |
+| `/gifts/baby-first-laugh-soundwave-art` | baby first laugh keepsake | "Baby's First Laugh Art — From a Phone Video" | Rewritten (same URL) |
+| `/gifts/proposal-audio-soundwave-art` | proposal keepsake, engagement gift | "Proposal Keepsake Art — The 'Yes' From Your Video" | Rewritten (same URL) |
+| other `/gifts/*`, `/gifts`, `/shop` | — | — | **Removed**; 308 redirects to the matching page (`next.config.ts`) |
+| `/terms`, `/privacy` | — | — | New |
 
 **Canonical consolidation:** `/gifts/first-dance-song-soundwave-art` and `/gifts/wedding-vow-soundwave-art` now canonicalise to `/wedding-vows-art`. The sitemap lists `/wedding-vows-art`, not the old URL.
 
@@ -41,10 +45,7 @@ We don't have keyword-volume tools in this environment. The priorities below com
 
 ## 4. Follow-ups (not done in this pass)
 
-- **`/gifts/*` pSEO content (`src/lib/pseo/*.ts`) is still song-led and uses the old visual design.** Examples: "clip of your first dance song", "Transform your song into cosmic starlight", "exact acoustic frequency profile".
-  - Most of these pages are already `noindex` or canonicalised. The exceptions are `first-baby-heartbeat`, `baby-first-laugh` and `proposal-audio`, which are indexable and are voice-led already.
-  - **Recommendation:** rewrite the three indexable ones to the new template, and either rewrite the rest or remove them from the build.
+- **Done (28 Sep):** the song-led `/gifts/*` pSEO pages were removed or rewritten (see the table above). `src/lib/pseo` is kept only because an old test suite covers it; it is marked deprecated.
 - **New pages worth writing next** (in priority order): "wedding video keepsake" (or fold into `/wedding-vows-art`); "baby's first laugh art"; "grandparent voice recording gift"; "how to get audio from a video on iPhone" (a how-to that feeds the studio).
-- **`/shop` and `/gifts` index** still use the pre-redesign look. Either restyle them or drop them from the nav/sitemap. They are not in the new nav.
 - **OG images:** `public/og.jpg` is regenerated from the new samples. Per-page OG images for intent pages would help social sharing.
 - **Search Console:** after deploy, request re-indexing of `/` and `/wedding-vows-art`, and watch the 308 from `/wedding-song-art`.

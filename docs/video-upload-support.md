@@ -10,7 +10,7 @@
 | Audio | M4A, MP3, WAV, AAC, WebM, OGG, FLAC | iPhone voice memos (`.m4a`), exported voicemails, WhatsApp voice notes once saved to Files |
 | Record now | In-browser recording (MediaRecorder) | "Record a voice note now" button |
 
-Limits: **400 MB** file size, **15 minutes** duration. There is no minimum beyond "a second or two".
+Limits: **400 MB** file size, **3 minutes** duration (owner decision, 28 Sep 2026). There is no minimum beyond "a second or two".
 
 ## How it works (the footage never leaves the device)
 
@@ -20,8 +20,8 @@ Limits: **400 MB** file size, **15 minutes** duration. There is no minimum beyon
    - the duration,
    - a raw loudness level used to detect silence.
 3. **Upload the sound only.**
-   - For **videos**, and for any audio file over 45 MB, the decoded sound is re-encoded as a WAV (`blobToWav`), and only that is sent to `/api/upload`.
-   - Small MP3/WAV/WebM/M4A files are sent unchanged.
+   - For **videos**, and for any audio file over 10 MB, the decoded sound is re-encoded as a mono 22 kHz WAV (`blobToWav`, about 8 MB for 3 minutes), and only that is sent to `/api/upload`.
+   - Small MP3/WAV/WebM/M4A files are sent unchanged. Every stored recording is therefore at most about 10 MB, so 1 TB of storage holds roughly 100,000 recordings.
    - The server's existing 50 MB audio limit and file validation (`src/lib/audio.ts`) are unchanged.
 4. **Ready.** The studio shows the source ("Video (sound only)", "Voice recording" or "Audio"), the file name and the length, and the preview redraws from the real recording.
 
@@ -35,7 +35,7 @@ Only the sound is stored (`storage/uploads/aud_*.{wav,mp3,webm,m4a}`). **No vide
 |---|---|---|
 | `unsupported` | Not audio/video by type or extension | "That file type isn't supported. Upload a video (MP4, MOV, M4V) or audio (M4A, MP3, WAV, AAC)." |
 | `too_large` | Over 400 MB | "Trim it to the moment you want and try again." |
-| `too_long` | Over 15 minutes (probe or decode) | "It's N minutes long. Please trim it to under 15 minutes." |
+| `too_long` | Over 3 minutes (probe or decode) | "That recording is 4:12 long. Please trim it to under 3 minutes." |
 | `no_audio` | The decoder can't find a readable soundtrack (no audio track, or a codec the browser can't open), **or** the soundtrack is silent (max RMS < 0.002) | "We couldn't find a soundtrack we can read in this video… try saving it again from your camera roll, or upload an audio file." / "This file seems to be silent. Does the video have sound?" |
 | `unreadable` | Corrupt file, decode failure, or under ~1 s | "Something went wrong preparing your recording." / "That recording is too short." |
 | `network` | Upload request failed | "The upload didn't go through — check your connection and try again." (with a **Try again** button that reuses the prepared audio) |
@@ -54,7 +54,7 @@ The error box is `role="alert"`, so screen readers announce it.
 ## Known limitations and follow-ups
 
 - **Codec coverage depends on the customer's browser.** HEVC audio-only is rare; the risk is Linux desktop browsers without AAC (a tiny share). The error message tells the customer to upload an audio file instead.
-- **Very long, high-bitrate videos are decoded in memory.** A 15-minute 4K clip may be slow on older phones. If support tickets show this, lower the cap to 5 minutes or add trimming.
+- **Videos are decoded in memory.** The 3-minute cap keeps this manageable on older phones.
 - **No trimming UI.** Customers trim in their Photos app. A simple start/end selector is the obvious next feature.
 - **No server-side transcoding.** This is by design (no ffmpeg in production, footage stays on the device).
-- **Upload retention:** there is no automatic deletion of `storage/uploads` yet. See the owner review.
+- **Upload retention:** handled by `npm run uploads:cleanup` (policy in `src/lib/retention.ts`), and takedowns by `npm run uploads:remove -- <order>`. See the owner review §7.

@@ -35,9 +35,13 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="meta mt-14 flex flex-col justify-between gap-2 border-t border-white/20 pt-6 opacity-70 sm:flex-row">
+        <div className="meta mt-14 flex flex-col justify-between gap-2 border-t border-white/20 pt-6 opacity-70 sm:flex-row sm:items-center">
           <span>© {new Date().getFullYear()} {BRAND_NAME}</span>
-          <span>Damaged or not as previewed? We reprint it free.</span>
+          <span className="flex flex-wrap items-center gap-x-5">
+            <Link href="/terms" className="inline-flex min-h-[44px] items-center hover:underline">Terms</Link>
+            <Link href="/privacy" className="inline-flex min-h-[44px] items-center hover:underline">Privacy</Link>
+            <span>Damaged or not as previewed? We reprint it free.</span>
+          </span>
         </div>
       </div>
     </footer>

@@ -41,7 +41,7 @@ Screenshot: `docs/review/redesign-2026/before-after-home.jpg`
 
 ## 3. Supported formats
 
-**Video:** MP4, MOV, M4V, WebM, 3GP. **Audio:** M4A, MP3, WAV, AAC, OGG, FLAC, WebM. You can also record in the browser. Limits are 400 MB and 15 minutes.
+**Video:** MP4, MOV, M4V, WebM, 3GP. **Audio:** M4A, MP3, WAV, AAC, OGG, FLAC, WebM. You can also record in the browser. Limits are 400 MB and **3 minutes**.
 
 ## 4. Is video upload implemented?
 
@@ -82,14 +82,27 @@ The studio has a separate, optional "The song behind the memory" field. It's pri
 
 **Still song-led (not yet fixed):** legacy `/gifts/*` pSEO pages, most of which are noindex/canonicalised. See `docs/seo-memory-positioning.md` §4.
 
-## 7. Legal / privacy questions for you (or a lawyer)
+## 7. Legal / privacy — decided 28 Sep 2026
 
-1. **Terms of Service and Privacy Policy pages don't exist yet.** They're needed before taking payment. The rights checkbox and its timestamp (`rightsConfirmedAt`, stored on the order) help, but they are not a substitute for Terms.
-2. **Recordings that include music.** A wedding video of the first dance contains the song as it played in the room. We make a *visual* derived from loudness and don't redistribute the audio publicly, except through the private QR page to whoever scans the print. Is private playback of a customer's own recording that captures background music acceptable to you? We think it's low-risk, but it's your call.
-3. **Recordings of other people / the deceased.** The checkbox says "made it or have permission". Decide what you do if a third party complains (a takedown email address, and remove the audio and disable the QR).
-4. **Retention.** Uploaded audio is kept indefinitely today, and there is no automated deletion. Suggested policy: keep the audio for as long as the QR should play (i.e. forever for QR orders), and delete non-QR orders' audio 90 days after delivery. It also needs a documented "email us and we'll remove it" process (the FAQ already promises this).
-5. **Streaming-service trademarks.** We name Spotify, Apple Music and YouTube only descriptively ("paste a link"). No logos are used. Keep it that way.
-6. **The brand name "SoundWave Art"** is descriptive and likely conflicts with existing marks (from the earlier owner review). This is still open.
+| # | Question | Decision | Where it lives |
+|---|---|---|---|
+| 1 | Terms and Privacy | Claude drafted both; no lawyer review for now | `/terms`, `/privacy`; linked in the footer, sitemap and next to the Order button |
+| 2 | Retention | Recordings behind a QR code are kept for as long as the business runs. Without a code: deleted 90 days after delivery. Cancelled orders, abandoned checkouts and uploads never ordered: deleted after 30 days. | `src/lib/retention.ts` (tested). Run `npm run uploads:cleanup` (dry run), then add `-- --apply` on a daily schedule on the NAS. |
+| 3 | Background music in personal videos | Accepted | Terms §2, proposal and wedding pages |
+| 4 | Takedowns | Remove on request, no questions asked | `npm run uploads:remove -- <orderId or token> --apply` deletes the file. The QR page then says "This recording has been removed" and the audio returns 410. |
+| 5 | Brand name | Workshopped | `docs/brand-name-workshop.md`. Recommendation: **Still Heard**. |
+
+**Commitments the drafted policies make on your behalf.** Change the pages if any of these are wrong:
+- Free changes or cancellation until production, which starts within about one business day.
+- A 30-day window to report damage or our mistakes; the customer chooses a reprint or a refund.
+- A typo that was in the approved preview is reprinted at cost.
+- Removal requests are handled within two business days.
+- If the business ever closes, customers are emailed first with a way to download their recordings.
+- Governing law is "the US state where we are registered" until `NEXT_PUBLIC_LEGAL_STATE` is set. `NEXT_PUBLIC_LEGAL_NAME` sets the legal entity name.
+
+**Storage estimate:** with the 3-minute cap and re-encoding, each recording is at most about 10 MB (usually 1–8 MB). A 1 TB NAS holds roughly 100,000 recordings.
+
+**Still open:** the brand-name trademark search and domain (see the workshop doc), and pointing a nightly job at `uploads:cleanup --apply`.
 
 ## 8. Redesign: what changed and why
 
@@ -148,14 +161,16 @@ Screenshots (`docs/review/redesign-2026/`):
   - frontend store 29/29
   - Python suite 44/44
 
-## 9. Decisions still yours
+## 9. Decisions (answered 28 Sep 2026)
 
-1. Approve the new one-liner and H1, or pick an alternative.
-2. The default QR style for new orders (currently **Discreet**, playing the recording).
-3. Whether the listen link should be available on all orders or only framed ones (currently all).
-4. The retention policy (§7.4).
-5. Whether to keep, rewrite or remove the legacy `/gifts/*`, `/shop` and `/gifts` pages.
-6. Upload limits (currently 15 min / 400 MB). Five minutes would be safer on older phones.
+1. Headline "Turn a moment you can hear into art you can keep." ✓ approved
+2. Default QR: Discreet, playing the recording ✓
+3. Listen link: kept for all orders (it was asked for in the pivot brief) ✓
+4. Retention ✓ (§7)
+5. Legacy pages ✓
+   - The three indexable `/gifts` pages (baby heartbeat, first laugh, proposal) were rewritten on the new template at the same URLs.
+   - Every other `/gifts/*` URL, `/gifts` and `/shop` now 308-redirect to their current equivalent.
+6. Upload limit: **3 minutes** ✓
 
 ## 10. What still needs real assets, content or backend work
 
@@ -163,6 +178,6 @@ Screenshots (`docs/review/redesign-2026/`):
 - **Real customer stories, with permission,** to replace the three demo examples. **No testimonials have been written or invented.** The homepage demo block is labelled as such.
 - **The print supplier** is still unconfirmed (paper, frame specs, turnaround in the copy are the plan, not a contract).
 - **Payments are not connected.** Orders stop at `pending_payment` with `?preview_checkout=1`. The fulfillment path still needs a production Postgres (the blocker from the earlier review).
-- **Terms and Privacy pages,** and automated upload deletion (§7).
+- **Schedule the clean-up job** and pick the legal entity and state (§7).
 - **Real-device video test** (§4).
 - **The brand name / trademark** check.

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Artwork from "@/components/art/Artwork";
 import FramedArtwork from "@/components/art/FramedArtwork";
@@ -283,7 +284,7 @@ export default function Studio({ initialDesign, initialOccasion, initialColorway
           {phase === "idle" || phase === "error" ? (
             <>
               <span className="display text-3xl">Choose a recording or video</span>
-              <span className="text-sm text-ink-soft">or drop it here · MP4, MOV, M4V, M4A, MP3, WAV, AAC · up to 15 minutes</span>
+              <span className="text-sm text-ink-soft">or drop it here · MP4, MOV, M4V, M4A, MP3, WAV, AAC · up to 3 minutes</span>
             </>
           ) : (
             <>
@@ -508,6 +509,17 @@ export default function Studio({ initialDesign, initialOccasion, initialColorway
         </p>
       )}
       <p className="text-sm text-ink-soft">Damaged, or not as previewed? We reprint it free.</p>
+      <p className="text-sm text-ink-soft">
+        By ordering you agree to our{" "}
+        <Link href="/terms" target="_blank" className="underline underline-offset-2">
+          Terms
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" target="_blank" className="underline underline-offset-2">
+          Privacy Policy
+        </Link>
+        .
+      </p>
     </div>
   );
 

@@ -15,6 +15,14 @@ export default async function ListenPage({ params, searchParams }: { params: Pro
   const order = await prisma.order.findUnique({ where: { listenToken: token }, select: { artworkSpec: true, status: true } }).catch(() => null);
   if (!order || !order.artworkSpec || order.status === "cancelled") notFound();
   const spec = JSON.parse(order.artworkSpec);
+  if (spec.recordingRemovedAt) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center bg-night px-6 py-12 text-center text-night-ink">
+        <h1 className="display text-4xl">This recording has been removed.</h1>
+        <p className="mt-4 max-w-sm opacity-80">It was taken down at the request of its owner. The print is still yours to keep.</p>
+      </main>
+    );
+  }
   // The customer chose a public listen link (e.g. a song on Spotify): the printed
   // code opens it. We only redirect; the URL is never fetched by our server.
   if (typeof spec.listenUrl === "string" && /^https?:\/\//.test(spec.listenUrl) && (await searchParams)?.recording === undefined) {
