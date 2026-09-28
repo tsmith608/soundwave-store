@@ -104,6 +104,7 @@ function render(ctx: RenderContext): string {
   const rows: [string, string][] = [];
   if (fields.names) rows.push(["Collected by", fields.names]);
   if (fields.date) rows.push(["Date", formatDate(fields.date, "long")]);
+  if (fields.song) rows.push(["Song", fields.song]);
   const rowH = small * 2.3;
   const msgFit = fields.message ? fitWrap(fields.message, F.garamondItalic, lw - pad * 2, 3, W * 0.024, small * 1.15) : null;
   const subH = fields.subtitle ? W * 0.028 * 1.6 : 0;
@@ -150,16 +151,17 @@ export const herbarium: DesignDefinition = {
   id: "herbarium",
   name: "Herbarium",
   direction: "Botanical",
-  tagline: "Your recording grown into a pressed botanical specimen — every leaf is a moment of sound.",
+  tagline: "Your recording grown into a one-of-a-kind botanical specimen.",
   rationale:
     "Answers the brief's test directly: remove the recording and it is still a legitimate botanical print. The waveform is encoded in the leaf lengths instead of drawn as bars, which no competitor does. Herbarium sheets and cyanotypes are long-established wall-art genres.",
   bestFor: ["First dance song", "Anniversary", "In memory of someone", "New baby", "Pet memorial"],
   fields: [
-    { key: "title", label: "Title", placeholder: "Our first dance", maxLength: 40, required: true },
-    { key: "subtitle", label: "Second line", placeholder: "“At Last”, Etta James", maxLength: 44 },
+    { key: "title", label: "Title", placeholder: "Our vows", maxLength: 40, required: true },
+    { key: "subtitle", label: "About the recording", placeholder: "Wedding video · June 14, 2025", maxLength: 44 },
     { key: "names", label: "Collected by", placeholder: "Emma & James", maxLength: 30 },
     { key: "date", label: "Date", placeholder: "2025-06-14", maxLength: 24 },
-    { key: "message", label: "A note on the label", placeholder: "Pressed from the song we danced to.", maxLength: 90, multiline: true },
+    { key: "message", label: "A note on the label", placeholder: "Recorded from the second row by her brother.", maxLength: 90, multiline: true },
+    { key: "song", label: "Song behind the memory", placeholder: "At Last — Etta James", maxLength: 44, hint: "Optional. Printed as a small line for context — we don't use the song's audio." },
   ],
   colorways: [
     cw("herbarium", "Herbarium", "#EFE9DC", "#2B3527", "#6F7462", "#2B3527", "#5F7153"),
@@ -168,13 +170,15 @@ export const herbarium: DesignDefinition = {
     cw("stone", "Stone", "#EEECE7", "#2A2A28", "#77736C", "#2A2A28", "#8E968A"),
   ],
   sample: {
-    title: "Our first dance",
-    subtitle: "“At Last”, Etta James",
+    title: "Our vows",
+    subtitle: "Wedding video · June 14, 2025",
     names: "Emma & James",
     date: "2025-06-14",
-    message: "Pressed from the song we danced to.",
+    message: "Recorded from the second row by her brother.",
+    song: "",
   },
-  sampleSeed: "herbarium-first-dance",
-  sampleKind: "song",
+
+  sampleSeed: "herbarium-vows",
+  sampleKind: "voice",
   render,
 };

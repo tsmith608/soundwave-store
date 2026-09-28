@@ -54,7 +54,7 @@ function render(ctx: RenderContext): string {
     s += lines(nf.lines, { x: W / 2, y, size: nf.size, face: F.garamondItalic, fill: c.ink, anchor: "middle", leading: nf.size * 1.05 });
     y += nf.size * 1.05 * (nf.lines.length - 1);
   }
-  const facts = [d ? `${moonPhaseName(phase)} · ${Math.round(illum * 100)}% illuminated` : "", fields.title].filter(Boolean).join("   ·   ");
+  const facts = [d ? `${moonPhaseName(phase)} · ${Math.round(illum * 100)}% illuminated` : "", fields.title, fields.song].filter(Boolean).join("   ·   ");
   if (facts) {
     y += W * 0.052;
     const fs = fitSize(facts, F.mono, W * 0.8, small * 1.05, small, 0.04);
@@ -75,15 +75,16 @@ export const nightOf: DesignDefinition = {
   id: "night-of",
   name: "The Night Of",
   direction: "Celestial",
-  tagline: "The moon exactly as it was on your date, ringed by your recording.",
+  tagline: "The moon exactly as it appeared on your date, surrounded by the sound of your recording.",
   rationale:
     "Star maps are the best-reviewed adjacent category (The Night Sky: ~9.7k Trustpilot reviews on one product) because the image is true to a date. This keeps that truth — real moon phase and illumination — and replaces random stars with the customer's own sound.",
   bestFor: ["The night we met", "Wedding night", "Anniversary", "A birth", "A night to remember someone"],
   fields: [
     { key: "date", label: "The date", placeholder: "2025-06-14", maxLength: 24, required: true, hint: "Pick an exact date so we can draw the real moon." },
     { key: "names", label: "Names", placeholder: "Emma & James", maxLength: 36 },
-    { key: "title", label: "What you're hearing", placeholder: "At Last — Etta James", maxLength: 44 },
+    { key: "title", label: "About the recording", placeholder: "Our vows, from the wedding video", maxLength: 44 },
     { key: "message", label: "A short line", placeholder: "The night everything started.", maxLength: 80, multiline: true },
+    { key: "song", label: "Song behind the memory", placeholder: "At Last — Etta James", maxLength: 44, hint: "Optional. Printed as a small line for context — we don't use the song's audio." },
   ],
   colorways: [
     cw("midnight", "Midnight", "#121A2A", "#EEE7D6", "#8C94A6", "#EFE6D0", "#243049"),
@@ -93,11 +94,13 @@ export const nightOf: DesignDefinition = {
   sample: {
     date: "2025-06-14",
     names: "Emma & James",
-    title: "At Last — Etta James",
+    title: "Our vows, from the wedding video",
     message: "The night everything started.",
     subtitle: "",
+    song: "",
   },
+
   sampleSeed: "night-of-emma",
-  sampleKind: "song",
+  sampleKind: "voice",
   render,
 };

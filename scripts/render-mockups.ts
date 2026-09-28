@@ -104,10 +104,10 @@ async function main() {
       file: "example-first-dance.jpg",
       design: "herbarium",
       colorway: "herbarium",
-      kind: "song",
+      kind: "voice",
       finish: "natural",
       wall: "#E3DCD1",
-      fields: { title: "Our first dance", subtitle: "“Can't Help Falling in Love”", names: "Priya & Daniel", date: "2024-09-21", message: "And every kitchen dance since." },
+      fields: { title: "Our vows", subtitle: "Wedding video · Sep 21 2024", names: "Priya & Daniel", date: "2024-09-21", message: "Filmed by her brother from the second row.", song: "" },
     },
     {
       file: "example-voicemail.jpg",

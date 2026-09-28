@@ -140,7 +140,7 @@ export function samplePeaks(seed: string, kind: "voice" | "song" | "heartbeat" =
  * Browser-only: decode an audio Blob into PEAK_RESOLUTION peaks using RMS
  * windows (closer to perceived loudness than raw sample maxima).
  */
-export async function decodePeaksFromBlob(blob: Blob, n = PEAK_RESOLUTION): Promise<{ peaks: number[]; duration: number }> {
+export async function decodePeaksFromBlob(blob: Blob, n = PEAK_RESOLUTION): Promise<{ peaks: number[]; duration: number; level: number }> {
   const buf = await blob.arrayBuffer();
   const Ctx: typeof AudioContext =
     (globalThis as unknown as { AudioContext: typeof AudioContext; webkitAudioContext: typeof AudioContext }).AudioContext ||
@@ -162,7 +162,8 @@ export async function decodePeaksFromBlob(blob: Blob, n = PEAK_RESOLUTION): Prom
       }
       peaks.push(Math.sqrt(sum / Math.max(1, end - start)));
     }
-    return { peaks: normalize(peaks), duration: audio.duration };
+    // `level` = loudest raw RMS window (0..1); ~0 means the file has no audible sound.
+    return { peaks: normalize(peaks), duration: audio.duration, level: Math.max(0, ...peaks) };
   } finally {
     void ctx.close();
   }

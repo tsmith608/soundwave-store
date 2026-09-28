@@ -49,8 +49,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // dedicated intent page; thin anniversary-year variants are kept for users
   // but not indexed, to stay clear of Google's scaled-content/doorway policies.
   const consolidated: Record<string, string> = {
-    "first-dance-song-soundwave-art": "/wedding-song-art",
-    "wedding-vow-soundwave-art": "/wedding-song-art",
+    "first-dance-song-soundwave-art": "/wedding-vows-art",
+    "wedding-vow-soundwave-art": "/wedding-vows-art",
     "pet-memorial-soundwave-art": "/pet-memorial-sound-art",
     "celebration-of-life-memorial-soundwave-art": "/voicemail-memorial-art",
     "1st-paper-anniversary-soundwave-art": "/anniversary-sound-wave-gift",

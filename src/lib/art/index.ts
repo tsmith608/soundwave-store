@@ -38,7 +38,7 @@ export function getSellableDesign(id: string | null | undefined): DesignDefiniti
   return DESIGNS.find((d) => d.id === id);
 }
 
-export const EMPTY_FIELDS: ArtFields = { title: "", subtitle: "", names: "", date: "", message: "" };
+export const EMPTY_FIELDS: ArtFields = { title: "", subtitle: "", names: "", date: "", message: "", song: "" };
 
 /** Trims and length-limits fields according to the design's specs. */
 export function cleanFields(design: DesignDefinition, input: Partial<Record<keyof ArtFields, unknown>>): ArtFields {

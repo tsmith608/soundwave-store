@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import { cleanFields, getSellableDesign, sanitizePeaks } from "@/lib/art";
 import { FRAME_FINISHES, getPrintSize, type ProductFormat } from "@/lib/catalog";
+import { cleanListenUrl } from "@/lib/listenLink";
 
 const UPLOAD_ID = /^(aud|img)_[a-f0-9]{16}$/;
 
@@ -39,6 +40,13 @@ async function curatedCheckout(request: NextRequest, body: any) {
   if (missing.length) {
     return NextResponse.json({ error: `Please fill in: ${missing.map((f) => f.label).join(", ")}` }, { status: 400 });
   }
+  if (body.rightsConfirmed !== true) {
+    return NextResponse.json({ error: "Please confirm you made the recording or have permission to use it." }, { status: 400 });
+  }
+  const listenUrl = cleanListenUrl(body.listenUrl);
+  if (typeof body.listenUrl === "string" && body.listenUrl.trim() && !listenUrl) {
+    return NextResponse.json({ error: "That listen link doesn't look like a web address. Paste a full link, e.g. https://open.spotify.com/…" }, { status: 400 });
+  }
   const peaks = sanitizePeaks(body.peaks);
   const audioPath = findUpload(body.audioId, "aud", [".wav", ".mp3", ".webm", ".m4a"]);
   if (!peaks || !audioPath) {
@@ -60,6 +68,9 @@ async function curatedCheckout(request: NextRequest, body: any) {
     peaks: peaks.map((p) => Math.round(p * 1000) / 1000),
     showQr: body.showQr !== false,
     qrStyle: body.qrStyle === "standard" ? "standard" : "discreet",
+    // QR destination only. Never fetched or analysed (src/lib/listenLink.ts).
+    listenUrl,
+    rightsConfirmedAt: new Date().toISOString(),
     format,
     frameFinish: format === "framed" ? frameFinish : null,
     sizeId: size.id,

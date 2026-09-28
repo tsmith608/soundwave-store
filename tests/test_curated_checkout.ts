@@ -27,7 +27,7 @@ const req = (body: unknown) =>
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, `${audioId}.wav`), Buffer.alloc(64));
   const peaks = Array.from({ length: 400 }, (_, i) => Math.abs(Math.sin(i / 7)));
-  const good = { designId: "herbarium", colorwayId: "stone", fields: { title: "Rose Okafor", names: "Her grandchildren", date: "1952 — 2026", message: "Call me" }, peaks, audioId, size: "12x16", format: "framed", frameFinish: "natural", showQr: true, qrStyle: "discreet" };
+  const good = { designId: "herbarium", colorwayId: "stone", fields: { title: "Rose Okafor", names: "Her grandchildren", date: "1952 — 2026", message: "Call me" }, peaks, audioId, size: "12x16", format: "framed", frameFinish: "natural", showQr: true, qrStyle: "discreet", rightsConfirmed: true, listenUrl: "open.spotify.com/track/abc123" };
 
   let r = await checkout(req(good));
   let j = await r.json();
@@ -51,6 +51,22 @@ const req = (body: unknown) =>
     r = await checkout(req({ ...good, designId: retired }));
     check(`retired design ${retired} not sellable`, r.status === 400);
   }
+  check("listen link normalised and stored", spec?.listenUrl === "https://open.spotify.com/track/abc123", String(spec?.listenUrl));
+  check("rights confirmation timestamp stored", typeof spec?.rightsConfirmedAt === "string");
+  r = await checkout(req({ ...good, rightsConfirmed: false }));
+  check("order without rights confirmation rejected", r.status === 400);
+  for (const bad of ["javascript:alert(1)", "not a url", "ftp://x.com/a", "https://user:pw@evil.com/"]) {
+    r = await checkout(req({ ...good, listenUrl: bad }));
+    check(`bad listen link rejected: ${bad}`, r.status === 400);
+  }
+  r = await checkout(req({ ...good, listenUrl: "" }));
+  j = await r.json();
+  const on = await prisma.order.findUnique({ where: { id: j.orderId } });
+  check("empty listen link → plays recording (null)", JSON.parse(on!.artworkSpec!).listenUrl === null);
+  r = await checkout(req({ ...good, fields: { ...good.fields, song: "At Last — Etta James" } }));
+  j = await r.json();
+  const os = await prisma.order.findUnique({ where: { id: j.orderId } });
+  check("song context stored as metadata field", JSON.parse(os!.artworkSpec!).fields.song === "At Last — Etta James");
   r = await checkout(req({ ...good, qrStyle: "weird" }));
   j = await r.json();
   const oq = await prisma.order.findUnique({ where: { id: j.orderId } });

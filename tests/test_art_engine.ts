@@ -8,6 +8,7 @@ import { DESIGNS, EXPLORATION_DESIGNS, RETIRED_DESIGNS, getSellableDesign, clean
 import { moonPhase, parseDate } from "../src/lib/art/dates";
 import { F, measure, fitWrap } from "../src/lib/art/fonts";
 import { PRINT_SIZES } from "../src/lib/catalog";
+import { cleanListenUrl } from "../src/lib/listenLink";
 
 let pass = 0;
 let fail = 0;
@@ -55,6 +56,21 @@ for (const d of DESIGNS) for (const c of d.colorways) {
   check(`${d.id}/${c.id} discreet drops caption`, !/SCAN TO LISTEN/.test(dis) && /SCAN TO LISTEN/.test(std));
 }
 
+// 2c. Memory pivot: song is context only, printed when given, escaped; samples are not songs
+for (const d of DESIGNS) {
+  check(`${d.id} sample is a personal recording, not a song`, d.sampleKind !== "song" && !/At Last|Etta James|Pressed from the song/.test(JSON.stringify(d.sample)));
+  check(`${d.id} has optional song field`, d.fields.some((f) => f.key === "song" && !f.required));
+  const withSong = renderArtwork(d, { ...d.sample, song: "Tom & Jerry <Live>" }, null, { widthIn: 12, heightIn: 16, showQr: false });
+  check(`${d.id} prints song line escaped`, withSong.includes("Tom &amp; Jerry &lt;Live&gt;"));
+}
+{
+  check("listen url: adds https", cleanListenUrl("open.spotify.com/track/x") === "https://open.spotify.com/track/x");
+  check("listen url: rejects javascript:", cleanListenUrl("javascript:alert(1)") === null);
+  check("listen url: rejects credentials", cleanListenUrl("https://a:b@x.com") === null);
+  check("listen url: rejects junk", cleanListenUrl("hello") === null);
+  check("listen url: empty is null", cleanListenUrl("  ") === null);
+}
+
 // 3. Hostile input is escaped and never produces markup
 const evil = { title: `</text><script>alert(1)</script>&"'`, subtitle: "<img src=x onerror=alert(1)>", names: "A & B <3", date: "2025-02-30", message: "]]><!--" };
 for (const d of DESIGNS) {
@@ -79,7 +95,7 @@ for (const d of DESIGNS) {
 // 5. Field cleaning respects maxLength and required fields exist
 for (const d of DESIGNS) {
   const f = cleanFields(d, long);
-  for (const spec of d.fields) check(`${d.id}.${spec.key} ≤ ${spec.maxLength}`, f[spec.key].length <= spec.maxLength);
+  for (const spec of d.fields) check(`${d.id}.${spec.key} ≤ ${spec.maxLength}`, (f[spec.key] ?? "").length <= spec.maxLength);
   check(`${d.id} has a required field`, d.fields.some((x) => x.required));
 }
 

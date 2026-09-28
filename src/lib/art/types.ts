@@ -7,12 +7,12 @@
  * browser and the vector print file, so the two can never drift apart.
  */
 
-export type FieldKey = "title" | "subtitle" | "names" | "date" | "message";
+export type FieldKey = "title" | "subtitle" | "names" | "date" | "message" | "song";
 
 export interface ArtFields {
-  /** Headline: song title, "Our First Dance", a name for memorials. */
+  /** Headline: "Our vows", "Dad's voicemail", a name for memorials. */
   title: string;
-  /** Secondary line: artist, "Voicemail · March 2019", a relationship. */
+  /** About the recording: "Voicemail · March 2019", "Wedding video". */
   subtitle: string;
   /** "Emma & James", "Mom", "Biscuit". */
   names: string;
@@ -20,6 +20,12 @@ export interface ArtFields {
   date: string;
   /** A short personal line. */
   message: string;
+  /**
+   * Optional song associated with the memory ("At Last — Etta James").
+   * Context only: printed as a small line. The artwork is ALWAYS generated
+   * from the customer's uploaded recording, never from a song or a URL.
+   */
+  song?: string;
 }
 
 export interface FieldSpec {

@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/create",
     "/designs",
-    "/wedding-song-art",
+    "/wedding-vows-art",
     "/voicemail-memorial-art",
     "/anniversary-sound-wave-gift",
     "/pet-memorial-sound-art",
