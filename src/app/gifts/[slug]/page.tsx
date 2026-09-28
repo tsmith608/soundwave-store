@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://soundwaveart.com";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   // Consolidation (docs/positioning.md → SEO): overlapping pages point at the
   // dedicated intent page; thin anniversary-year variants are kept for users
   // but not indexed, to stay clear of Google's scaled-content/doorway policies.
@@ -99,7 +99,7 @@ export default async function GiftOccasionPage({ params }: PageProps) {
     notFound();
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://soundwaveart.com";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const pageUrl = `${appUrl}/gifts/${occasion.slug}`;
 
   const palette = PALETTES[occasion.recommendedPalette] || PALETTES["midnight_gold"];

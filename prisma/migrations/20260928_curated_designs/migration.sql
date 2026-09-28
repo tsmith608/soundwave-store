@@ -17,3 +17,14 @@ CREATE TABLE IF NOT EXISTS "AnalyticsEvent" (
 );
 CREATE INDEX IF NOT EXISTS "AnalyticsEvent_event_createdAt_idx" ON "AnalyticsEvent"("event", "createdAt");
 CREATE INDEX IF NOT EXISTS "AnalyticsEvent_sessionId_idx" ON "AnalyticsEvent"("sessionId");
+
+CREATE TABLE IF NOT EXISTS "Subscriber" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "source" TEXT,
+    "occasion" TEXT,
+    "consent" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Subscriber_pkey" PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX IF NOT EXISTS "Subscriber_email_key" ON "Subscriber"("email");

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://soundwaveart.com";
+  const base = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const paths = [
     "",
     "/create",
@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/voicemail-memorial-art",
     "/anniversary-sound-wave-gift",
     "/pet-memorial-sound-art",
+    "/how-to-save-a-voicemail",
     "/gifts/first-baby-heartbeat-soundwave-art",
     "/gifts/baby-first-laugh-soundwave-art",
     "/gifts/proposal-audio-soundwave-art",

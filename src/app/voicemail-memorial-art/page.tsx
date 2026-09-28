@@ -26,7 +26,7 @@ const c: IntentContent = {
   howTo: [
     { title: "iPhone", body: "Phone app → Voicemail → tap the message → Share → Save to Files (or AirDrop/email it to yourself). Then upload that file in the studio." },
     { title: "Android", body: "Options differ by carrier. Many visual-voicemail apps have Save or Export. If yours doesn't, play the voicemail on speaker and record it with another phone's voice-memo app, or screen-record while it plays." },
-    { title: "Carrier voicemail only?", body: "Call your voicemail from another line and record the call, or ask your carrier to email the message. Do this soon — carriers delete old messages." },
+    { title: "Carrier voicemail only?", body: "Call your voicemail from another line and record the call, or ask your carrier to email the message. Do this soon — carriers delete old messages. There is a full step-by-step guide linked in the footer (“How to save a voicemail”)." },
   ],
   considerations: [
     { title: "Short is fine", body: "Even four seconds — “Hi, it's Mom, call me back” — gives a complete, beautiful line. The artwork scales to any length." },

@@ -47,7 +47,7 @@ const STATUS_STEPS = [
 ];
 
 function maskStreet(address: string | null | undefined): string {
-  if (!address) return "Standard Delivery Address";
+  if (!address) return "Added at checkout";
   const parts = address.split(",");
   if (parts.length > 1) {
     return "*** " + parts.slice(1).join(", ").trim();
@@ -56,7 +56,7 @@ function maskStreet(address: string | null | undefined): string {
 }
 
 function maskEmail(email: string | null | undefined): string {
-  if (!email || !email.includes("@")) return "customer@example.com";
+  if (!email || !email.includes("@") || email === "pending@checkout") return "Added at checkout";
   const [local, domain] = email.split("@");
   if (local.length <= 2) return `*@${domain}`;
   return `${local[0]}***${local.slice(-1)}@${domain}`;
@@ -144,10 +144,10 @@ export default function OrderStatusPage({
           </Link>
 
           <Link
-            href="/shop"
+            href="/create"
             className="text-xs uppercase font-semibold tracking-wider text-[#B76E79] hover:underline"
           >
-            Create Another Portrait →
+            Create another →
           </Link>
         </div>
       </header>
@@ -308,20 +308,20 @@ export default function OrderStatusPage({
                       <span className="text-[#2D2A26] font-medium">{frameConfig?.dimensions || order.frameSize}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-[#EAE3DC]">
-                      <span className="text-[#6B655F]">Color Palette</span>
+                      <span className="text-[#6B655F]">Colourway</span>
                       <span className="text-[#2D2A26] font-medium">{paletteConfig?.name || order.palette}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-[#EAE3DC]">
-                      <span className="text-[#6B655F]">Personal Inscription</span>
+                      <span className="text-[#6B655F]">Words</span>
                       <span className="text-[#2D2A26] font-serif italic">{order.caption || "None"}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-[#EAE3DC]">
                       <span className="text-[#6B655F]">Audio Playback QR Code</span>
-                      <span className="text-emerald-600 font-medium">Included & Active</span>
+                      <span className="text-[#2D2A26] font-medium">{order.artwork && !order.artwork.showQr ? "Not included" : "Included"}</span>
                     </div>
                     <div className="flex justify-between py-2">
                       <span className="text-[#6B655F]">Paper Quality</span>
-                      <span className="text-[#2D2A26] font-medium">300 DPI Archival Matte</span>
+                      <span className="text-[#2D2A26] font-medium">Archival matte fine-art paper</span>
                     </div>
                   </div>
                 </div>
@@ -340,7 +340,7 @@ export default function OrderStatusPage({
                       <strong className="text-[#2D2A26]">Notification Email:</strong> {maskEmail(order.customerEmail)}
                     </p>
                     <p>
-                      <strong className="text-[#2D2A26]">Carrier:</strong> FedEx Ground (Insured)
+                      <strong className="text-[#2D2A26]">Shipping:</strong> Tracked US delivery
                     </p>
                     {order.partnerOrderId && (
                       <p>

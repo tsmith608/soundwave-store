@@ -130,3 +130,13 @@ model AnalyticsEvent {
   @@index([event, createdAt])
   @@index([sessionId])
 }
+
+// Email capture (holiday cutoff reminders, launch news). Double opt-in is recommended before sending marketing.
+model Subscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  source    String?
+  occasion  String?
+  consent   Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

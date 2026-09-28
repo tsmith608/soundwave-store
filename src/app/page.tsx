@@ -8,6 +8,7 @@ import Testimonials from "@/components/Testimonials";
 import Artwork from "@/components/art/Artwork";
 import { DESIGNS, getDesign, samplePeaks } from "@/lib/art";
 import { PRINT_SIZES, formatPrice } from "@/lib/catalog";
+import { SITE_HOST } from "@/lib/site";
 
 const EXAMPLES = [
   { img: "/mockups/example-first-dance.jpg", label: "A first-dance song", design: "Liner Notes", href: "/create?occasion=wedding" },
@@ -182,7 +183,7 @@ export default function Home() {
                 <Artwork designId="night-of" fields={getDesign("night-of")!.sample} idPrefix="qr1" />
               </div>
               <div className="rounded-[28px] border-[6px] border-[#2D2A26] bg-white p-4 aspect-[9/17] flex flex-col justify-end">
-                <div className="text-[11px] text-[#9E968F]">soundwaveart.com</div>
+                <div className="text-[11px] text-[#9E968F]">{SITE_HOST}</div>
                 <div className="font-serif text-lg leading-tight mt-1">Emma &amp; James</div>
                 <div className="mt-3 h-1.5 rounded-full bg-[#E6DFD6] overflow-hidden">
                   <div className="h-full w-2/5 bg-[#2D2A26]" />

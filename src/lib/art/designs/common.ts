@@ -20,7 +20,7 @@ export function background(ctx: RenderContext, color?: string): string {
 }
 
 export function qrUrl(ctx: RenderContext): string {
-  return ctx.opts.qrUrl || "https://soundwaveart.com/l/preview";
+  return ctx.opts.qrUrl || `${(process.env.NEXT_PUBLIC_APP_URL || "https://example.com").replace(/\/$/, "")}/l/preview`;
 }
 
 /**

@@ -1,5 +1,7 @@
 import React from "react";
 import Link from "next/link";
+import EmailCapture from "./EmailCapture";
+import { SUPPORT_EMAIL } from "@/lib/site";
 
 export default function Footer() {
   return (
@@ -10,6 +12,9 @@ export default function Footer() {
           <p className="mt-3 leading-relaxed text-[#6B655F]">
             Finished art prints made from the sounds people keep: first-dance songs, vows, voicemails, heartbeats. Printed on archival paper in the US and shipped ready to hang.
           </p>
+          <div className="mt-8">
+            <EmailCapture source="footer" heading="Holiday cutoff reminder" blurb="We'll email you before the last order date for Christmas delivery." />
+          </div>
         </div>
         <div>
           <div className="text-xs uppercase tracking-[0.18em] text-[#9E968F] mb-3">Make one</div>
@@ -20,6 +25,7 @@ export default function Footer() {
             <li><Link href="/voicemail-memorial-art" className="hover:text-[#2D2A26]">Voicemail memorial art</Link></li>
             <li><Link href="/anniversary-sound-wave-gift" className="hover:text-[#2D2A26]">Anniversary gift</Link></li>
             <li><Link href="/pet-memorial-sound-art" className="hover:text-[#2D2A26]">Pet memorial</Link></li>
+            <li><Link href="/how-to-save-a-voicemail" className="hover:text-[#2D2A26]">How to save a voicemail</Link></li>
           </ul>
         </div>
         <div>
@@ -27,7 +33,7 @@ export default function Footer() {
           <ul className="space-y-2">
             <li><Link href="/#how-it-works" className="hover:text-[#2D2A26]">How it works</Link></li>
             <li><Link href="/#faq" className="hover:text-[#2D2A26]">FAQ &amp; shipping</Link></li>
-            <li><a href="mailto:hello@soundwaveart.com" className="hover:text-[#2D2A26]">hello@soundwaveart.com</a></li>
+            <li><a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-[#2D2A26]">{SUPPORT_EMAIL}</a></li>
           </ul>
         </div>
       </div>

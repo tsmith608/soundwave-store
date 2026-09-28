@@ -1,3 +1,10 @@
+# SoundWave Art
+
+> **September 2026 update: start with [`docs/owner-review.md`](docs/owner-review.md).**
+> The product was rebuilt around five curated, finished designs rendered by one TypeScript engine (`src/lib/art/`) that produces both the live preview and the vector print PDF. The border/palette customizer, the old `/shop` catalogue and the "luxury" claims described further down this README are **superseded**. See `docs/art-direction-2026.md` and `docs/current-product-audit.md`. Sections below are kept for history.
+>
+> Quick commands: `npm run dev` · `npm run build` · `npm run test:all` · `npm run test:checkout` (needs a database) · `npm run art:gallery` (render every design to `docs/review/designs/`) · `npm run art:mockups` (product mockups to `public/mockups/`) · `npx tsx scripts/render-art.ts print spec.json out.pdf` (print file for one order).
+
 # SoundWave Art — Next-Gen Acoustic Fine Art E-Commerce Platform
 
 > **Comprehensive Hand-Off Documentation & Developer Guide**  
