@@ -71,7 +71,7 @@ function render(ctx: RenderContext): string {
     const vs = fitSize(value, F.monoMedium, colW - W * 0.02, valueSize, small);
     s += text(value, { x, y: valueY, size: vs, face: F.monoMedium, fill: c.ink });
   });
-  const q = qrBlock(ctx, { x: W - m, y: labelY - small * 0.8, color: c.ink, align: "right", minIn: 0.8 });
+  const q = qrBlock(ctx, { x: W - m, y: ruleY + W * 0.028, color: c.ink, align: "right", minIn: 0.9 });
   if (q.svg) {
     s += q.svg;
     s += text("Scan to play", {

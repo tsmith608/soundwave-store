@@ -170,6 +170,7 @@ def fetch_order_details(conn: sqlite3.Connection, order_id: str) -> Optional[Dic
                 "status": d.get("status", "pending_payment"),
                 "partner_order_id": d.get("partnerOrderId"),
                 "total_amount": d.get("totalAmount", 0),
+                "artwork_spec": d.get("artworkSpec"),
             }
 
     if "orders" in tables:
@@ -480,6 +481,36 @@ def step_compile_pdf(
     return pdf_path
 
 
+def step_render_curated(order: Dict[str, Any], prints_dir: Path, previews_dir: Path) -> Tuple[Path, Path, str, int]:
+    """
+    Curated-design orders (Order.artworkSpec): renders the print file with the
+    same TypeScript renderer that drew the customer's preview, so print and
+    preview are identical. Output is a vector PDF at exact physical size, plus
+    a PNG proof. Returns (pdf_path, preview_path, public_preview_url, pdf_bytes).
+    """
+    import subprocess
+
+    spec = json.loads(order["artwork_spec"])
+    spec_path = prints_dir / f"{order['id']}.spec.json"
+    spec_path.write_text(json.dumps(spec), encoding="utf-8")
+    pdf_path = prints_dir / f"{order['id']}.pdf"
+    preview_path = previews_dir / f"{order['id']}_preview.png"
+    npx = "npx.cmd" if sys.platform == "win32" else "npx"
+    result = subprocess.run(
+        [npx, "tsx", "scripts/render-art.ts", "print", str(spec_path), str(pdf_path), "--png", str(preview_path)],
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    if result.returncode != 0 or not pdf_path.exists():
+        raise RuntimeError(f"Artwork render failed: {result.stderr.strip()[-800:]}")
+    size = pdf_path.stat().st_size
+    if size < 5_000:
+        raise RuntimeError(f"Rendered PDF is implausibly small ({size} bytes)")
+    return pdf_path, preview_path, f"/api/orders/{order['id']}/preview", size
+
+
 def step_verify_pdf(pdf_path: Path) -> int:
     """Step 4: Asserts PDF file exists, has valid header, and file size >= 1,000,000 bytes."""
     if not pdf_path.exists():
@@ -640,6 +671,36 @@ def step_dispatch_email(
 # 3. Main Fulfillment Orchestrator Function
 # ============================================================================
 
+def _finish_fulfillment(conn, order, order_id, pdf_path, pdf_size, public_preview_url, schema_type, provider_name, email_provider, start_time):
+    """Steps 6-8 shared by legacy and curated orders."""
+    partner_order_id = step_submit_partner(order, pdf_path, provider_override=provider_name)
+    add_fulfillment_log(conn, order_id, "submit_to_print_partner", "completed", f"Partner ID: {partner_order_id}")
+    email_res = step_dispatch_email(order, public_preview_url, email_override=email_provider)
+    add_fulfillment_log(conn, order_id, "dispatch_confirmation_email", "completed", f"Email ID: {email_res.get('id')}")
+    rel_pdf_path = f"storage/print_pdfs/{pdf_path.name}"
+    update_order_fulfillment_success(
+        conn=conn,
+        order_id=order_id,
+        partner_order_id=partner_order_id,
+        pdf_path=rel_pdf_path,
+        preview_url=public_preview_url,
+        schema_type=schema_type,
+        pdf_size_bytes=pdf_size,
+    )
+    add_fulfillment_log(conn, order_id, "update_order_status_to_submitted", "completed", "Status: fulfillment_submitted")
+    return {
+        "success": True,
+        "orderId": order_id,
+        "status": "fulfillment_submitted",
+        "partnerOrderId": partner_order_id,
+        "pdfPath": rel_pdf_path,
+        "previewUrl": public_preview_url,
+        "pdfSizeBytes": pdf_size,
+        "elapsedSeconds": round(time.time() - start_time, 2),
+        "steps": ["fetch_order_from_db", "render_curated_artwork", "submit_to_print_partner", "dispatch_confirmation_email", "update_order_status_to_submitted"],
+    }
+
+
 def run_fulfillment(
     order_id: str,
     provider_name: Optional[str] = None,
@@ -677,6 +738,13 @@ def run_fulfillment(
     previews_dir.mkdir(parents=True, exist_ok=True)
 
     try:
+        if order.get("artwork_spec"):
+            # Curated designs: steps 2-5 collapse into one deterministic vector render.
+            logger.info("Steps 2-5: render curated artwork (vector PDF + proof)")
+            pdf_path, preview_path, public_preview_url, pdf_size = step_render_curated(order, prints_dir, previews_dir)
+            add_fulfillment_log(conn, order_id, "render_curated_artwork", "completed", f"{pdf_path.name} ({pdf_size} bytes)")
+            return _finish_fulfillment(conn, order, order_id, pdf_path, pdf_size, public_preview_url, schema_type, provider_name, email_provider, start_time)
+
         # Step 2: generate_waveform
         logger.info("Step 2: generate_waveform")
         wave_path = step_generate_waveform(order, previews_dir)

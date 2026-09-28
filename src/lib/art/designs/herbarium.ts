@@ -136,7 +136,7 @@ function render(ctx: RenderContext): string {
   }
 
   // Annotation + QR, bottom-left
-  const q = qrBlock(ctx, { x: m, y: H - m - W * 0.11, color: c.ink, align: "left", label: "Scan to listen", labelColor: c.muted, minIn: 0.8 });
+  const q = qrBlock(ctx, { x: m, y: H - m - W * 0.11, color: c.ink, align: "left", label: "Scan to listen", labelColor: c.muted, minIn: 0.9 });
   if (q.svg) {
     const qy = H - m - q.height + small * 0.3;
     s += `<g transform="translate(0 ${r(qy - (H - m - W * 0.11))})">${q.svg}</g>`;

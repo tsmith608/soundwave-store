@@ -6,7 +6,7 @@ import type { Colorway, RenderContext } from "../types";
 export const upi = (ctx: RenderContext) => ctx.W / ctx.opts.widthIn;
 
 /** QR size in canvas units: never smaller than `minIn` physical inches (scan reliability). */
-export function qrSize(ctx: RenderContext, minIn = 0.85, share = 0.085): number {
+export function qrSize(ctx: RenderContext, minIn = 0.9, share = 0.085): number {
   return Math.max(minIn * upi(ctx), ctx.W * share);
 }
 
@@ -36,12 +36,22 @@ export function qrBlock(
   const align = o.align ?? "center";
   const left = align === "center" ? o.x - size / 2 : align === "right" ? o.x - size : o.x;
   const labelSize = minType(ctx);
-  let svg = qrPath(qrUrl(ctx), left, o.y, size, o.color);
+  // Phone cameras expect dark modules on a light ground. On dark colourways the
+  // code sits on a small light tile (with quiet zone) instead of being inverted.
+  const paper = ctx.colorway.paper;
+  let svg: string;
+  if (luminance(o.color) > luminance(paper)) {
+    const pad = size * 0.14; // ≈4 modules of quiet zone for a version-3 code
+    svg = `<rect x="${(left - pad).toFixed(2)}" y="${(o.y - pad).toFixed(2)}" width="${(size + pad * 2).toFixed(2)}" height="${(size + pad * 2).toFixed(2)}" rx="${(pad * 0.5).toFixed(2)}" fill="${o.color}"/>`;
+    svg += qrPath(qrUrl(ctx), left, o.y, size, paper);
+  } else {
+    svg = qrPath(qrUrl(ctx), left, o.y, size, o.color);
+  }
   let height = size;
   if (o.label) {
     svg += text(o.label, {
-      x: align === "center" ? o.x : align === "right" ? o.x : o.x,
-      y: o.y + size + labelSize * 1.9,
+      x: o.x,
+      y: o.y + size + labelSize * (luminance(o.color) > luminance(paper) ? 3.1 : 1.9),
       size: labelSize,
       face: F.sansMedium,
       fill: o.labelColor ?? o.color,
@@ -68,3 +78,15 @@ export function cw(
 
 /** Clamp helper for layout math. */
 export const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+
+/** Relative luminance of a #RRGGBB colour (0 black … 1 white). */
+export function luminance(hex: string): number {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return 0.5;
+  const n = parseInt(m[1], 16);
+  const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+}
