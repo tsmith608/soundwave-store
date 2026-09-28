@@ -1,3 +1,5 @@
+// LEGACY (Sep 2026): no longer mounted anywhere. Replaced by src/components/studio/Studio.tsx.
+// Kept only because older standalone test scripts in tests/ import-check it.
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";

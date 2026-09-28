@@ -127,14 +127,18 @@ function runTier1() {
     `Export: ${shopValid}, Catalog grid: ${shopHasGrid}`
   );
 
-  // 1.6 Customizer route hosts PortraitBuilder with Suspense hydration
-  const customHasSuspense = customCode !== null && customCode.includes("Suspense") && customCode.includes("PortraitBuilder");
+  // 1.6 Customizer routes host the curated-design studio with Suspense hydration
+  // (updated Sep 2026: PortraitBuilder border picker replaced by curated designs)
+  const createCode = readFileSafe("src/app/create/page.tsx");
+  const customHasSuspense =
+    customCode !== null && customCode.includes("Suspense") && customCode.includes("StudioFromParams") &&
+    createCode !== null && createCode.includes("Suspense") && createCode.includes("StudioFromParams");
   record(
     "Tier 1",
-    "F1.6: Customizer studio route hosts PortraitBuilder wrapped in Suspense",
+    "F1.6: Studio routes (/create, /product/custom) host the design studio wrapped in Suspense",
     Boolean(customHasSuspense),
-    "Suspense wrapping PortraitBuilder for query param hydration",
-    `Contains Suspense and PortraitBuilder: ${customHasSuspense}`
+    "Suspense wrapping StudioFromParams for query param hydration on both routes",
+    `Contains Suspense and StudioFromParams: ${customHasSuspense}`
   );
 
   // F2. Animation Library & Motion Layout Structure
@@ -296,16 +300,18 @@ function runTier2() {
 
   // 2.1 Deep-linking query parameter extraction on /product/custom
   const customCode = readFileSafe("src/app/product/custom/page.tsx");
-  const extractsTemplateParam = customCode !== null && customCode.includes('searchParams.get("template")');
-  const extractsPaletteParam = customCode !== null && customCode.includes('searchParams.get("palette")');
-  const extractsSizeParam = customCode !== null && customCode.includes('searchParams.get("size")');
+  const paramsCode = readFileSafe("src/components/studio/StudioFromParams.tsx");
+  const extractsDesign = paramsCode !== null && paramsCode.includes('sp.get("design")');
+  const extractsLegacyTemplate = paramsCode !== null && paramsCode.includes('sp.get("template")');
+  const extractsOccasionAndSize = paramsCode !== null && paramsCode.includes('sp.get("occasion")') && paramsCode.includes('sp.get("size")');
   record(
     "Tier 2",
-    "B2.1: Customizer studio parses deep-linking query parameters (?template, ?palette, ?size)",
-    Boolean(extractsTemplateParam && extractsPaletteParam && extractsSizeParam),
-    "Extracts template, palette, and size from useSearchParams",
-    `template: ${extractsTemplateParam}, palette: ${extractsPaletteParam}, size: ${extractsSizeParam}`
+    "B2.1: Studio parses deep-linking query parameters (?design, ?occasion, ?size, legacy ?template)",
+    Boolean(extractsDesign && extractsLegacyTemplate && extractsOccasionAndSize),
+    "Extracts design, occasion, size and legacy template from useSearchParams",
+    `design: ${extractsDesign}, template: ${extractsLegacyTemplate}, occasion+size: ${extractsOccasionAndSize}`
   );
+
 
   // 2.2 Unrecognized or empty template fallback handling
   const pbCode = readFileSafe("src/components/PortraitBuilder.tsx");
@@ -377,40 +383,38 @@ function runTier3() {
   // 3.1 Navbar navigation connects multi-page routes
   const navCode = readFileSafe("src/components/Navbar.tsx");
   const navHasHome = navCode !== null && navCode.includes('href="/"');
-  const navHasShop = navCode !== null && navCode.includes('href="/shop"');
-  const navHasCustom = navCode !== null && navCode.includes('href="/product/custom"');
+  const navHasShop = navCode !== null && navCode.includes('"/designs"');
+  const navHasCustom = navCode !== null && navCode.includes('href="/create"');
   record(
     "Tier 3",
-    "C3.1: Navbar connects all primary multi-page routes ('/', '/shop', '/product/custom')",
+    "C3.1: Navbar connects all primary multi-page routes ('/', '/designs', '/create')",
     Boolean(navHasHome && navHasShop && navHasCustom),
-    "Navbar links to '/', '/shop', and '/product/custom'",
-    `Home: ${navHasHome}, Shop: ${navHasShop}, Custom: ${navHasCustom}`
+    "Navbar links to '/', '/designs', and '/create'",
+    `Home: ${navHasHome}, Designs: ${navHasShop}, Studio: ${navHasCustom}`
   );
 
   // 3.2 Footer navigation connects multi-page routes
   const footCode = readFileSafe("src/components/Footer.tsx");
-  const footHasCustom = footCode !== null && footCode.includes('href="/product/custom"');
-  const footHasShop = footCode !== null && footCode.includes('href="/shop"');
+  const footHasCustom = footCode !== null && footCode.includes('href="/create"');
+  const footHasShop = footCode !== null && footCode.includes('href="/designs"');
   record(
     "Tier 3",
-    "C3.2: Footer links to wall art catalog and bespoke customizer studio",
+    "C3.2: Footer links to the designs catalogue and the studio",
     Boolean(footHasCustom && footHasShop),
-    "Footer links to '/shop' and '/product/custom'",
+    "Footer links to '/designs' and '/create'",
     `Customizer link: ${footHasCustom}, Shop link: ${footHasShop}`
   );
 
   // 3.3 Shop catalog cards deep-link to customizer with query parameter
+  const designsCode = readFileSafe("src/app/designs/page.tsx");
   const shopCode = readFileSafe("src/app/shop/page.tsx");
-  const shopHasDeepLinks = shopCode !== null && (
-    shopCode.includes("/product/custom?template=") ||
-    shopCode.includes("/product/custom?preset=") ||
-    shopCode.includes("/product/custom?")
-  );
+  const shopHasDeepLinks =
+    designsCode !== null && designsCode.includes("/create?design=") && shopCode !== null && shopCode.includes('"/designs"');
   record(
     "Tier 3",
-    "C3.3: Shop catalog preset cards deep-link to /product/custom with template query params",
+    "C3.3: Designs catalogue deep-links to /create?design= (and /shop redirects to /designs)",
     Boolean(shopHasDeepLinks),
-    "Catalog cards pass template parameter into /product/custom",
+    "Catalogue cards pass the design id into /create",
     `Deep linking configured: ${shopHasDeepLinks}`
   );
 
@@ -463,32 +467,24 @@ function runTier4() {
   );
 
   // 4.2 Shop catalog category filtering scenario
-  const shopCode = readFileSafe("src/app/shop/page.tsx");
-  const hasCategoryFilters = shopCode !== null && (
-    shopCode.includes("selectedCategory") ||
-    shopCode.includes("activeCategory") ||
-    shopCode.includes("filter")
-  );
+  const studioCode = readFileSafe("src/components/studio/Studio.tsx");
+  const hasCategoryFilters = studioCode !== null && studioCode.includes("OCCASIONS.map") && studioCode.includes("chooseOccasion");
   record(
     "Tier 4",
-    "S4.2: Catalog curation workflow: Shop provides interactive category filtering across aesthetic genres",
+    "S4.2: Curation workflow: studio lets customers start from an occasion, which preselects a design",
     Boolean(hasCategoryFilters),
-    "Shop page provides category filtering state and UI",
-    `Category filtering present: ${hasCategoryFilters}`
+    "Studio renders occasion choices that select a recommended design",
+    `Occasion curation present: ${hasCategoryFilters}`
   );
 
   // 4.3 Luxury craftsmanship and trust marker presentation
-  const customCode = readFileSafe("src/app/product/custom/page.tsx");
-  const hasCraftsmanship = customCode !== null && (
-    customCode.includes("300 DPI") ||
-    customCode.includes("Solid Wood") ||
-    customCode.includes("Archival")
-  );
+  const studioCode2 = readFileSafe("src/components/studio/Studio.tsx");
+  const hasCraftsmanship = studioCode2 !== null && studioCode2.includes("exactly what you see") && studioCode2.includes("reprint it free");
   record(
     "Tier 4",
-    "S4.3: Customizer studio presents luxury craftsmanship assurances (300 DPI, Solid Wood, Archival)",
+    "S4.3: Studio presents truthful production assurances (print matches preview, free reprint)",
     Boolean(hasCraftsmanship),
-    "Studio presents museum-grade craftsmanship narrative",
+    "Studio states what-you-see-is-printed and the reprint promise",
     `Craftsmanship narrative present: ${hasCraftsmanship}`
   );
 

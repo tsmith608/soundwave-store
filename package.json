@@ -14,7 +14,12 @@
     "test:m1": "tsx src/lib/verify.ts",
     "test:m3_m4": "tsx src/lib/verify_m3_m4.ts",
     "test:sprint2": "tsx tests/test_sprint2_unified.ts",
-    "test:all": "tsx src/lib/verify.ts && tsx src/lib/verify_m3_m4.ts"
+    "test:all": "tsx src/lib/verify.ts && tsx src/lib/verify_m3_m4.ts && tsx tests/test_art_engine.ts",
+    "test:art": "tsx tests/test_art_engine.ts",
+    "test:checkout": "tsx tests/test_curated_checkout.ts",
+    "art:gallery": "tsx scripts/render-art.ts gallery docs/review/designs",
+    "art:mockups": "tsx scripts/render-mockups.ts",
+    "art:fonts": "node scripts/build-font-metrics.mjs"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",

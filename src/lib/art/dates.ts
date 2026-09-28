@@ -6,7 +6,9 @@ export function parseDate(input: string): Date | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input.trim());
   if (!m) return null;
   const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], 12));
-  return Number.isNaN(d.getTime()) ? null : d;
+  // reject overflow like 2025-02-30 or 2025-13-01 rather than rolling over
+  if (Number.isNaN(d.getTime()) || d.getUTCMonth() !== +m[2] - 1 || d.getUTCDate() !== +m[3]) return null;
+  return d;
 }
 
 export type DateStyle = "long" | "dots" | "slashes" | "monthYear" | "year" | "spaced";
