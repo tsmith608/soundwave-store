@@ -7,6 +7,7 @@ import Reveal from "@/components/brand/Reveal";
 import { WaveEdge } from "@/components/brand/shapes";
 import { getDesign, samplePeaks, type ArtFields } from "@/lib/art";
 import { PRINT_SIZES, formatPrice } from "@/lib/catalog";
+import { SITE_URL } from "@/lib/site";
 
 export interface IntentExample {
   designId: string;
@@ -32,6 +33,8 @@ export interface IntentContent {
   considerations: { title: string; body: string }[];
   faqs: { q: string; a: string }[];
   ctaLabel: string;
+  /** Canonical path, for breadcrumbs. */
+  path?: string;
 }
 
 const WORLDS: Record<World, { bg: string; text: string; fill: string; dark?: boolean }> = {
@@ -51,18 +54,35 @@ export default function IntentPage({ c }: { c: IntentContent }) {
   const w = WORLDS[c.world ?? "paper"];
   const fromPrint = Math.min(...PRINT_SIZES.map((s) => s.price.print));
   const fromFramed = Math.min(...PRINT_SIZES.map((s) => s.price.framed));
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: c.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
-  };
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: c.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    },
+    ...(c.path
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: c.eyebrow, item: `${SITE_URL}${c.path}` },
+            ],
+          },
+        ]
+      : []),
+  ];
   const hero = c.examples[0];
   return (
     <div className="flex min-h-screen flex-col overflow-x-clip">
       <Navbar />
-      <main className="flex-1">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <main id="main" className="flex-1">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
         <section className={`${w.bg} ${w.text} ${w.dark ? "on-dark" : ""}`}>
+          <nav aria-label="Breadcrumb" className="mx-auto max-w-[1440px] px-4 pt-6 text-sm opacity-75 sm:px-8">
+            <a href="/" className="underline">Home</a> <span aria-hidden>/</span> <span aria-current="page">{c.eyebrow}</span>
+          </nav>
           <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-4 pb-16 pt-12 sm:px-8 lg:grid-cols-12">
             <div className="lg:col-span-7">
               <p className="meta opacity-75">{c.eyebrow}</p>

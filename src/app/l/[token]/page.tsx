@@ -19,7 +19,7 @@ export default async function ListenPage({ params, searchParams }: { params: Pro
 
   if (item.recordingRemovedAt) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-night px-6 py-12 text-center text-night-ink">
+      <main id="main" className="flex min-h-screen flex-col items-center justify-center bg-night px-6 py-12 text-center text-night-ink">
         <h1 className="display text-4xl">This recording has been removed.</h1>
         <p className="mt-4 max-w-sm opacity-80">It was taken down at the request of its owner. The print is still yours to keep.</p>
       </main>
@@ -35,7 +35,7 @@ export default async function ListenPage({ params, searchParams }: { params: Pro
   const sub = [spec.fields?.title !== heading ? spec.fields?.title : "", spec.fields?.subtitle].filter(Boolean).join(" · ");
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-night px-6 py-12 text-night-ink">
+    <main id="main" className="flex min-h-screen flex-col items-center bg-night px-6 py-12 text-night-ink">
       <div className="w-full max-w-sm text-center">
         {heading && <h1 className="display text-5xl">{heading}</h1>}
         {sub && <p className="mt-2 text-sm opacity-80">{sub}</p>}

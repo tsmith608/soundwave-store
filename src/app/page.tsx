@@ -92,7 +92,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col overflow-x-clip">
       <Navbar />
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         {/* ── 1 · HERO ─────────────────────────────────────────────── */}
         <section className="relative mx-auto max-w-[1440px] px-4 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-14">
           <MemoryTrace seed="hero-trace" fill="var(--film)" className="pointer-events-none absolute -right-[20%] top-[8%] h-[70%] w-[95%] opacity-90 lg:-right-[6%] lg:w-[62%]" />

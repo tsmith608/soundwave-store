@@ -33,7 +33,13 @@ export default function Analytics() {
   const [consent, setConsent] = useState<Consent>(null);
   const anyPixel = Boolean(GA4 || META || TIKTOK);
 
-  useEffect(() => setConsent(readConsent()), []);
+  useEffect(() => {
+    setConsent(readConsent());
+    // The cookie preferences page changes consent without a reload.
+    const on = () => setConsent(readConsent());
+    window.addEventListener("sw:consent", on);
+    return () => window.removeEventListener("sw:consent", on);
+  }, []);
 
   useEffect(() => {
     captureAttribution();
@@ -72,13 +78,18 @@ fbq('init','${META}');fbq('track','PageView');`}</Script>
 ttq.load('${TIKTOK}');ttq.page();}(window, document, 'ttq');`}</Script>
       )}
       {anyPixel && consent === null && (
-        <div className="fixed bottom-20 lg:bottom-4 left-4 right-4 sm:left-auto sm:max-w-sm z-50 bg-white border border-[#E6DFD6] shadow-lg rounded-md p-4 text-sm text-[#4A453F]">
-          <p className="mb-3">We use cookies to measure which videos and ads bring people here. Nothing is shared until you say yes.</p>
+        <div role="dialog" aria-label="Cookie choice" className="fixed bottom-20 left-4 right-4 z-50 border-2 border-ink bg-paper p-4 text-sm shadow-[4px_4px_0_#151412] sm:left-auto sm:max-w-sm lg:bottom-4">
+          <p className="mb-3">
+            We&rsquo;d like to use advertising cookies to measure which videos and ads bring people here. Nothing is shared with ad platforms until you say yes.{" "}
+            <a href="/cookies" className="underline">
+              Details
+            </a>
+          </p>
           <div className="flex gap-2">
-            <button onClick={() => decide("granted")} className="px-3 py-1.5 rounded bg-[#2D2A26] text-white">
+            <button onClick={() => decide("granted")} className="min-h-[44px] border-2 border-ink bg-ink px-4 text-paper">
               Accept
             </button>
-            <button onClick={() => decide("denied")} className="px-3 py-1.5 rounded border border-[#DDD5CB]">
+            <button onClick={() => decide("denied")} className="min-h-[44px] border-2 border-ink px-4">
               No thanks
             </button>
           </div>

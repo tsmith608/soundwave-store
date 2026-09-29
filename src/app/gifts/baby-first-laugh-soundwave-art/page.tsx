@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const c: IntentContent = {
+  path: "/gifts/baby-first-laugh-soundwave-art",
   world: "botanical",
   eyebrow: "Baby · first laugh",
   h1: "Six seconds of laughing, kept for good.",

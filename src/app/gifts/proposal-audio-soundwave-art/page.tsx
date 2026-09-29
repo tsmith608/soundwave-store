@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const c: IntentContent = {
+  path: "/gifts/proposal-audio-soundwave-art",
   world: "night",
   eyebrow: "Proposal · engagement",
   h1: "The question, the yes, and the moon that night.",

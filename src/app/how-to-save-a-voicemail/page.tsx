@@ -57,7 +57,7 @@ export default function Page() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
           <p className="meta">Guide</p>

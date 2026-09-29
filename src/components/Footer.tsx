@@ -28,8 +28,12 @@ export default function Footer() {
           <div className="md:col-span-3">
             <div className="meta mb-3 opacity-60">Help</div>
             <ul>
-              <li><Link href="/#how-it-works" className="inline-flex min-h-[44px] items-center hover:underline">How it works</Link></li>
-              <li><Link href="/#faq" className="inline-flex min-h-[44px] items-center hover:underline">FAQ &amp; shipping</Link></li>
+              <li><Link href="/track" className="inline-flex min-h-[44px] items-center hover:underline">Track an order</Link></li>
+              <li><Link href="/faq" className="inline-flex min-h-[44px] items-center hover:underline">FAQ</Link></li>
+              <li><Link href="/shipping" className="inline-flex min-h-[44px] items-center hover:underline">Shipping</Link></li>
+              <li><Link href="/returns" className="inline-flex min-h-[44px] items-center hover:underline">Returns &amp; refunds</Link></li>
+              <li><Link href="/contact" className="inline-flex min-h-[44px] items-center hover:underline">Contact us</Link></li>
+              <li><Link href="/about" className="inline-flex min-h-[44px] items-center hover:underline">About</Link></li>
               <li><Link href="/how-to-save-a-voicemail" className="inline-flex min-h-[44px] items-center hover:underline">How to save a voicemail</Link></li>
               <li><a href={`mailto:${SUPPORT_EMAIL}`} className="inline-flex min-h-[44px] items-center hover:underline">{SUPPORT_EMAIL}</a></li>
             </ul>
@@ -40,6 +44,8 @@ export default function Footer() {
           <span className="flex flex-wrap items-center gap-x-5">
             <Link href="/terms" className="inline-flex min-h-[44px] items-center hover:underline">Terms</Link>
             <Link href="/privacy" className="inline-flex min-h-[44px] items-center hover:underline">Privacy</Link>
+            <Link href="/cookies" className="inline-flex min-h-[44px] items-center hover:underline">Cookies</Link>
+            <Link href="/account" className="inline-flex min-h-[44px] items-center hover:underline">Account</Link>
             <span>Damaged or not as previewed? We reprint it free.</span>
           </span>
         </div>

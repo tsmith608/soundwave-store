@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const c: IntentContent = {
+  path: "/anniversary-sound-wave-gift",
   eyebrow: "Anniversary gifts",
   h1: "An anniversary gift made from a sound you share.",
   world: "night",

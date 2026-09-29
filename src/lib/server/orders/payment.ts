@@ -173,12 +173,10 @@ export async function applyRefundTotals(tx: Tx, orderId: string, refundedCents: 
   const full = refundedCents >= order.totalCents;
   await tx.payment.updateMany({ where: { orderId }, data: { status: full ? "refunded" : "partially_refunded" } });
   await noteEvent(orderId, "payment", actor, full ? "Order fully refunded." : `Partial refund: total refunded ${(refundedCents / 100).toFixed(2)}.`, undefined, tx);
-  if (full && order.status !== "refunded" && order.status !== "pending_payment") {
+  if (full && !["refunded", "pending_payment", "cancelled"].includes(order.status)) {
     await transition(tx, orderId, "refunded", { actor, message: "Full refund issued." });
-    await enqueue(tx, "send_email", { template: "refund", orderId }, { dedupeKey: `email:refund_full:${orderId}` });
-  } else if (!full) {
-    await enqueue(tx, "send_email", { template: "refund", orderId, refundedCents }, { dedupeKey: `email:refund:${orderId}:${refundedCents}` });
   }
+  await enqueue(tx, "send_email", { template: "refund", orderId, refundedCents }, { dedupeKey: `email:refund:${orderId}:${refundedCents}` });
 }
 
 export async function flagDispute(dispute: Stripe.Dispute) {

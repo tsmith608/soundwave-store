@@ -15,7 +15,7 @@ export default async function FakeCheckout({ params }: { params: Promise<{ sessi
   if (!order) notFound();
   const input = "h-11 w-full border-2 border-ink bg-white px-3";
   return (
-    <main className="mx-auto max-w-lg px-4 py-10">
+    <main id="main" className="mx-auto max-w-lg px-4 py-10">
       <p className="meta text-signal">Development · fake payment page</p>
       <h1 className="display mt-2 text-4xl">Test checkout</h1>
       <p className="mt-2 text-ink-soft">This stands in for Stripe Checkout when no Stripe keys are configured. The buttons send signed Stripe-format webhooks to this app.</p>

@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import Studio from "@/components/studio/Studio";
 import { activeVariants } from "@/lib/server/catalog";
 import { readCart } from "@/lib/server/cart";
-import { BRAND_NAME } from "@/lib/site";
+import { BRAND_NAME, SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -32,10 +32,24 @@ export default async function CreatePage({ searchParams }: { searchParams: Promi
       projectId = item.projectId;
     }
   }
+  const prices = variants.map((v) => v.priceCents / 100);
+  // Product schema: real prices from the catalogue; no ratings until real reviews exist.
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "Custom keepsake art print from your recording",
+    description: "Personalised wall art generated from the sound of your own recording or video: The Night Of or Herbarium, printed on archival paper, framed or unframed.",
+    brand: { "@type": "Brand", name: BRAND_NAME },
+    image: [`${SITE_URL}/mockups/wall-night-of.jpg`, `${SITE_URL}/mockups/wall-herbarium.jpg`],
+    offers: prices.length
+      ? { "@type": "AggregateOffer", priceCurrency: "USD", lowPrice: Math.min(...prices).toFixed(2), highPrice: Math.max(...prices).toFixed(2), offerCount: prices.length, availability: "https://schema.org/InStock", url: `${SITE_URL}/create` }
+      : undefined,
+  };
   return (
     <div className="flex min-h-screen flex-col pb-[72px] lg:pb-0">
       <Navbar />
       <main id="main" className="flex-1">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c") }} />
         <div className="mx-auto max-w-[1440px] px-4 pt-8 sm:px-8">
           <h1 className="display text-[13vw] sm:text-[8vw] lg:text-[88px]">
             {editItem ? "Edit your " : "Make your "}

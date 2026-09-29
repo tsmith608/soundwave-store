@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const c: IntentContent = {
+  path: "/pet-memorial-sound-art",
   world: "botanical",
   eyebrow: "Pet memorial",
   h1: "The sound that meant they were home.",

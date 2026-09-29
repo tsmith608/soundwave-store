@@ -37,7 +37,7 @@ export default function DesignsPage() {
   return (
     <div className="flex min-h-screen flex-col overflow-x-clip">
       <Navbar />
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         <section className="mx-auto max-w-[1440px] px-4 pb-12 pt-12 sm:px-8">
           <p className="meta">The art</p>
           <h1 className="display mt-4 max-w-5xl text-[14vw] sm:text-[9vw] lg:text-[120px]">

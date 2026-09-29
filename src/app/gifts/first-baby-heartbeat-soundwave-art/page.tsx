@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const c: IntentContent = {
+  path: "/gifts/first-baby-heartbeat-soundwave-art",
   world: "romantic",
   eyebrow: "Baby · heartbeat",
   h1: "The first sound you heard of them.",

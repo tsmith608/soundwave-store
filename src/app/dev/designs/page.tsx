@@ -12,7 +12,7 @@ export const metadata = { robots: { index: false, follow: false }, title: "Desig
 export default function DevDesigns() {
   if (process.env.NODE_ENV === "production" && process.env.SHOW_DEV_PAGES !== "1") notFound();
   return (
-    <main className="p-8 bg-[#E7E2DA] min-h-screen text-[#2D2A26]">
+    <main id="main" className="p-8 bg-[#E7E2DA] min-h-screen text-[#2D2A26]">
       <h1 className="font-serif text-4xl">All designs (internal)</h1>
       <p className="text-sm mt-2 max-w-2xl">Sellable designs first, then explorations kept for reference. Critique and scoring: docs/art-direction-2026.md.</p>
       {[

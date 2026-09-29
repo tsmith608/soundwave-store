@@ -9,7 +9,7 @@
     "lint": "next lint",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "test:all": "tsx src/lib/verify.ts && tsx src/lib/verify_m3_m4.ts && tsx tests/test_art_engine.ts && tsx tests/test_retention.ts",
+    "test:all": "npm run test:unit && npm run test:art && npm run test:integration",
     "uploads:cleanup": "tsx scripts/cleanup-uploads.ts",
     "uploads:remove": "tsx scripts/remove-recording.ts",
     "test:art": "tsx tests/test_art_engine.ts",
@@ -21,7 +21,13 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "worker": "tsx scripts/worker.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "npm run test:unit && npm run test:art",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:integration": "tsx --test --test-concurrency=1 --import ./tests/integration/setup.ts tests/integration/*.test.ts",
+    "test:e2e": "tsx tests/e2e/checkout.e2e.ts",
+    "test:db:prepare": "sh -c \"DATABASE_URL=${TEST_DATABASE_URL:-postgresql://postgres@localhost:5433/soundwave_test} DIRECT_URL=${TEST_DATABASE_URL:-postgresql://postgres@localhost:5433/soundwave_test} prisma migrate deploy\"",
+    "test:security": "tsx tests/e2e/security.e2e.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1142.0",

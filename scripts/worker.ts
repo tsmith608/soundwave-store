@@ -11,6 +11,7 @@ import { runJob } from "../src/lib/server/jobs/handlers";
 import { prisma } from "../src/lib/server/db";
 import { getEnv } from "../src/lib/server/env";
 import { log } from "../src/lib/server/log";
+import { initSentryNode } from "../src/lib/server/sentry";
 
 const env = getEnv();
 const workerId = `${os.hostname()}:${process.pid}`;
@@ -43,6 +44,7 @@ async function scheduleMaintenance() {
 }
 
 async function main() {
+  await initSentryNode();
   log.info("worker_started", { workerId, concurrency: env.WORKER_CONCURRENCY, fulfillment: env.fulfillmentProvider, email: env.emailProvider, storage: env.STORAGE_DRIVER });
   if (once) {
     await scheduleMaintenance();

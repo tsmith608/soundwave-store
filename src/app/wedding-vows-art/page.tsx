@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const c: IntentContent = {
+  path: "/wedding-vows-art",
   eyebrow: "Wedding vows · first dance · speeches",
   h1: "Your vows, exactly as they sounded that day.",
   world: "botanical",
