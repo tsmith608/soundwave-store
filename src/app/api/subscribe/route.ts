@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/server/db";
+import { clientIp } from "@/lib/server/http";
+import { rateLimit } from "@/lib/server/rateLimit";
 
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/;
 
 /** Stores an email for launch news / shipping-cutoff reminders. Idempotent. */
 export async function POST(req: NextRequest) {
+  try {
+    await rateLimit("contact", clientIp(req));
+  } catch {
+    return NextResponse.json({ error: "Too many attempts. Please wait a few minutes." }, { status: 429 });
+  }
   const body = await req.json().catch(() => null);
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
   if (!EMAIL.test(email) || email.length > 254) return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });

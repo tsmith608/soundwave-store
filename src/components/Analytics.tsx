@@ -3,7 +3,7 @@
 import Script from "next/script";
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { track } from "@/lib/analytics";
+import { captureAttribution, track } from "@/lib/analytics";
 
 const GA4 = process.env.NEXT_PUBLIC_GA4_ID;
 const META = process.env.NEXT_PUBLIC_META_PIXEL_ID;
@@ -36,9 +36,9 @@ export default function Analytics() {
   useEffect(() => setConsent(readConsent()), []);
 
   useEffect(() => {
-    if (pathname === "/" || pathname?.startsWith("/wedding") || pathname?.startsWith("/voicemail") || pathname?.startsWith("/anniversary") || pathname?.startsWith("/pet-memorial") || pathname?.startsWith("/designs")) {
-      track("landing_view", { page: pathname, source: typeof document !== "undefined" ? document.referrer : undefined });
-    }
+    captureAttribution();
+    // Private pages (admin, account, order status) are not part of the marketing funnel.
+    if (pathname && !/^\/(admin|account|order|l\/|dev\/)/.test(pathname)) track("page_view", { page: pathname }, { onceKey: pathname });
   }, [pathname]);
 
   const decide = (v: "granted" | "denied") => {

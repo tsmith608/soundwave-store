@@ -1,49 +1,19 @@
 /**
- * Applies the upload retention policy in src/lib/retention.ts.
- * Dry run by default — prints what it would delete. Run on a schedule
- * (e.g. daily cron on the NAS) with --apply.
- *
- *   npx tsx scripts/cleanup-uploads.ts            # dry run
- *   npx tsx scripts/cleanup-uploads.ts --apply    # delete
+ * Applies the upload retention policy (src/lib/retention.ts) now. The worker
+ * already does this every 10 minutes; this is for manual runs.
+ *   npm run uploads:cleanup            # dry run
+ *   npm run uploads:cleanup -- --apply # delete
  */
-import fs from "fs";
-import path from "path";
-import { prisma } from "../src/lib/db";
-import { fileVerdict, type RetentionOrder } from "../src/lib/retention";
+import { prisma } from "../src/lib/server/db";
+import { runRetention } from "../src/lib/server/retention";
 
-async function main() {
+(async () => {
   const apply = process.argv.includes("--apply");
-  const dir = path.resolve(process.cwd(), "storage", "uploads");
-  if (!fs.existsSync(dir)) return console.log("No storage/uploads directory.");
-  const files = fs.readdirSync(dir).filter((f) => /^aud_/.test(f));
-
-  const orders = await prisma.order.findMany({ select: { id: true, audioPath: true, status: true, artworkSpec: true, updatedAt: true } });
-  const byFile = new Map<string, (RetentionOrder & { id: string })[]>();
-  for (const o of orders) {
-    const name = path.basename(o.audioPath || "");
-    if (!name) continue;
-    byFile.set(name, [...(byFile.get(name) ?? []), o]);
-  }
-
-  let deleted = 0;
-  let freed = 0;
-  for (const f of files) {
-    const full = path.join(dir, f);
-    const stat = fs.statSync(full);
-    const v = fileVerdict(byFile.get(f) ?? [], stat.mtime);
-    if (v.keep) continue;
-    console.log(`${apply ? "delete" : "would delete"}  ${f}  (${(stat.size / 1e6).toFixed(1)} MB)  — ${v.reason}`);
-    if (apply) fs.unlinkSync(full);
-    deleted++;
-    freed += stat.size;
-  }
-  console.log(`\n${files.length} recordings checked · ${deleted} ${apply ? "deleted" : "to delete"} · ${(freed / 1e6).toFixed(1)} MB${apply ? " freed" : ""}`);
-  if (!apply && deleted) console.log("Dry run. Re-run with --apply to delete.");
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exitCode = 1;
-  })
-  .finally(() => prisma.$disconnect());
+  const res = await runRetention({ apply });
+  for (const r of res) console.log(`${apply ? "deleted" : "would delete"}  ${r.id}  (${(r.bytes / 1e6).toFixed(1)} MB)  — ${r.reason}`);
+  console.log(`\n${res.length} recording(s) ${apply ? "deleted" : "to delete"}.${!apply && res.length ? " Re-run with --apply." : ""}`);
+  await prisma.$disconnect();
+})().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

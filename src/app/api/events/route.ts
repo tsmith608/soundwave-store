@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import type { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/server/db";
+import { clientIp } from "@/lib/server/http";
+import { rateLimit } from "@/lib/server/rateLimit";
 
-const ALLOWED = new Set([
-  "landing_view",
-  "design_selected",
-  "personalization_started",
-  "audio_uploaded",
-  "preview_generated",
-  "add_to_cart",
-  "checkout_initiated",
-  "purchase",
-]);
+// "purchase" is intentionally absent: it is recorded server-side from the Stripe webhook.
+const ALLOWED = new Set(["page_view", "product_view", "design_selected", "customizer_started", "media_uploaded", "design_generated", "customization_completed", "add_to_cart", "checkout_started"]);
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max) : null);
 
@@ -23,7 +18,10 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
     if (!body || !ALLOWED.has(body.event)) return new NextResponse(null, { status: 204 });
-    const params = body.params && typeof body.params === "object" ? JSON.stringify(body.params).slice(0, 2000) : null;
+    await rateLimit("events", clientIp(req));
+    const raw = body.params && typeof body.params === "object" ? (body.params as Record<string, unknown>) : null;
+    // Keep only flat, short primitive values — never free text from the customer.
+    const params = raw ? Object.fromEntries(Object.entries(raw).filter(([k, v]) => k.length < 40 && ["string", "number", "boolean"].includes(typeof v)).slice(0, 20).map(([k, v]) => [k, typeof v === "string" ? v.slice(0, 120) : v])) : undefined;
     await prisma.analyticsEvent
       .create({
         data: {
@@ -32,7 +30,7 @@ export async function POST(req: NextRequest) {
           sessionId: str(body.sessionId, 80),
           path: str(body.path, 300),
           referrer: str(body.referrer, 300),
-          params,
+          params: params as Prisma.InputJsonValue | undefined,
           userAgent: str(req.headers.get("user-agent"), 300),
         },
       })

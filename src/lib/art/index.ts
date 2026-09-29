@@ -18,6 +18,12 @@ export { samplePeaks, sanitizePeaks, decodePeaksFromBlob, PEAK_RESOLUTION } from
 export const DESIGNS: DesignDefinition[] = [nightOf, herbarium];
 
 /**
+ * Version of the shared rendering engine (layout, fonts, QR). Recorded on every
+ * generated print file together with the design's templateVersion.
+ */
+export const ART_ENGINE_VERSION = "2026.09.1";
+
+/**
  * Previously sold, now retired from the storefront. Kept fully renderable so
  * any existing order still prints, and so they can be brought back.
  */

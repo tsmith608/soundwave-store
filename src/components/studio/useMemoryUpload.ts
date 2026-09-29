@@ -20,7 +20,8 @@ const VIDEO_EXT = /\.(mp4|mov|m4v|webm|3gp)$/i;
 
 export type UploadState =
   | { phase: "idle" }
-  | { phase: "reading" | "extracting" | "uploading"; name: string }
+  | { phase: "reading" | "extracting" | "verifying"; name: string }
+  | { phase: "uploading"; name: string; progress: number }
   | { phase: "ready"; name: string }
   | { phase: "error"; name?: string; code: ErrorCode; message: string };
 
@@ -63,45 +64,82 @@ function probeDuration(blob: Blob, video: boolean): Promise<number> {
   });
 }
 
-export function useMemoryUpload(onReady: (r: { peaks: number[]; audioId: string; info: MemoryInfo }) => void) {
+/** PUT with upload progress (fetch can't report upload progress). */
+function putWithProgress(url: string, headers: Record<string, string>, body: Blob, onProgress: (p: number) => void): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+    for (const [k, v] of Object.entries(headers)) xhr.setRequestHeader(k, v);
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`storage ${xhr.status}`)));
+    xhr.onerror = () => reject(new Error("network"));
+    xhr.ontimeout = () => reject(new Error("network"));
+    xhr.timeout = 180_000;
+    xhr.send(body);
+  });
+}
+
+export interface ReadyResult {
+  peaks: number[];
+  assetId: string;
+  info: MemoryInfo;
+}
+
+export function useMemoryUpload(onReady: (r: ReadyResult) => void) {
   const [state, setState] = useState<UploadState>({ phase: "idle" });
   const [info, setInfo] = useState<MemoryInfo | null>(null);
   const pending = useRef<{ blob: Blob; name: string; source: MemoryInfo["source"]; peaks: number[]; duration: number } | null>(null);
 
   const upload = useCallback(
     async (blob: Blob, name: string, source: MemoryInfo["source"], peaks: number[], duration: number) => {
-      setState({ phase: "uploading", name });
+      setState({ phase: "uploading", name, progress: 0 });
       try {
-        const direct = source !== "video" && blob.size <= DIRECT_UPLOAD_LIMIT && (DIRECT_EXT.test(name) || /webm|wav|mpeg/.test(blob.type));
+        const direct = source !== "video" && blob.size <= DIRECT_UPLOAD_LIMIT && (DIRECT_EXT.test(name) || /webm|wav|mpeg|mp4|m4a/.test(blob.type)) && /^audio\//.test(blob.type || "audio/");
         // Videos and unusual/large audio are re-encoded to a compact WAV in the browser:
         // only the sound is sent, the footage never leaves the device.
-        const file = direct ? new File([blob], name, { type: blob.type || "audio/webm" }) : new File([await blobToWav(blob)], "memory.wav", { type: "audio/wav" });
-        const form = new FormData();
-        form.append("audio", file);
-        let res: Response;
+        const file: Blob = direct ? blob : await blobToWav(blob);
+        const mimeType = direct ? (blob.type || "audio/webm").split(";")[0] : "audio/wav";
+        let intent: { assetId: string; upload: { url: string; headers: Record<string, string> } };
         try {
-          res = await fetch("/api/upload", { method: "POST", body: form });
+          const r = await fetch("/api/uploads", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ fileName: name, mimeType, sizeBytes: file.size, durationMs: Math.round(duration * 1000), source }),
+          });
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok) {
+            setState({ phase: "error", name, code: r.status === 413 ? "too_large" : r.status === 415 ? "unsupported" : "server", message: data.error || "We couldn’t save that recording. Please try again." });
+            return;
+          }
+          intent = data;
         } catch {
           setState({ phase: "error", name, code: "network", message: "The upload didn’t go through — check your connection and try again." });
           return;
         }
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data.audioId) {
-          setState({ phase: "error", name, code: "server", message: data.error || "We couldn’t save that recording. Please try again." });
+        try {
+          await putWithProgress(intent.upload.url, intent.upload.headers, file, (p) => setState({ phase: "uploading", name, progress: p }));
+        } catch {
+          setState({ phase: "error", name, code: "network", message: "The upload was interrupted — check your connection and try again." });
+          return;
+        }
+        setState({ phase: "verifying", name });
+        const done = await fetch(`/api/uploads/${intent.assetId}/complete`, { method: "POST" }).catch(() => null);
+        const dj = done ? await done.json().catch(() => ({})) : {};
+        if (!done || !done.ok) {
+          setState({ phase: "error", name, code: done ? "server" : "network", message: dj.error || "We couldn’t verify that upload. Please try again." });
           return;
         }
         const i: MemoryInfo = { source, fileName: name, duration };
         setInfo(i);
         pending.current = null;
         setState({ phase: "ready", name });
-        onReady({ peaks, audioId: data.audioId, info: i });
+        onReady({ peaks, assetId: intent.assetId, info: i });
       } catch {
         setState({ phase: "error", name, code: "unreadable", message: "Something went wrong preparing your recording. Please try again." });
       }
     },
     [onReady]
   );
-
   const handle = useCallback(
     async (blob: Blob, name: string, forced?: MemoryInfo["source"]) => {
       const isVideo = forced ? forced === "video" : blob.type.startsWith("video/") || (VIDEO_EXT.test(name) && !/\.webm$/i.test(name));
@@ -165,5 +203,11 @@ export function useMemoryUpload(onReady: (r: { peaks: number[]; audioId: string;
     setState({ phase: "idle" });
   }, []);
 
-  return { state, info, handle, retry, reset, canRetry: () => pending.current !== null };
+  /** Restores a previously uploaded recording (after refresh or when editing a cart item). */
+  const restore = useCallback((i: MemoryInfo) => {
+    setInfo(i);
+    setState({ phase: "ready", name: i.fileName });
+  }, []);
+
+  return { state, info, handle, retry, reset, restore, canRetry: () => pending.current !== null };
 }

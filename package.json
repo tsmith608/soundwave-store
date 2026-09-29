@@ -8,12 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "test": "tsx src/lib/verify.ts",
-    "test:m1": "tsx src/lib/verify.ts",
-    "test:m3_m4": "tsx src/lib/verify_m3_m4.ts",
-    "test:sprint2": "tsx tests/test_sprint2_unified.ts",
     "test:all": "tsx src/lib/verify.ts && tsx src/lib/verify_m3_m4.ts && tsx tests/test_art_engine.ts && tsx tests/test_retention.ts",
     "uploads:cleanup": "tsx scripts/cleanup-uploads.ts",
     "uploads:remove": "tsx scripts/remove-recording.ts",
@@ -22,32 +17,34 @@
     "art:gallery": "tsx scripts/render-art.ts gallery docs/review/designs",
     "art:mockups": "tsx scripts/render-mockups.ts",
     "art:fonts": "node scripts/build-font-metrics.mjs",
-    "test:qr": "python3 tests/test_qr_discreet.py"
+    "test:qr": "python3 tests/test_qr_discreet.py",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "worker": "tsx scripts/worker.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1142.0",
+    "@aws-sdk/s3-request-presigner": "^3.1142.0",
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
     "@fontsource/cormorant-garamond": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/instrument-serif": "^5.3.0",
     "@fontsource/inter": "^5.3.0",
     "@prisma/client": "^6.4.0",
-    "better-sqlite3": "^11.8.1",
-    "framer-motion": "^13.4.0",
-    "lucide-react": "^1.47.0",
+    "@sentry/nextjs": "^11.1.0",
     "next": "16.1.6",
     "qrcode-generator": "^2.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "stripe": "^17.7.0",
-    "uuid": "^11.1.0"
+    "stripe": "^22.6.2",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@prisma/client": "^6.4.0",
-    "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
@@ -58,5 +55,8 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.23.13",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

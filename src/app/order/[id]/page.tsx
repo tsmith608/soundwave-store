@@ -1,362 +1,156 @@
-"use client";
-
-import React, { useEffect, useState, use } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { FRAME_SIZES, PALETTES } from "@/lib/constants";
-import FramedArtwork from "@/components/art/FramedArtwork";
-import { getDesign, type ArtFields } from "@/lib/art";
-import { track } from "@/lib/analytics";
+import { notFound } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Artwork from "@/components/art/Artwork";
+import type { ArtFields } from "@/lib/art";
+import { formatCents } from "@/lib/commerce";
+import { FRAME_FINISHES } from "@/lib/catalog";
+import { getCurrentUser, requireAdmin } from "@/lib/server/auth";
+import { prisma } from "@/lib/server/db";
+import { checkOrderAccessToken } from "@/lib/server/orders/access";
+import { PROGRESS, STATUS_LABEL } from "@/lib/server/orders/state";
+import { BRAND_NAME, SUPPORT_EMAIL } from "@/lib/site";
 
-interface OrderArtwork {
-  designId: string;
-  colorwayId: string;
-  fields: ArtFields;
-  peaks: number[];
-  showQr: boolean;
-  qrStyle?: "standard" | "discreet";
-  format: "framed" | "print";
-  frameFinish: string | null;
-  widthIn: number;
-  heightIn: number;
-}
+export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: `Your order — ${BRAND_NAME}`, robots: { index: false, follow: false } };
 
-interface OrderData {
-  id: string;
-  orderId: string;
-  status: string;
-  statusLabel: string;
-  previewUrl: string | null;
-  frameSize: string;
-  palette: string;
-  caption: string | null;
-  partnerOrderId: string | null;
-  totalAmount: number;
-  artwork?: OrderArtwork | null;
-  customerEmail?: string;
-  shippingName?: string;
-  shippingAddress?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+const STEP_LABEL = ["Paid", "Print file", "At the studio", "Printing", "Shipped", "Delivered"];
 
-const STATUS_STEPS = [
-  { key: "pending_payment", label: "Awaiting Payment" },
-  { key: "pending_fulfillment", label: "Payment Confirmed" },
-  { key: "fulfillment_submitted", label: "Print Submitted" },
-  { key: "shipped", label: "Shipped" },
-  { key: "delivered", label: "Delivered" },
-];
+/**
+ * Order status. Visible to: the link in the customer's emails (signed token),
+ * the signed-in owner, or an admin. Knowing the order id alone isn't enough.
+ */
+export default async function OrderPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ t?: string }> }) {
+  const [{ id }, { t }] = await Promise.all([params, searchParams]);
+  const order = await prisma.order.findUnique({ where: { id }, include: { items: true, shipments: { orderBy: { createdAt: "asc" } } } });
+  if (!order) notFound();
+  const user = await getCurrentUser();
+  const allowed = checkOrderAccessToken(order.id, t) || (user && order.userId === user.id) || Boolean(await requireAdmin());
+  if (!allowed) notFound();
 
-function maskStreet(address: string | null | undefined): string {
-  if (!address) return "Added at checkout";
-  const parts = address.split(",");
-  if (parts.length > 1) {
-    return "*** " + parts.slice(1).join(", ").trim();
-  }
-  return "*** " + address.slice(-10);
-}
-
-function maskEmail(email: string | null | undefined): string {
-  if (!email || !email.includes("@") || email === "pending@checkout") return "Added at checkout";
-  const [local, domain] = email.split("@");
-  if (local.length <= 2) return `*@${domain}`;
-  return `${local[0]}***${local.slice(-1)}@${domain}`;
-}
-
-export default function OrderStatusPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const resolvedParams = use(params);
-  const orderId = resolvedParams.id;
-
-  const [order, setOrder] = useState<OrderData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchOrder = async () => {
-    try {
-      const res = await fetch(`/api/orders/${orderId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setOrder(data);
-        setError(null);
-      } else if (res.status === 404) {
-        setError("Order not found. Please check your order ID.");
-      } else {
-        setError("Failed to retrieve order details.");
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to load order");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrder();
-
-    // Auto-poll while order is in active fulfillment
-    const interval = setInterval(() => {
-      fetchOrder();
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [orderId]);
-
-  const [isTestOrder, setIsTestOrder] = useState(false);
-  useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    setIsTestOrder(sp.get("preview_checkout") === "1");
-  }, []);
-
-  // Browser half of the purchase conversion; the server sends the same event_id from the Stripe webhook.
-  useEffect(() => {
-    if (!order || order.status === "pending_payment") return;
-    if (new URLSearchParams(window.location.search).get("status") !== "success") return;
-    track(
-      "purchase",
-      { order_id: order.id, value: order.totalAmount / 100, currency: "USD", design_id: order.artwork?.designId, size: order.frameSize },
-      { eventId: `purchase_${order.id}`, onceKey: order.id }
-    );
-  }, [order]);
-
-  const frameConfig = order ? FRAME_SIZES[order.frameSize] : null;
-  const paletteConfig = order ? PALETTES[order.palette] : null;
-
-  // Determine active step index
-  const currentStatus = order?.status || "pending_payment";
-  const currentStepIndex = STATUS_STEPS.findIndex((s) => s.key === currentStatus);
-  const activeIndex = currentStepIndex >= 0 ? currentStepIndex : 1;
+  const idx = PROGRESS.indexOf(order.status);
+  const closed = ["cancelled", "refunded", "failed", "pending_payment"].includes(order.status);
+  const addr = [order.shipName, order.shipLine1, order.shipLine2, [order.shipCity, order.shipState, order.shipPostalCode].filter(Boolean).join(", ")].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-[#F2EDE3] text-[#2D2A26] flex flex-col">
-      {/* Header */}
-      <header className="border-b border-[#EAE3DC] bg-white/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#151412] flex items-center justify-center text-white font-serif font-bold text-xs shadow-sm">
-              SW
-            </div>
-            <span className="font-serif text-lg font-bold text-[#2D2A26] tracking-wide">
-              SoundWave Art
-            </span>
-          </Link>
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      <main id="main" className="flex-1">
+        <div className="mx-auto max-w-[1100px] px-4 pb-20 pt-10 sm:px-8">
+          <p className="meta">Order {order.number}</p>
+          <h1 className="display mt-2 text-5xl sm:text-6xl">{STATUS_LABEL[order.status]}</h1>
+          {order.paidAt && <p className="mt-2 text-ink-soft">Placed {order.paidAt.toLocaleDateString("en-US", { dateStyle: "long" })}</p>}
+          {order.refundedCents > 0 && order.status !== "refunded" && <p className="mt-2 font-semibold">{formatCents(order.refundedCents)} refunded.</p>}
 
-          <Link
-            href="/create"
-            className="text-xs uppercase font-semibold tracking-wider text-[#151412] hover:underline"
-          >
-            Create another →
-          </Link>
-        </div>
-      </header>
+          {!closed && (
+            <ol className="mt-8 grid grid-cols-3 gap-2 sm:grid-cols-6" aria-label="Progress">
+              {STEP_LABEL.map((label, i) => {
+                const done = idx >= i || (order.status === "ready_for_fulfillment" && i <= 1);
+                return (
+                  <li key={label} className={`border-2 border-ink p-2 text-sm ${done ? "bg-ink text-paper" : "bg-paper"}`} aria-current={idx === i ? "step" : undefined}>
+                    <span className="meta block !text-[10px] opacity-70">{done ? "✓" : `0${i + 1}`}</span>
+                    {label}
+                  </li>
+                );
+              })}
+            </ol>
+          )}
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {loading ? (
-          <div className="py-24 text-center space-y-4">
-            <div className="w-10 h-10 border-2 border-[#151412] border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-[#6B655F] text-sm">Locating your custom order details...</p>
-          </div>
-        ) : error ? (
-          <div className="py-20 text-center max-w-md mx-auto space-y-4">
-            <div className="w-12 h-12 rounded-full bg-red-100 border border-red-300 text-red-600 flex items-center justify-center mx-auto text-xl font-bold">
-              !
-            </div>
-            <h2 className="text-2xl font-serif text-[#2D2A26]">Order Not Found</h2>
-            <p className="text-[#6B655F] text-sm">{error}</p>
-            <Link
-              href="/"
-              className="inline-block mt-4 px-6 py-2.5 rounded-xl bg-[#151412] text-white font-semibold text-sm"
-            >
-              Return Home
-            </Link>
-          </div>
-        ) : order ? (
-          <div className="space-y-8">
-            {/* Order Confirmation Banner */}
-            <div className="bg-white border border-[#EAE3DC] rounded-none border-2 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-              <div>
-                <span className="text-[11px] font-mono uppercase tracking-widest text-[#151412] bg-[#151412]/10 px-2.5 py-0.5 rounded border border-[#151412]/20">
-                  {order.statusLabel || "Payment Confirmed"}
-                </span>
-                <h1 className="text-2xl sm:text-3xl font-serif text-[#2D2A26] mt-2">
-                  Order #{order.id}
-                </h1>
-                <p className="text-xs text-[#6B655F] mt-1">
-                  Placed on {new Date(order.createdAt).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </p>
-              </div>
+          {order.shipments.length > 0 && (
+            <section className="mt-10 border-2 border-ink bg-botanical p-5">
+              <h2 className="display text-3xl">Tracking</h2>
+              <ul className="mt-3 space-y-2">
+                {order.shipments.map((s) => (
+                  <li key={s.id}>
+                    {s.carrier ?? "Carrier"} {s.service ? `· ${s.service}` : ""} — {s.trackingNumber ?? "number pending"}{" "}
+                    {s.trackingUrl && (
+                      <a href={s.trackingUrl} target="_blank" rel="noopener noreferrer" className="font-semibold underline">
+                        Track package
+                      </a>
+                    )}
+                    {s.deliveredAt && <span className="ml-2">· Delivered {s.deliveredAt.toLocaleDateString()}</span>}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-sm">Delivery dates are the carrier&rsquo;s estimate.</p>
+            </section>
+          )}
 
-              <div className="text-right sm:text-right">
-                <span className="text-xs text-[#6B655F] block">{order.status === "pending_payment" ? "Total" : "Total Paid"}</span>
-                <span className="text-2xl font-serif font-bold text-[#2D2A26]">
-                  ${(order.totalAmount / 100).toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            {isTestOrder && (
-              <div className="rounded-xl border border-[#E3D3B8] bg-[#FBF5EA] px-5 py-4 text-sm text-[#5C4A2E]">
-                Payments aren&apos;t switched on yet, so this order was saved as a test and nothing was charged.
-              </div>
-            )}
-
-            {/* Stepper Progression */}
-            <div className="bg-white border border-[#EAE3DC] rounded-none border-2 p-6 sm:p-8 shadow-sm">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#2D2A26] mb-6">
-                Fulfillment Status
-              </h2>
-
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 relative">
-                {STATUS_STEPS.map((step, idx) => {
-                  const isDone = idx <= activeIndex;
-                  const isCurrent = idx === activeIndex;
-
+          <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <section aria-label="Items">
+              <ul className="space-y-6">
+                {order.items.map((it) => {
+                  const spec = it.artworkSpec as unknown as { designId: string; colorwayId: string; fields: ArtFields; peaks: number[]; widthIn: number; heightIn: number; showQr: boolean; qrStyle: "discreet" | "standard" };
                   return (
-                    <div key={step.key} className="flex flex-col items-center text-center space-y-2">
-                      <div
-                        className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
-                          isDone
-                            ? "bg-[#151412] text-white shadow-md shadow-[#151412]/20"
-                            : "bg-[#F2EDE3] border border-[#EAE3DC] text-[#9E968F]"
-                        } ${isCurrent ? "ring-4 ring-[#151412]/30 scale-110" : ""}`}
-                      >
-                        {isDone ? (
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        ) : (
-                          idx + 1
-                        )}
+                    <li key={it.id} className="grid grid-cols-[120px_minmax(0,1fr)] gap-4">
+                      <div className="border-2 border-ink bg-paper-2 p-2">
+                        <Artwork designId={spec.designId} fields={spec.fields} peaks={spec.peaks} colorwayId={spec.colorwayId} widthIn={spec.widthIn} heightIn={spec.heightIn} showQr={spec.showQr} qrStyle={spec.qrStyle} idPrefix={`o-${it.id}`} />
                       </div>
-                      <span
-                        className={`text-xs font-medium ${
-                          isCurrent ? "text-[#151412] font-bold" : isDone ? "text-[#2D2A26]" : "text-[#9E968F]"
-                        }`}
-                      >
-                        {step.label}
-                      </span>
-                    </div>
+                      <div>
+                        <p className="display text-2xl">{it.designName}</p>
+                        <p className="text-ink-soft">
+                          {it.productName}
+                          {it.frameFinish ? ` · ${FRAME_FINISHES.find((f) => f.id === it.frameFinish)?.label ?? it.frameFinish} frame` : ""} · × {it.quantity}
+                        </p>
+                        <p className="mt-1 text-sm">{[spec.fields.title, spec.fields.names, spec.fields.date].filter(Boolean).join(" · ")}</p>
+                        <p className="mt-1 font-semibold">{formatCents(it.lineTotalCents)}</p>
+                        {it.recordingRemovedAt && <p className="mt-1 text-sm text-ink-soft">Recording removed on request; the code is switched off.</p>}
+                      </div>
+                    </li>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Artwork Preview & Specs Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Artwork Preview Card */}
-              <div className="lg:col-span-6 bg-white border border-[#EAE3DC] rounded-none border-2 p-6 flex flex-col items-center justify-center shadow-sm">
-                <span className="text-xs uppercase tracking-wider text-[#6B655F] font-semibold mb-4 self-start">
-                  Artwork Proof Preview
-                </span>
-
-                {order.artwork && getDesign(order.artwork.designId) ? (
-                  <div className="w-full max-w-[380px] bg-[#EDE8E1] p-8">
-                    <FramedArtwork
-                      designId={order.artwork.designId}
-                      fields={order.artwork.fields}
-                      peaks={order.artwork.peaks}
-                      colorwayId={order.artwork.colorwayId}
-                      widthIn={order.artwork.widthIn}
-                      heightIn={order.artwork.heightIn}
-                      showQr={order.artwork.showQr}
-                      qrStyle={order.artwork.qrStyle ?? "standard"}
-                      format={order.artwork.format}
-                      frameFinish={order.artwork.frameFinish ?? "black"}
-                      idPrefix="order"
-                    />
-                  </div>
-                ) : (
-                <div
-                  className="w-full max-w-[360px] bg-[#FDFBF7] p-4 rounded-xl border-4 border-[#E8DDD1] shadow-md overflow-hidden"
-                  style={{
-                    aspectRatio: frameConfig?.aspectRatio || "4/5",
-                  }}
-                >
-                  <img
-                    src={`/api/orders/${order.id}/preview`}
-                    alt="SoundWave Art Preview"
-                    className="w-full h-full object-cover rounded shadow-sm"
-                    onError={(e) => {
-                      // Fallback if image fails to load
-                      (e.target as HTMLElement).style.display = "none";
-                    }}
-                  />
+              </ul>
+            </section>
+            <aside className="h-fit space-y-6 border-2 border-ink p-5">
+              <dl className="space-y-1.5 text-[15px]">
+                <div className="flex justify-between">
+                  <dt>Subtotal</dt>
+                  <dd>{formatCents(order.subtotalCents)}</dd>
                 </div>
+                {order.discountCents > 0 && (
+                  <div className="flex justify-between">
+                    <dt>Discount {order.discountCode ? `(${order.discountCode})` : ""}</dt>
+                    <dd>−{formatCents(order.discountCents)}</dd>
+                  </div>
                 )}
-
-                <p className="text-[11px] text-[#6B655F] mt-4 text-center">
-                  {order.artwork ? "This is the exact artwork we print, rendered from your order." : "Low-res preview proof • High-res 300 DPI file currently in print production"}
+                <div className="flex justify-between">
+                  <dt>Shipping</dt>
+                  <dd>{order.shippingCents ? formatCents(order.shippingCents) : "Free"}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Tax</dt>
+                  <dd>{formatCents(order.taxCents)}</dd>
+                </div>
+                <div className="flex justify-between border-t-2 border-ink pt-2 font-semibold">
+                  <dt>Total</dt>
+                  <dd>{formatCents(order.totalCents)}</dd>
+                </div>
+              </dl>
+              {addr.length > 0 && (
+                <div>
+                  <p className="meta mb-1">Shipping to</p>
+                  <address className="not-italic">
+                    {addr.map((l) => (
+                      <span key={l} className="block">
+                        {l}
+                      </span>
+                    ))}
+                  </address>
+                </div>
+              )}
+              <div className="text-sm">
+                <p className="font-semibold">Something not right?</p>
+                <p className="mt-1 text-ink-soft">
+                  Email <a href={`mailto:${SUPPORT_EMAIL}?subject=Order%20${order.number}`} className="underline">{SUPPORT_EMAIL}</a> or use our <Link href={`/contact?order=${order.number}`} className="underline">contact form</Link> with your order number.
                 </p>
               </div>
-
-              {/* Order Details & Specifications */}
-              <div className="lg:col-span-6 space-y-6">
-                <div className="bg-white border border-[#EAE3DC] rounded-none border-2 p-6 space-y-4 shadow-sm">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-[#2D2A26]">
-                    Art Specifications
-                  </h3>
-
-                  <div className="space-y-3 text-xs">
-                    <div className="flex justify-between py-2 border-b border-[#EAE3DC]">
-                      <span className="text-[#6B655F]">Frame Size</span>
-                      <span className="text-[#2D2A26] font-medium">{frameConfig?.dimensions || order.frameSize}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-[#EAE3DC]">
-                      <span className="text-[#6B655F]">Colourway</span>
-                      <span className="text-[#2D2A26] font-medium">{paletteConfig?.name || order.palette}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-[#EAE3DC]">
-                      <span className="text-[#6B655F]">Words</span>
-                      <span className="text-[#2D2A26] font-serif italic">{order.caption || "None"}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-[#EAE3DC]">
-                      <span className="text-[#6B655F]">Audio Playback QR Code</span>
-                      <span className="text-[#2D2A26] font-medium">{order.artwork && !order.artwork.showQr ? "Not included" : order.artwork?.qrStyle === "discreet" ? "Included (discreet)" : "Included"}</span>
-                    </div>
-                    <div className="flex justify-between py-2">
-                      <span className="text-[#6B655F]">Paper Quality</span>
-                      <span className="text-[#2D2A26] font-medium">Archival matte fine-art paper</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Delivery Information */}
-                <div className="bg-white border border-[#EAE3DC] rounded-none border-2 p-6 space-y-3 shadow-sm">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-[#2D2A26]">
-                    Shipping & Tracking
-                  </h3>
-
-                  <div className="text-xs space-y-2 text-[#6B655F]">
-                    <p>
-                      <strong className="text-[#2D2A26]">Shipping Address:</strong> {maskStreet(order.shippingAddress)}
-                    </p>
-                    <p>
-                      <strong className="text-[#2D2A26]">Notification Email:</strong> {maskEmail(order.customerEmail)}
-                    </p>
-                    <p>
-                      <strong className="text-[#2D2A26]">Shipping:</strong> Tracked US delivery
-                    </p>
-                    {order.partnerOrderId && (
-                      <p>
-                        <strong className="text-[#2D2A26]">Partner Ref:</strong>{" "}
-                        <span className="font-mono text-[#151412] font-medium">{order.partnerOrderId}</span>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+            </aside>
           </div>
-        ) : null}
+        </div>
       </main>
+      <Footer />
     </div>
   );
 }

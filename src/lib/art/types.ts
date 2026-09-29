@@ -103,6 +103,12 @@ export type ArtDirection =
 export interface DesignDefinition {
   id: string;
   name: string;
+  /**
+   * Bump whenever this design's rendered output changes. Orders store the
+   * version they bought, and paid orders keep their already-rendered print
+   * file, so an update never silently changes a purchased piece.
+   */
+  templateVersion?: number;
   direction: ArtDirection;
   /** One sentence a customer reads. */
   tagline: string;

@@ -8,14 +8,23 @@
  * deduplicated. No secrets live here; see docs/analytics-plan.md.
  */
 
+/**
+ * Funnel (docs/analytics-plan.md): page_view → product_view → customizer_started
+ * → media_uploaded → design_generated → customization_completed → add_to_cart
+ * → checkout_started → purchase (purchase is recorded server-side from the
+ * Stripe webhook, never from the browser). Params never contain the
+ * customer's words or media — only ids, sizes and amounts.
+ */
 export type FunnelEvent =
-  | "landing_view"
+  | "page_view"
+  | "product_view"
   | "design_selected"
-  | "personalization_started"
-  | "audio_uploaded"
-  | "preview_generated"
+  | "customizer_started"
+  | "media_uploaded"
+  | "design_generated"
+  | "customization_completed"
   | "add_to_cart"
-  | "checkout_initiated"
+  | "checkout_started"
   | "purchase";
 
 export interface EventParams {
@@ -45,30 +54,66 @@ declare global {
 }
 
 /** GA4 recommended event names where one exists. */
-const GA4_NAME: Record<FunnelEvent, string> = {
-  landing_view: "landing_view",
+const GA4_NAME: Record<FunnelEvent, string | null> = {
+  page_view: null, // GA4 records page_view itself
+  product_view: "view_item",
   design_selected: "select_item",
-  personalization_started: "personalization_started",
-  audio_uploaded: "audio_uploaded",
-  preview_generated: "preview_generated",
+  customizer_started: "customizer_started",
+  media_uploaded: "media_uploaded",
+  design_generated: "design_generated",
+  customization_completed: "customization_completed",
   add_to_cart: "add_to_cart",
-  checkout_initiated: "begin_checkout",
+  checkout_started: "begin_checkout",
   purchase: "purchase",
 };
 
 const META_NAME: Partial<Record<FunnelEvent, string>> = {
-  design_selected: "ViewContent",
+  product_view: "ViewContent",
   add_to_cart: "AddToCart",
-  checkout_initiated: "InitiateCheckout",
+  checkout_started: "InitiateCheckout",
   purchase: "Purchase",
 };
 
 const TIKTOK_NAME: Partial<Record<FunnelEvent, string>> = {
-  design_selected: "ViewContent",
+  product_view: "ViewContent",
   add_to_cart: "AddToCart",
-  checkout_initiated: "InitiateCheckout",
+  checkout_started: "InitiateCheckout",
   purchase: "CompletePayment",
 };
+
+const ATTR_KEY = "sw_attr";
+const ATTR_PARAMS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "fbclid", "ttclid"];
+
+/**
+ * First-touch attribution: stored for 30 days on this device and attached to
+ * the cart (and so the order). Only marketing parameters and the referrer —
+ * nothing personal.
+ */
+export function captureAttribution(): void {
+  if (typeof window === "undefined") return;
+  try {
+    const existing = JSON.parse(localStorage.getItem(ATTR_KEY) || "null");
+    if (existing && Date.now() - existing.t < 30 * 86400_000) return;
+    const q = new URLSearchParams(location.search);
+    const data: Record<string, string> = {};
+    for (const k of ATTR_PARAMS) {
+      const v = q.get(k);
+      if (v) data[k] = v.slice(0, 200);
+    }
+    const ref = document.referrer && !document.referrer.startsWith(location.origin) ? document.referrer.slice(0, 300) : "";
+    if (ref) data.referrer = ref;
+    data.landing = location.pathname.slice(0, 200);
+    localStorage.setItem(ATTR_KEY, JSON.stringify({ t: Date.now(), data }));
+  } catch {}
+}
+
+export function getAttribution(): Record<string, string> | undefined {
+  try {
+    return JSON.parse(localStorage.getItem(ATTR_KEY) || "null")?.data;
+  } catch {
+    return undefined;
+  }
+}
 
 const once = new Set<string>();
 
@@ -113,7 +158,8 @@ export function track(event: FunnelEvent, params: EventParams = {}, opts: { even
       : {};
 
   try {
-    window.gtag?.("event", GA4_NAME[event], { ...params, ...ecommerce, event_id: eventId, transaction_id: params.order_id });
+    const g = GA4_NAME[event];
+    if (g) window.gtag?.("event", g, { ...params, ...ecommerce, event_id: eventId, transaction_id: params.order_id });
   } catch {}
   try {
     const m = META_NAME[event];

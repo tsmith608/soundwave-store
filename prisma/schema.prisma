@@ -1,3 +1,7 @@
+// SoundWave Art — production commerce schema.
+// Money is always integer minor units (cents) + ISO currency. Timestamps are UTC.
+// Customer media never lives in the database: only object-storage keys.
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -8,122 +12,727 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ───────────────────────────── Identity ─────────────────────────────
+
+enum UserRole {
+  customer
+  admin
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique // stored lower-case
+  emailVerifiedAt DateTime?
+  name            String?
+  role            UserRole  @default(customer)
+  marketingOptIn  Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  sessions  Session[]
+  addresses Address[]
+  projects  Project[]
+  carts     Cart[]
+  orders    Order[]
+}
+
+/// Server-side session. Only a SHA-256 of the cookie token is stored.
+model Session {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  userAgent  String?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// One-time email sign-in link. Only the hash is stored; single use.
+model LoginToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  email     String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  ip        String?
+
+  @@index([email, createdAt])
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  line1      String
+  line2      String?
+  city       String
+  state      String?
+  postalCode String
+  country    String   @default("US")
+  phone      String?
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ───────────────────────────── Catalog ─────────────────────────────
+
+model Product {
+  id          String           @id // e.g. "art-print"
+  slug        String           @unique
+  name        String
+  description String
+  active      Boolean          @default(true)
+  sortOrder   Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  variants    ProductVariant[]
+}
+
+enum ProductFormat {
+  print
+  framed
+}
+
+/// A sellable size × format. Frame finish is an option on the variant.
+model ProductVariant {
+  id                     String        @id // e.g. "framed-12x16"
+  productId              String
+  product                Product       @relation(fields: [productId], references: [id])
+  sku                    String        @unique // internal SKU
+  format                 ProductFormat
+  sizeId                 String // "8x10" | "12x16" | "18x24"
+  label                  String
+  widthIn                Decimal       @db.Decimal(6, 2)
+  heightIn               Decimal       @db.Decimal(6, 2)
+  priceCents             Int
+  currency               String        @default("usd")
+  /// Allowed values for the frame finish option (empty for unframed prints).
+  frameFinishes          String[]      @default([])
+  fulfillmentProvider    String        @default("prodigi")
+  /// Provider SKU, e.g. Prodigi "GLOBAL-CFPM-16X20". Must be verified against the provider catalogue.
+  fulfillmentSku         String
+  /// Extra provider attributes (JSON), e.g. { "mount": "Snow white" }.
+  fulfillmentAttributes  Json?
+  /// Print bleed in inches added on every edge of the production file.
+  bleedIn                Decimal       @default(0) @db.Decimal(4, 3)
+  printDpi               Int           @default(300)
+  /// Estimated production + transit time shown to customers (business days).
+  leadTimeMinDays        Int           @default(5)
+  leadTimeMaxDays        Int           @default(9)
+  active                 Boolean       @default(true)
+  sortOrder              Int           @default(0)
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@unique([format, sizeId])
+  @@index([productId])
+}
+
+/// Admin-facing registry of the artwork designs implemented in src/lib/art.
+/// `version` is bumped whenever the renderer output for a design changes, so
+/// orders record exactly which version they bought.
+model DesignTemplate {
+  id          String   @id // matches src/lib/art design id
+  name        String
+  version     Int      @default(1)
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ───────────────────────────── Customisation ─────────────────────────────
+
+enum ProjectStatus {
+  draft
+  ordered
+  archived
+}
+
+/// A customer's work in progress in the studio. Owned by a signed-in user or
+/// by an anonymous device key (hashed cookie).
+model Project {
+  id            String        @id @default(cuid())
+  userId        String?
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ownerKeyHash  String?
+  status        ProjectStatus @default(draft)
+  designId      String
+  colorwayId    String
+  /// { title, subtitle, names, date, message, song }
+  fields        Json
+  /// { showQr, qrStyle, qrTarget, listenUrl }
+  options       Json
+  /// Loudness envelope computed in the browser (0..1), max 2000 points.
+  peaks         Json?
+  audioAssetId  String?
+  audioAsset    UploadedAsset? @relation("ProjectAudio", fields: [audioAssetId], references: [id], onDelete: SetNull)
+  rightsConfirmedAt DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  cartItems CartItem[]
+
+  @@index([userId])
+  @@index([ownerKeyHash])
+  @@index([status, updatedAt])
+}
+
+enum AssetStatus {
+  pending   // upload URL issued, bytes not yet verified
+  ready     // verified and usable
+  rejected  // failed validation
+  deleted   // bytes removed by retention / takedown
+}
+
+/// Customer media (sound only — video frames never leave the device).
+model UploadedAsset {
+  id              String      @id @default(cuid())
+  ownerKeyHash    String?
+  userId          String?
+  kind            String      @default("audio")
+  source          String      @default("audio") // audio | video | recording
+  storageKey      String      @unique
+  mimeType        String
+  sizeBytes       Int
+  durationMs      Int?
+  originalName    String?
+  status          AssetStatus @default(pending)
+  rejectReason    String?
+  createdAt       DateTime    @default(now())
+  verifiedAt      DateTime?
+  /// Set while the asset is unattached; clean-up deletes after this time.
+  expiresAt       DateTime?
+  deletedAt       DateTime?
+  deleteReason    String?
+
+  projects   Project[]   @relation("ProjectAudio")
+  orderItems OrderItem[]
+
+  @@index([status, expiresAt])
+  @@index([ownerKeyHash])
+}
+
+enum GeneratedAssetKind {
+  print_pdf
+  print_png
+  preview_png
+}
+
+/// Derived files: production print files and previews. Immutable once written.
+model GeneratedAsset {
+  id              String             @id @default(cuid())
+  orderItemId     String
+  orderItem       OrderItem          @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  kind            GeneratedAssetKind
+  storageKey      String             @unique
+  mimeType        String
+  sizeBytes       Int
+  widthPx         Int?
+  heightPx        Int?
+  widthIn         Decimal?           @db.Decimal(6, 2)
+  heightIn        Decimal?           @db.Decimal(6, 2)
+  dpi             Int?
+  sha256          String
+  rendererVersion String
+  createdAt       DateTime           @default(now())
+
+  @@index([orderItemId, kind])
+}
+
+// ───────────────────────────── Cart ─────────────────────────────
+
+enum CartStatus {
+  active
+  checking_out
+  converted
+  abandoned
+}
+
+model Cart {
+  id                String     @id @default(cuid())
+  tokenHash         String     @unique
+  userId            String?
+  user              User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status            CartStatus @default(active)
+  currency          String     @default("usd")
+  email             String?
+  /// Explicit opt-in for reminder emails (abandoned-cart recovery). Default off.
+  recoveryConsent   Boolean    @default(false)
+  discountCode      String?
+  /// { utm_source, utm_medium, utm_campaign, utm_term, utm_content, referrer, landing, gclid, fbclid, ttclid }
+  attribution       Json?
+  convertedOrderId  String?    @unique
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  lastActivityAt    DateTime   @default(now())
+
+  items CartItem[]
+
+  @@index([status, lastActivityAt])
+  @@index([userId])
+}
+
+model CartItem {
+  id          String         @id @default(cuid())
+  cartId      String
+  cart        Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  projectId   String
+  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  variantId   String
+  variant     ProductVariant @relation(fields: [variantId], references: [id])
+  frameFinish String?
+  quantity    Int            @default(1)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([cartId])
+}
+
+// ───────────────────────────── Orders ─────────────────────────────
+
+/// Main lifecycle. Refunds are tracked separately (Order.refundedCents and
+/// Payment.status) so a partial refund never hides where the order is in
+/// production; a full refund moves the order to `refunded`.
+/// Allowed transitions: src/lib/server/orders/state.ts.
+enum OrderStatus {
+  pending_payment
+  paid
+  processing_artwork
+  ready_for_fulfillment
+  submitted_to_fulfillment
+  in_production
+  shipped
+  delivered
+  cancelled
+  refunded
+  failed
+}
+
 model Order {
-  id                  String           @id @default(uuid())
-  customerEmail       String
-  shippingName        String?
-  shippingAddress     String?
-  frameSize           String
-  palette             String
-  caption             String?
-  audioPath           String
-  photoPath           String?
-  decorativeTheme     String           @default("botanical")
-  // Curated-design orders: JSON { version, designId, colorwayId, fields, peaks, showQr, format, frameFinish, widthIn, heightIn }
-  artworkSpec         String?
-  // Unguessable token behind the printed scan-to-listen code (/l/<token>)
-  listenToken         String?          @unique
-  previewUrl          String?
-  printPdfPath        String?
-  status              String           @default("pending_payment")
-  partnerOrderId      String?
-  stripeSessionId     String?          @unique
-  totalAmount         Int              @default(0)
+  id                      String      @id @default(cuid())
+  /// Human-friendly number shown to customers, e.g. SW-10421.
+  number                  String      @unique
+  userId                  String?
+  user                    User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  cartId                  String?
+  email                   String
+  customerName            String?
+  phone                   String?
+  status                  OrderStatus @default(pending_payment)
+  currency                String      @default("usd")
+  subtotalCents           Int
+  discountCents           Int         @default(0)
+  shippingCents           Int         @default(0)
+  taxCents                Int         @default(0)
+  totalCents              Int
+  refundedCents           Int         @default(0)
+  discountCode            String?
+  shippingMethod          String      @default("standard")
+  /// Shipping address snapshot (from Stripe Checkout).
+  shipName                String?
+  shipLine1               String?
+  shipLine2               String?
+  shipCity                String?
+  shipState               String?
+  shipPostalCode          String?
+  shipCountry             String?
+  stripeCheckoutSessionId String?     @unique
+  stripePaymentIntentId   String?     @unique
+  stripeCustomerId        String?
+  /// Pricing snapshot computed server-side at checkout (JSON of the quote).
+  pricingSnapshot         Json
+  attribution             Json?
+  /// Set when an order needs a human (fulfillment error, dispute, etc).
+  attentionReason         String?
+  paidAt                  DateTime?
+  cancelledAt             DateTime?
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
 
-  // Etsy Integration Fields (Sprint 2 Milestone 3)
-  source              String           @default("direct") // "direct" | "etsy"
-  externalOrderId     String?          @unique            // Etsy receipt ID / partner ID
-  personalizationData String?                             // JSON string: song, artist, notes
-  etsyListingId       String?
-  etsyReceiptId       String?
-  audioSourceUrl      String?
+  items        OrderItem[]
+  payments     Payment[]
+  refunds      Refund[]
+  fulfillments Fulfillment[]
+  shipments    Shipment[]
+  events       OrderEvent[]
+  emails       EmailMessage[]
+  redemption   DiscountRedemption?
 
-  // Resend Email Tracking Fields (Sprint 2 Milestone 4)
-  resendEmailId       String?          @unique
-  emailStatus         String?          @default("not_sent") // "not_sent" | "sent" | "delivered" | "bounced" | "complained"
-  emailDeliveredAt    DateTime?
-  emailBounceReason   String?
-  emailBouncedAt      DateTime?
-  lastEmailEventAt    DateTime?
+  @@index([status, createdAt])
+  @@index([email])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([attentionReason])
+}
 
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  fulfillmentLogs     FulfillmentLog[]
-  emailEvents         EmailEvent[]
+model OrderItem {
+  id                 String         @id @default(cuid())
+  orderId            String
+  order              Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId          String
+  variant            ProductVariant @relation(fields: [variantId], references: [id])
+  productName        String
+  sku                String
+  format             ProductFormat
+  sizeId             String
+  frameFinish        String?
+  quantity           Int
+  unitPriceCents     Int
+  lineTotalCents     Int
+  designId           String
+  designName         String
+  templateVersion    Int
+  /// Complete, immutable artwork spec (fields, peaks, colourway, QR, size) as purchased.
+  artworkSpec        Json
+  audioAssetId       String?
+  audioAsset         UploadedAsset? @relation(fields: [audioAssetId], references: [id], onDelete: SetNull)
+  listenToken        String?        @unique
+  recordingRemovedAt DateTime?
+  rightsConfirmedAt  DateTime?
+  createdAt          DateTime       @default(now())
 
+  generatedAssets GeneratedAsset[]
+
+  @@index([orderId])
+}
+
+/// Append-only audit trail of order state transitions and notable events.
+model OrderEvent {
+  id         String       @id @default(cuid())
+  orderId    String
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type       String       // status_changed | payment | fulfillment | email | note | error
+  fromStatus OrderStatus?
+  toStatus   OrderStatus?
+  actor      String       // system | webhook:stripe | admin:<email> | customer
+  message    String?
+  data       Json?
+  createdAt  DateTime     @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+// ───────────────────────────── Payments ─────────────────────────────
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  refunded
+  partially_refunded
+  disputed
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          String        @default("stripe")
+  providerPaymentId String        @unique // PaymentIntent id
+  amountCents       Int
+  currency          String
+  status            PaymentStatus
+  method            String?       // card, apple_pay, link …
+  failureMessage    String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([orderId])
+}
+
+enum RefundStatus {
+  pending
+  succeeded
+  failed
+  canceled
+}
+
+model Refund {
+  id               String       @id @default(cuid())
+  orderId          String
+  order            Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  providerRefundId String?      @unique
+  /// Guards against double refunds on retry (sent to Stripe as Idempotency-Key).
+  idempotencyKey   String       @unique
+  amountCents      Int
+  reason           String?
+  status           RefundStatus @default(pending)
+  createdBy        String
+  failureReason    String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([orderId])
+}
+
+// ───────────────────────────── Discounts ─────────────────────────────
+
+enum DiscountType {
+  percent
+  fixed
+  free_shipping
+}
+
+model Discount {
+  id               String       @id @default(cuid())
+  code             String       @unique // upper-case
+  description      String?
+  type             DiscountType
+  /// percent: 1..100; fixed: cents; free_shipping: ignored
+  value            Int          @default(0)
+  minSubtotalCents Int          @default(0)
+  /// Limit to these variant ids (empty = all).
+  variantIds       String[]     @default([])
+  startsAt         DateTime?
+  endsAt           DateTime?
+  maxRedemptions   Int?
+  maxPerCustomer   Int?
+  timesRedeemed    Int          @default(0)
+  active           Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  redemptions DiscountRedemption[]
+}
+
+model DiscountRedemption {
+  id          String   @id @default(cuid())
+  discountId  String
+  discount    Discount @relation(fields: [discountId], references: [id])
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  email       String
+  amountCents Int
+  createdAt   DateTime @default(now())
+
+  @@index([discountId, email])
+}
+
+// ───────────────────────────── Fulfillment ─────────────────────────────
+
+enum FulfillmentStatus {
+  pending        // waiting for print files / submission
+  submitting
+  submitted
+  in_production
+  shipped
+  complete
+  cancelled
+  failed         // needs attention; retryable
+}
+
+model Fulfillment {
+  id              String            @id @default(cuid())
+  orderId         String
+  order           Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider        String
+  providerOrderId String?           @unique
+  /// Sent to the provider so a retried submission never creates a second print order.
+  idempotencyKey  String            @unique
+  status          FulfillmentStatus @default(pending)
+  providerStatus  String?
+  shippingMethod  String?
+  costCents       Int?
+  costCurrency    String?
+  attempts        Int               @default(0)
+  lastError       String?
+  submittedAt     DateTime?
+  lastSyncedAt    DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  shipments Shipment[]
+
+  @@index([orderId])
+  @@index([status, updatedAt])
+}
+
+enum ShipmentStatus {
+  pending
+  shipped
+  in_transit
+  delivered
+  exception
+  returned
+}
+
+model Shipment {
+  id                 String         @id @default(cuid())
+  orderId            String
+  order              Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fulfillmentId      String
+  fulfillment        Fulfillment    @relation(fields: [fulfillmentId], references: [id], onDelete: Cascade)
+  providerShipmentId String
+  carrier            String?
+  service            String?
+  trackingNumber     String?
+  trackingUrl        String?
+  status             ShipmentStatus @default(shipped)
+  shippedAt          DateTime?
+  deliveredAt        DateTime?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@unique([fulfillmentId, providerShipmentId])
+  @@index([orderId])
+}
+
+// ───────────────────────────── Messaging ─────────────────────────────
+
+enum EmailStatus {
+  queued
+  sent
+  delivered
+  bounced
+  complained
+  failed
+}
+
+model EmailMessage {
+  id                String      @id @default(cuid())
+  /// e.g. "order_confirmation:<orderId>" — prevents duplicate sends on retry.
+  dedupeKey         String      @unique
+  orderId           String?
+  order             Order?      @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  template          String
+  to                String
+  subject           String
+  provider          String
+  providerMessageId String?     @unique
+  status            EmailStatus @default(queued)
+  error             String?
+  sentAt            DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([orderId])
   @@index([status])
-  @@index([customerEmail])
-  @@index([stripeSessionId])
-  @@index([externalOrderId])
-  @@index([source])
-  @@index([resendEmailId])
 }
 
+model ContactMessage {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  orderNumber String?
+  topic       String
+  message     String
+  status      String   @default("open") // open | answered | closed
+  createdAt   DateTime @default(now())
+
+  @@index([status, createdAt])
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?
+  occasion  String?
+  consent   Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ───────────────────────────── Infrastructure ─────────────────────────────
+
+enum WebhookStatus {
+  received
+  processed
+  ignored
+  failed
+}
+
+/// Every inbound provider webhook, deduplicated by (provider, eventId).
 model WebhookEvent {
-  id          String    @id @default(uuid())
-  eventId     String    @unique
-  eventType   String
-  status      String
-  payload     String
+  id          String        @id @default(cuid())
+  provider    String        // stripe | prodigi | resend
+  eventId     String
+  type        String
+  status      WebhookStatus @default(received)
+  attempts    Int           @default(0)
+  lastError   String?
+  payload     Json
+  receivedAt  DateTime      @default(now())
   processedAt DateTime?
+
+  @@unique([provider, eventId])
+  @@index([status, receivedAt])
+}
+
+enum JobStatus {
+  queued
+  running
+  succeeded
+  failed // will retry
+  dead   // exhausted retries — needs a human
+}
+
+/// Postgres-backed job queue (see src/lib/server/jobs). Workers claim rows
+/// with FOR UPDATE SKIP LOCKED, so any number of worker processes is safe.
+model Job {
+  id          String    @id @default(cuid())
+  type        String
+  payload     Json
+  status      JobStatus @default(queued)
+  /// Optional: at most one job with this key is queued/running at a time.
+  dedupeKey   String?   @unique
+  runAt       DateTime  @default(now())
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(8)
+  lastError   String?
+  lockedAt    DateTime?
+  lockedBy    String?
+  finishedAt  DateTime?
   createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  @@index([eventId])
-  @@index([eventType])
+  @@index([status, runAt])
+  @@index([type, status])
 }
 
-model FulfillmentLog {
-  id        String   @id @default(uuid())
-  orderId   String
-  order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  step      String
-  status    String
-  details   String?
-  timestamp DateTime @default(now())
+model RateLimit {
+  key         String
+  windowStart DateTime
+  count       Int      @default(1)
 
-  @@index([orderId])
+  @@id([key, windowStart])
+  @@index([windowStart])
 }
 
-model EtsyToken {
-  id           String   @id @default(uuid())
-  shopId       String?
-  accessToken  String
-  refreshToken String
-  expiresAt    DateTime
-  tokenType    String?  @default("Bearer")
-  scope        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model AuditEvent {
+  id         String   @id @default(cuid())
+  actor      String   // admin email or "system"
+  action     String
+  targetType String
+  targetId   String
+  data       Json?
+  ip         String?
+  createdAt  DateTime @default(now())
 
-  @@index([shopId])
+  @@index([targetType, targetId])
+  @@index([createdAt])
 }
 
-model EmailEvent {
-  id            String    @id @default(uuid())
-  orderId       String?
-  order         Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  resendEmailId String
-  eventType     String    // "email.sent", "email.delivered", "email.bounced", "email.complained", "email.opened", "email.clicked"
-  recipient     String
-  subject       String?
-  bounceReason  String?
-  payload       String?   // Raw webhook JSON payload
-  createdAt     DateTime  @default(now())
-
-  @@index([orderId])
-  @@index([resendEmailId])
-  @@index([eventType])
-}
-
-// First-party funnel events (see docs/analytics-plan.md)
 model AnalyticsEvent {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   event     String
   eventId   String?
   sessionId String?
   path      String?
   referrer  String?
-  params    String?
+  params    Json?
   userAgent String?
   createdAt DateTime @default(now())
 
@@ -131,12 +740,8 @@ model AnalyticsEvent {
   @@index([sessionId])
 }
 
-// Email capture (holiday cutoff reminders, launch news). Double opt-in is recommended before sending marketing.
-model Subscriber {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  source    String?
-  occasion  String?
-  consent   Boolean  @default(true)
-  createdAt DateTime @default(now())
+/// Monotonic counter for human-friendly order numbers.
+model Counter {
+  name  String @id
+  value Int
 }
