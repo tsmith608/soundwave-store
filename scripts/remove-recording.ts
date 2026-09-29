@@ -3,6 +3,7 @@
  * one listen token) and switches off its QR code. No questions asked.
  *   npm run uploads:remove -- <order number | order id | listen token> [--apply]
  */
+import "./_env";
 import { prisma } from "../src/lib/server/db";
 import { removeRecording } from "../src/lib/server/orders/takedown";
 

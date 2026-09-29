@@ -63,7 +63,7 @@ export default function Navbar() {
           ))}
         </nav>
         <div className="hidden items-center gap-2 md:flex">
-          <Link href="/account" className="inline-flex min-h-[44px] items-center px-2 text-[15px] font-medium hover:underline">
+          <Link href="/account" className="hidden min-h-[44px] items-center px-2 text-[15px] font-medium hover:underline lg:inline-flex">
             Account
           </Link>
           <CartLink count={count} />

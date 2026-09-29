@@ -117,8 +117,11 @@ export async function renderOrder(orderId: string, opts: { force?: boolean } = {
     await browser.close().catch(() => undefined);
   }
 
+  const env = getEnv();
+  // Hold before sending to the lab so a customer can still correct a name or date.
+  const holdUntil = new Date((order.paidAt ?? new Date()).getTime() + env.FULFILLMENT_HOLD_HOURS * 3600_000);
   await prisma.$transaction(async (tx) => {
-    await transition(tx, orderId, "ready_for_fulfillment", { actor: "worker", message: "Print files ready." });
-    if (getEnv().FULFILLMENT_AUTO_SUBMIT) await enqueue(tx, "submit_fulfillment", { orderId } as Prisma.InputJsonValue, { dedupeKey: `submit_fulfillment:${orderId}` });
+    await transition(tx, orderId, "ready_for_fulfillment", { actor: "worker", message: holdUntil > new Date() ? `Print files ready. Sending to the lab after ${holdUntil.toISOString()} (correction window).` : "Print files ready." });
+    if (env.FULFILLMENT_AUTO_SUBMIT) await enqueue(tx, "submit_fulfillment", { orderId } as Prisma.InputJsonValue, { dedupeKey: `submit_fulfillment:${orderId}`, runAt: holdUntil });
   });
 }

@@ -242,8 +242,17 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       return;
     }
     const d = readDraft();
-    if (d && !initialDesign && !initialOccasion) {
+    if (d) {
+      // A refresh keeps the recording, words and choices. If the visitor arrived
+      // via a link to a different design, switch to it but keep everything else.
+      // Restoring a device draft must happen after mount (localStorage is browser-only).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       applySnapshot(d);
+      const linked = getSellableDesign(initialDesign) ?? getSellableDesign(LEGACY_TEMPLATE_MAP[initialDesign ?? ""]);
+      if (linked && linked.id !== d.designId) {
+        setDesignId(linked.id);
+        setColorwayId(linked.colorways.find((c) => c.id === initialColorway)?.id ?? linked.colorways[0].id);
+      }
       setDesignChosen(true);
       setOccasionId(d.occasionId);
       setSizeId(d.sizeId);

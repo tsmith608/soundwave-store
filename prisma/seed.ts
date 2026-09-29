@@ -5,6 +5,7 @@
  *
  *   npm run db:seed            npx tsx prisma/seed.ts --force
  */
+import "../scripts/_env";
 import { PrismaClient } from "@prisma/client";
 import { seedCatalog } from "../src/lib/server/seed";
 

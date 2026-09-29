@@ -118,8 +118,33 @@ export async function markPaidFromSession(s: Session, actor = "webhook:stripe"):
     return { orderId: order.id, changed: true };
   });
 
-  if (result.changed) log.info("order_paid", { orderId: result.orderId, sessionId: s.id });
+  if (result.changed && result.orderId) {
+    log.info("order_paid", { orderId: result.orderId, sessionId: s.id });
+    void recordPurchase(result.orderId);
+  }
   return result;
+}
+
+/**
+ * Purchase is recorded server-side only (never from the browser, so it can't be
+ * faked or double-counted): first-party funnel log with attribution, plus
+ * GA4 / Meta / TikTok server APIs when configured (hashed email only).
+ */
+async function recordPurchase(orderId: string) {
+  try {
+    const o = await prisma.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true } });
+    await prisma.analyticsEvent.create({
+      data: {
+        event: "purchase",
+        eventId: `purchase_${o.id}`,
+        params: { order_number: o.number, value: o.totalCents / 100, currency: o.currency.toUpperCase(), items: o.items.reduce((a, i) => a + i.quantity, 0), design_ids: o.items.map((i) => i.designId).join(","), ...((o.attribution as Record<string, string>) ?? {}) },
+      },
+    });
+    const { forwardConversion } = await import("../../serverEvents");
+    await forwardConversion({ name: "Purchase", eventId: `purchase_${o.id}`, value: o.totalCents / 100, currency: o.currency.toUpperCase(), email: o.email, orderId: o.id, designId: o.items[0]?.designId });
+  } catch (err) {
+    log.warn("purchase_tracking_failed", { orderId, err });
+  }
 }
 
 export async function markAsyncPaymentFailed(s: Session) {

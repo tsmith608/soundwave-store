@@ -43,6 +43,8 @@ const schema = z.object({
 
   FULFILLMENT_PROVIDER: z.enum(["prodigi", "mock"]).optional(),
   FULFILLMENT_AUTO_SUBMIT: z.enum(["true", "false"]).default("true").transform((v) => v === "true"),
+  /** Hours between payment and sending to the lab, so customers can fix typos (as the confirmation email promises). */
+  FULFILLMENT_HOLD_HOURS: z.coerce.number().min(0).max(72).default(12),
   PRODIGI_API_KEY: z.string().optional(),
   PRODIGI_ENV: z.enum(["sandbox", "live"]).default("sandbox"),
   PRODIGI_CALLBACK_SECRET: z.string().optional(),

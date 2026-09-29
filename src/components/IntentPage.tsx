@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FramedArtwork from "@/components/art/FramedArtwork";
@@ -81,7 +82,7 @@ export default function IntentPage({ c }: { c: IntentContent }) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
         <section className={`${w.bg} ${w.text} ${w.dark ? "on-dark" : ""}`}>
           <nav aria-label="Breadcrumb" className="mx-auto max-w-[1440px] px-4 pt-6 text-sm opacity-75 sm:px-8">
-            <a href="/" className="underline">Home</a> <span aria-hidden>/</span> <span aria-current="page">{c.eyebrow}</span>
+            <Link href="/" className="underline">Home</Link> <span aria-hidden>/</span> <span aria-current="page">{c.eyebrow}</span>
           </nav>
           <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-4 pb-16 pt-12 sm:px-8 lg:grid-cols-12">
             <div className="lg:col-span-7">

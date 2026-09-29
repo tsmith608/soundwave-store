@@ -1,5 +1,7 @@
 # Production Build — Audit & Implementation Plan
 
+> **Status:** implemented. See `docs/architecture.md`, `docs/deployment.md`, `docs/operations.md` and `docs/launch-checklist.md`.
+
 29 Sep 2026. This plan comes before any code changes.
 
 ## Audit summary

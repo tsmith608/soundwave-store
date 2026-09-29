@@ -142,7 +142,7 @@ class FakeProvider extends StripeProvider {
   // @ts-expect-error narrowing the readonly name for the fake
   readonly name = "fake" as const;
 
-  async createCheckoutSession(input: CreateCheckoutInput) {
+  async createCheckoutSession() {
     const id = `cs_fake_${randomToken(12)}`;
     return { id, url: `${getEnv().NEXT_PUBLIC_APP_URL}/dev/checkout/${id}`, expiresAt: new Date(Date.now() + 31 * 60_000) };
   }
@@ -150,7 +150,7 @@ class FakeProvider extends StripeProvider {
   async retrieveCheckoutSession() {
     return null;
   }
-  async refund(input: { idempotencyKey: string }) {
+  async refund(input: { paymentIntentId?: string; idempotencyKey: string }) {
     return { id: `re_fake_${hmac(input.idempotencyKey, "fake-refund").slice(0, 16)}`, status: "succeeded" };
   }
   webhookSecret() {

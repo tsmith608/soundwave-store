@@ -34,6 +34,8 @@ export default function Analytics() {
   const anyPixel = Boolean(GA4 || META || TIKTOK);
 
   useEffect(() => {
+    // Browser-only storage is read after mount to keep server and client HTML identical.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setConsent(readConsent());
     // The cookie preferences page changes consent without a reload.
     const on = () => setConsent(readConsent());

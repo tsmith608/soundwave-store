@@ -78,8 +78,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             </section>
           )}
 
-          <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-            <section aria-label="Items">
+          <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <section aria-label="Items" className="min-w-0">
               <ul className="space-y-6">
                 {order.items.map((it) => {
                   const spec = it.artworkSpec as unknown as { designId: string; colorwayId: string; fields: ArtFields; peaks: number[]; widthIn: number; heightIn: number; showQr: boolean; qrStyle: "discreet" | "standard" };

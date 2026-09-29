@@ -1,0 +1,39 @@
+# Example Fly.io config (copy to fly.toml and edit). Any container host works
+# (Railway, Render, a VM); what matters is: web + worker processes, a release
+# command that migrates, HTTPS, and the environment from .env.example.
+app = "your-app-name"
+primary_region = "iad"
+
+[build]
+  [build.args]
+    NEXT_PUBLIC_APP_URL = "https://www.yourdomain.com"
+    NEXT_PUBLIC_BRAND_NAME = "Your Brand"
+    NEXT_PUBLIC_SUPPORT_EMAIL = "support@yourdomain.com"
+
+[deploy]
+  release_command = "npm run release"
+
+[processes]
+  web = "npm start"
+  worker = "npm run worker"
+
+[http_service]
+  processes = ["web"]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "off"
+  min_machines_running = 1
+  [[http_service.checks]]
+    grace_period = "40s"
+    interval = "30s"
+    method = "GET"
+    path = "/api/health"
+    timeout = "5s"
+
+[[vm]]
+  processes = ["web"]
+  memory = "1gb"
+
+[[vm]]
+  processes = ["worker"]
+  memory = "2gb"   # Chromium renders 300-DPI print files

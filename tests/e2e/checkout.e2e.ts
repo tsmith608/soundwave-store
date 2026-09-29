@@ -29,13 +29,14 @@ async function main() {
   // 1. Studio
   await page.goto(`${BASE}/create?design=herbarium`, { waitUntil: "networkidle" });
   await page.locator('input[type=file]').setInputFiles(path.resolve("tests/fixtures/voice.wav"));
-  await page.getByText("Your artwork is now shaped by this recording").waitFor({ timeout: 30_000 });
+  // Generous first timeout: a cold dev server compiles the upload routes on first use.
+  await page.getByText("Your artwork is now shaped by this recording").waitFor({ timeout: 120_000 });
   await page.locator('input[type=checkbox]').first().check();
   await page.getByRole("button", { name: /Details/ }).first().click();
   await page.locator('input[type=text]').first().fill("Dad's voicemail");
   await page.getByRole("button", { name: /Review/ }).first().click();
   await page.getByRole("button", { name: /^Add to cart — / }).click();
-  await page.waitForURL(/\/cart/, { timeout: 30_000 });
+  await page.waitForURL(/\/cart/, { timeout: 90_000 });
   console.log("✓ added to cart");
 
   // 2. Refresh keeps the cart (server-side, cookie-bound)
@@ -68,7 +69,7 @@ async function main() {
   console.log("✓ duplicate webhook ignored");
 
   // 5. Worker: render → submit → email
-  execFileSync("npx", ["tsx", "scripts/worker.ts", "--once"], { stdio: "inherit", env: { ...process.env, LOG_LEVEL: "warn" } });
+  execFileSync("npx", ["tsx", "scripts/worker.ts", "--once"], { stdio: "inherit", env: { ...process.env, LOG_LEVEL: "warn", FULFILLMENT_HOLD_HOURS: "0" } });
   const after = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: { items: { include: { generatedAssets: true } }, fulfillments: true, emails: true } });
   assert.equal(after.status, "submitted_to_fulfillment", `status is ${after.status}`);
   const kinds = after.items[0].generatedAssets.map((a) => a.kind).sort();

@@ -53,12 +53,39 @@ export async function retryFulfillmentAction(orderId: string): Promise<ActionRes
     await prisma.fulfillment.updateMany({ where: { orderId, status: "failed", providerOrderId: null }, data: { status: "pending", lastError: null } });
     await prisma.order.update({ where: { id: orderId }, data: { attentionReason: null } });
     if (!rendered || ["paid", "processing_artwork"].includes(o.status)) await enqueue(prisma, "render_order", { orderId }, { dedupeKey: `render_order:${orderId}` });
-    else if (o.status === "ready_for_fulfillment") await enqueue(prisma, "submit_fulfillment", { orderId }, { dedupeKey: `submit_fulfillment:${orderId}` });
+    else if (o.status === "ready_for_fulfillment") {
+      await enqueue(prisma, "submit_fulfillment", { orderId }, { dedupeKey: `submit_fulfillment:${orderId}` });
+      // Skip the correction hold when an admin sends it deliberately.
+      await prisma.job.updateMany({ where: { dedupeKey: `submit_fulfillment:${orderId}`, status: { in: ["queued", "failed"] } }, data: { runAt: new Date() } });
+    }
     else throw new Error(`Nothing to retry for an order that is ${o.status}.`);
     await audit(u.email, "retry_fulfillment", "order", orderId);
     await noteEvent(orderId, "note", `admin:${u.email}`, "Retry requested.");
     return "Queued. The worker will pick it up within a few seconds.";
   }, [`/admin/orders/${orderId}`]);
+}
+
+/** Fix the words on a paid item before it goes to the lab (customer emailed a correction). */
+export async function correctTextAction(orderItemId: string, _prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+  const u = await admin();
+  const item = await prisma.orderItem.findUniqueOrThrow({ where: { id: orderItemId }, include: { order: true } });
+  return run(async () => {
+    if (!["paid", "processing_artwork", "ready_for_fulfillment"].includes(item.order.status)) throw new Error("This item has already gone to the lab — it can't be edited. Cancel/refund or reprint instead.");
+    const { getDesign, cleanFields } = await import("@/lib/art");
+    const design = getDesign(item.designId);
+    if (!design) throw new Error("Design not found.");
+    const spec = item.artworkSpec as Record<string, unknown> & { fields: Record<string, string> };
+    const input: Record<string, string> = {};
+    for (const f of design.fields) input[f.key] = String(form.get(`field_${f.key}`) ?? spec.fields[f.key] ?? "");
+    const fields = cleanFields(design, input);
+    const missing = design.fields.filter((f) => f.required && !fields[f.key]);
+    if (missing.length) throw new Error(`Required: ${missing.map((f) => f.label).join(", ")}`);
+    await prisma.orderItem.update({ where: { id: item.id }, data: { artworkSpec: { ...spec, fields } as unknown as Prisma.InputJsonValue } });
+    await audit(u.email, "correct_text", "order_item", item.id, { before: spec.fields, after: fields } as unknown as Prisma.InputJsonValue);
+    await noteEvent(item.orderId, "note", `admin:${u.email}`, `Text corrected on ${item.designName}: ${JSON.stringify(fields)}`);
+    await enqueue(prisma, "render_order", { orderId: item.orderId, force: true }, { dedupeKey: `render_order:${item.orderId}` });
+    return "Saved. New print files are being rendered; the corrected version is what goes to the lab.";
+  }, [`/admin/orders/${item.orderId}`]);
 }
 
 export async function rerenderAction(orderId: string): Promise<ActionResult> {

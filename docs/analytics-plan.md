@@ -4,18 +4,26 @@
 
 ---
 
-## 1. Funnel events
+## 1. Funnel events (updated 29 Sep 2026)
 
-| # | Funnel step | Event (ours) | GA4 name | Meta Pixel | TikTok Pixel | Fired from |
-|---|---|---|---|---|---|---|
-| 1 | Landing-page view | `landing_view` | `landing_view` (+ auto `page_view`) | PageView (auto) | page (auto) | `src/components/Analytics.tsx` on `/`, `/designs` and intent pages |
-| 2 | Design selected | `design_selected` | `select_item` | ViewContent | ViewContent | Studio load + every design click (once per design per page view) |
-| 3 | Personalisation started | `personalization_started` | custom | custom | — | First keystroke in any field |
-| 4 | Audio uploaded | `audio_uploaded` | custom | custom | — | After the file is decoded *and* saved (includes `duration_s`) |
-| 5 | Preview generated | `preview_generated` | custom | custom | — | First real-audio preview per design and recording |
-| 6 | Add to cart | `add_to_cart` | `add_to_cart` | AddToCart | AddToCart | "Order" button click (value, size, format) |
-| 7 | Checkout initiated | `checkout_initiated` | `begin_checkout` | InitiateCheckout | InitiateCheckout | Checkout session created, just before redirect |
-| 8 | Purchase | `purchase` | `purchase` | Purchase | CompletePayment | **Browser**: order page after Stripe success. **Server**: Stripe webhook (`forwardConversion`). Same `event_id = purchase_<orderId>` on both. |
+visitor → customiser start → upload → completed design → cart → checkout → sale
+
+| # | Funnel step | Event (ours) | GA4 name | Meta / TikTok | Fired from |
+|---|---|---|---|---|---|
+| 1 | Page view | `page_view` | auto `page_view` | PageView (auto) | Every public page (`src/components/Analytics.tsx`); private pages (admin, account, order) are excluded |
+| 2 | Product view | `product_view` | `view_item` | ViewContent | Studio opens |
+| – | Design chosen | `design_selected` | `select_item` | — | A design card is clicked |
+| 3 | Customiser started | `customizer_started` | custom | — | First edit of the words |
+| 4 | Media uploaded | `media_uploaded` | custom | — | Recording verified by the server (includes `source_type`, `duration_s`) |
+| 5 | Design generated | `design_generated` | custom | — | First real-audio preview per design and recording |
+| 6 | Customisation completed | `customization_completed` | custom | — | All checks pass: recording, required words, rights confirmation |
+| 7 | Add to cart | `add_to_cart` | `add_to_cart` | AddToCart | Add to cart succeeded (value, size, format, quantity) |
+| 8 | Checkout started | `checkout_started` | `begin_checkout` | InitiateCheckout | Cart → Checkout clicked |
+| 9 | Purchase | `purchase` | `purchase` | Purchase / CompletePayment | **Server only**, from the Stripe webhook, once per order. First-party row plus GA4 Measurement Protocol / Meta CAPI / TikTok Events API when configured (hashed email). The browser never sends purchase events, so they can't be faked or double-counted. |
+
+**Attribution.** On the first page view, `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `gclid`, `fbclid`, `ttclid`, the external referrer and the landing path are stored on the device for 30 days (first touch). They're attached to the cart at checkout and copied onto the order (`Order.attribution`) and the `purchase` event. That makes revenue by campaign a single query (§5).
+
+**Privacy.** Event parameters are ids, sizes and amounts only. The server strips anything longer than 120 characters and anything that isn't a flat primitive. The customer's words and recordings never reach any analytics system.
 
 **Parameters on every event:** `design_id`, `occasion`, `size`, `format`, `value` (USD), `order_id` where known. We also record `sessionId` (per-tab, sessionStorage), `path` and `referrer`.
 
@@ -59,7 +67,7 @@ TIKTOK_EVENTS_TOKEN=...                # TikTok Events Manager > Settings > Even
 
 ## 4. Validation checklist (owner action, ~30 minutes)
 
-- [ ] Set `NEXT_PUBLIC_GA4_ID`. Open GA4 DebugView, walk the funnel on `/create`, and confirm `select_item` → `personalization_started` → `audio_uploaded` → `preview_generated` → `add_to_cart` → `begin_checkout`.
+- [ ] Set `NEXT_PUBLIC_GA4_ID`. Open GA4 DebugView, walk the funnel on `/create`, and confirm `view_item` → `customizer_started` → `media_uploaded` → `design_generated` → `customization_completed` → `add_to_cart` → `begin_checkout`, then a test purchase appears server-side.
 - [ ] Mark `purchase` as a key event in GA4. Mark `begin_checkout` too, as an early-signal key event for small data.
 - [ ] Meta: use Test Events with `META_TEST_EVENT_CODE`. Make a Stripe test-mode purchase and confirm one Purchase shown as "Deduplicated" (browser + server).
 - [ ] TikTok: Events Manager → Test events. Confirm CompletePayment is deduplicated.
@@ -68,23 +76,28 @@ TIKTOK_EVENTS_TOKEN=...                # TikTok Events Manager > Settings > Even
 ## 5. Reading the funnel without GA4
 
 ```sql
--- Sessions reaching each step in the last 14 days
-SELECT event, COUNT(DISTINCT "sessionId") AS sessions
+-- Sessions reaching each step in the last 14 days (purchase is counted per order)
+SELECT event, COUNT(DISTINCT COALESCE("sessionId", "eventId")) AS n
 FROM "AnalyticsEvent"
 WHERE "createdAt" > now() - interval '14 days'
 GROUP BY event
 ORDER BY CASE event
-  WHEN 'landing_view' THEN 1 WHEN 'design_selected' THEN 2 WHEN 'personalization_started' THEN 3
-  WHEN 'audio_uploaded' THEN 4 WHEN 'preview_generated' THEN 5 WHEN 'add_to_cart' THEN 6
-  WHEN 'checkout_initiated' THEN 7 WHEN 'purchase' THEN 8 END;
+  WHEN 'page_view' THEN 1 WHEN 'product_view' THEN 2 WHEN 'customizer_started' THEN 3
+  WHEN 'media_uploaded' THEN 4 WHEN 'design_generated' THEN 5 WHEN 'customization_completed' THEN 6
+  WHEN 'add_to_cart' THEN 7 WHEN 'checkout_started' THEN 8 WHEN 'purchase' THEN 9 END;
+
+-- Revenue by campaign (first-touch attribution stored on orders)
+SELECT attribution->>'utm_source' AS source, attribution->>'utm_campaign' AS campaign,
+       COUNT(*) AS orders, SUM("totalCents" - "refundedCents") / 100.0 AS net_revenue
+FROM "Order" WHERE "paidAt" IS NOT NULL GROUP BY 1, 2 ORDER BY net_revenue DESC;
 
 -- Which designs get chosen
-SELECT params::json->>'design_id' AS design, COUNT(*) FROM "AnalyticsEvent"
+SELECT params->>'design_id' AS design, COUNT(*) FROM "AnalyticsEvent"
 WHERE event = 'design_selected' GROUP BY 1 ORDER BY 2 DESC;
 
 -- Where traffic comes from (first landing per session)
 SELECT split_part(referrer, '/', 3) AS source, COUNT(DISTINCT "sessionId") FROM "AnalyticsEvent"
-WHERE event = 'landing_view' GROUP BY 1 ORDER BY 2 DESC;
+WHERE event = 'page_view' GROUP BY 1 ORDER BY 2 DESC;
 ```
 
 ## 6. UTM discipline
@@ -102,8 +115,8 @@ These are hypotheses for the first 1,000 studio sessions:
 | Ratio | If below… | Look at |
 |---|---|---|
 | landing → design_selected | 35% | Hero clarity and imagery |
-| design_selected → audio_uploaded | 30% | The recording step: help copy, formats, mobile upload. **Most likely leak.** |
-| audio_uploaded → add_to_cart | 25% | Price, size or format clarity; preview trust |
+| product_view → media_uploaded | 30% | The recording step: help copy, formats, mobile upload. **Most likely leak.** |
+| media_uploaded → add_to_cart | 25% | Price, size or format clarity; preview trust |
 | add_to_cart → purchase | 50% | Checkout friction, shipping-date anxiety, payment errors |
 
 ## 8. Not tracked on purpose

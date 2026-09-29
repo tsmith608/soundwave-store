@@ -117,8 +117,8 @@ export default function CartView({ initial, notice }: { initial: CartDto | null;
   const lead = { min: Math.max(...cart.items.map((i) => i.variant.leadTimeMinDays)), max: Math.max(...cart.items.map((i) => i.variant.leadTimeMaxDays)) };
 
   return (
-    <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-      <section aria-label="Items">
+    <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <section aria-label="Items" className="min-w-0">
         {notice === "cancelled" && (
           <p role="status" className="mb-4 border-2 border-ink bg-film p-3">
             Checkout was cancelled — nothing was charged and your cart is saved.

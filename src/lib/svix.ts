@@ -7,7 +7,7 @@ export interface SvixHeadersInput {
   "svix-id"?: string | null;
   "svix-timestamp"?: string | null;
   "svix-signature"?: string | null;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type SvixHeaders = SvixHeadersInput | Headers;
@@ -25,7 +25,7 @@ function extractHeader(headers: SvixHeaders, key: string, aliasKey: string): str
     return (headers as Headers).get(key) || (headers as Headers).get(aliasKey) || null;
   }
   const obj = headers as SvixHeadersInput;
-  return obj[key] ?? obj[aliasKey] ?? null;
+  return (obj[key] as string | null | undefined) ?? (obj[aliasKey] as string | null | undefined) ?? null;
 }
 
 /**
@@ -100,8 +100,8 @@ export function verifySvixSignature(
     }
 
     return { valid: true };
-  } catch (err: any) {
-    return { valid: false, reason: `Verification exception: ${err.message}` };
+  } catch (err: unknown) {
+    return { valid: false, reason: `Verification exception: ${(err as Error).message}` };
   }
 }
 

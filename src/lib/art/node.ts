@@ -24,17 +24,32 @@ export function embeddedFontCss(root = process.cwd()): string {
   return cachedCss;
 }
 
-export const CHROMIUM_PATH =
-  process.env.CHROMIUM_PATH ||
-  ["/opt/pw-browsers/chromium-1194/chrome-linux/chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome"].find((p) =>
-    fs.existsSync(p)
-  );
+function findChromium(): string | undefined {
+  if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH;
+  // Official Playwright images put browsers under PLAYWRIGHT_BROWSERS_PATH (/ms-playwright).
+  for (const root of [process.env.PLAYWRIGHT_BROWSERS_PATH, "/ms-playwright", "/opt/pw-browsers"].filter(Boolean) as string[]) {
+    try {
+      for (const d of fs.readdirSync(root).filter((x) => /^chromium-\d+$/.test(x)).sort().reverse()) {
+        for (const sub of ["chrome-linux/chrome", "chrome-linux64/chrome"]) {
+          const p = path.join(root, d, sub);
+          if (fs.existsSync(p)) return p;
+        }
+      }
+    } catch {
+      /* not present */
+    }
+  }
+  return ["/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome"].find((p) => fs.existsSync(p));
+}
+
+export const CHROMIUM_PATH = findChromium();
 
 type Browser = import("playwright-core").Browser;
 
 export async function launch(): Promise<Browser> {
   const { chromium } = await import("playwright-core");
-  return chromium.launch({ executablePath: CHROMIUM_PATH });
+  if (!CHROMIUM_PATH) throw new Error("Chromium not found. Set CHROMIUM_PATH (see docs/deployment.md).");
+  return chromium.launch({ executablePath: CHROMIUM_PATH, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
 }
 
 function htmlFor(svg: string, widthIn: number, heightIn: number): string {

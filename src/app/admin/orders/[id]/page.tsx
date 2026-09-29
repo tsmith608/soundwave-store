@@ -10,6 +10,7 @@ import { storage } from "@/lib/server/storage";
 import {
   addNoteAction,
   cancelAction,
+  correctTextAction,
   clearAttentionAction,
   markDeliveredAction,
   refundAction,
@@ -162,6 +163,21 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
                     <dt className="text-ink-soft">Rights</dt>
                     <dd>{it.rightsConfirmedAt ? `confirmed ${when(it.rightsConfirmedAt)}` : "—"}</dd>
                   </dl>
+                  {["paid", "processing_artwork", "ready_for_fulfillment"].includes(o.status) && (
+                    <details className="mt-3">
+                      <summary className="cursor-pointer font-semibold underline">Correct the text (before it goes to the lab)</summary>
+                      <div className="mt-2 max-w-lg">
+                        <ConfirmForm action={correctTextAction.bind(null, it.id)} title="Edit the words on this print" submitLabel="Save and re-render" tone="default">
+                          {Object.entries(spec.fields).map(([k, v]) => (
+                            <label key={k} className="block text-sm">
+                              {k}
+                              <input name={`field_${k}`} defaultValue={v ?? ""} className="mt-1 h-9 w-full border-2 border-ink px-2" />
+                            </label>
+                          ))}
+                        </ConfirmForm>
+                      </div>
+                    </details>
+                  )}
                   <p className="mt-2 font-semibold">Files</p>
                   {it.generatedAssets.length === 0 && <p className="text-ink-soft">Not rendered yet.</p>}
                   <ul>

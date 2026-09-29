@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Artwork from "@/components/art/Artwork";
@@ -46,7 +47,7 @@ export default async function ListenPage({ params, searchParams }: { params: Pro
           </div>
         )}
         <p className="mt-10 text-xs opacity-60">
-          Played from a print by <a href="/" className="underline">{BRAND_NAME}</a>
+          Played from a print by <Link href="/" className="underline">{BRAND_NAME}</Link>
         </p>
       </div>
     </main>

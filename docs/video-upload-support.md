@@ -19,13 +19,13 @@ Limits: **400 MB** file size, **3 minutes** duration (owner decision, 28 Sep 202
    - the loudness envelope (the peaks that shape the artwork),
    - the duration,
    - a raw loudness level used to detect silence.
-3. **Upload the sound only.**
-   - For **videos**, and for any audio file over 10 MB, the decoded sound is re-encoded as a mono 22 kHz WAV (`blobToWav`, about 8 MB for 3 minutes), and only that is sent to `/api/upload`.
+3. **Upload the sound only**, straight to private object storage through a short-lived signed URL (`POST /api/uploads` → `PUT` → `POST /api/uploads/:id/complete`). The server then checks the stored size and sniffs the file's real type before accepting it.
+   - For **videos**, and for any audio file over 10 MB, the decoded sound is re-encoded as a mono 22 kHz WAV (`blobToWav`, about 8 MB for 3 minutes), and only that is uploaded.
    - Small MP3/WAV/WebM/M4A files are sent unchanged. Every stored recording is therefore at most about 10 MB, so 1 TB of storage holds roughly 100,000 recordings.
-   - The server's existing 50 MB audio limit and file validation (`src/lib/audio.ts`) are unchanged.
+   - The server accepts at most 12 MB of audio (`src/lib/server/media.ts`).
 4. **Ready.** The studio shows the source ("Video (sound only)", "Voice recording" or "Audio"), the file name and the length, and the preview redraws from the real recording.
 
-Only the sound is stored (`storage/uploads/aud_*.{wav,mp3,webm,m4a}`). **No video frames are uploaded or stored.**
+Only the sound is stored (bucket prefix `uploads/`, random keys). **No video frames are uploaded or stored.**
 
 ## States and error messages
 
@@ -39,7 +39,7 @@ Only the sound is stored (`storage/uploads/aud_*.{wav,mp3,webm,m4a}`). **No vide
 | `no_audio` | The decoder can't find a readable soundtrack (no audio track, or a codec the browser can't open), **or** the soundtrack is silent (max RMS < 0.002) | "We couldn't find a soundtrack we can read in this video… try saving it again from your camera roll, or upload an audio file." / "This file seems to be silent. Does the video have sound?" |
 | `unreadable` | Corrupt file, decode failure, or under ~1 s | "Something went wrong preparing your recording." / "That recording is too short." |
 | `network` | Upload request failed | "The upload didn't go through — check your connection and try again." (with a **Try again** button that reuses the prepared audio) |
-| `server` | `/api/upload` rejected it | The server's message |
+| `server` | The server rejected it (type, size or content check) | The server's message |
 
 The error box is `role="alert"`, so screen readers announce it.
 
@@ -57,4 +57,4 @@ The error box is `role="alert"`, so screen readers announce it.
 - **Videos are decoded in memory.** The 3-minute cap keeps this manageable on older phones.
 - **No trimming UI.** Customers trim in their Photos app. A simple start/end selector is the obvious next feature.
 - **No server-side transcoding.** This is by design (no ffmpeg in production, footage stays on the device).
-- **Upload retention:** handled by `npm run uploads:cleanup` (policy in `src/lib/retention.ts`), and takedowns by `npm run uploads:remove -- <order>`. See the owner review §7.
+- **Upload retention:** the worker applies `src/lib/retention.ts` every 10 minutes; takedowns via admin or `npm run uploads:remove -- <order> --apply`.

@@ -1,5 +1,7 @@
 # Owner Review — Memory Pivot + 2026 Redesign
 
+> **Update, 29 Sep 2026:** the store now has a full commerce backend (cart, Stripe, print files, Prodigi, email, admin). What you need to provide and do before launch is in `docs/launch-checklist.md`.
+
 **Branch:** `claude/intelligent-fermi-n7ian7`. **Date:** 28 Sep 2026.
 
 **Nothing has been deployed.** No money was spent and no campaigns were created.

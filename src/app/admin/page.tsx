@@ -3,10 +3,12 @@ import { prisma } from "@/lib/server/db";
 import { Badge, H1, money, Table, when } from "@/components/admin/ui";
 import { getEnv } from "@/lib/server/env";
 
-export default async function Dashboard() {
-  const env = getEnv();
-  const since = (d: number) => new Date(Date.now() - d * 86400_000);
-  const [today, week, attention, deadJobs, failedHooks, failedEmails, openContacts, recent] = await Promise.all([
+function since(days: number) {
+  return new Date(Date.now() - days * 86400_000);
+}
+
+async function load() {
+  return Promise.all([
     prisma.order.aggregate({ where: { paidAt: { gte: since(1) } }, _sum: { totalCents: true }, _count: true }),
     prisma.order.aggregate({ where: { paidAt: { gte: since(7) } }, _sum: { totalCents: true }, _count: true }),
     prisma.order.findMany({ where: { attentionReason: { not: null } }, orderBy: { updatedAt: "desc" }, take: 20 }),
@@ -16,6 +18,11 @@ export default async function Dashboard() {
     prisma.contactMessage.count({ where: { status: "open" } }),
     prisma.order.findMany({ where: { paidAt: { not: null } }, orderBy: { paidAt: "desc" }, take: 10 }),
   ]);
+}
+
+export default async function Dashboard() {
+  const env = getEnv();
+  const [today, week, attention, deadJobs, failedHooks, failedEmails, openContacts, recent] = await load();
   const cards: [string, string, string?][] = [
     ["Paid today", `${today._count} · ${money(today._sum.totalCents ?? 0)}`],
     ["Last 7 days", `${week._count} · ${money(week._sum.totalCents ?? 0)}`],

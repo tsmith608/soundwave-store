@@ -4,6 +4,7 @@
  *   npm run uploads:cleanup            # dry run
  *   npm run uploads:cleanup -- --apply # delete
  */
+import "./_env";
 import { prisma } from "../src/lib/server/db";
 import { runRetention } from "../src/lib/server/retention";
 

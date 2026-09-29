@@ -11,13 +11,10 @@ type State = { phase: "checking" } | { phase: "paid"; number: string; url: strin
  * the server has recorded it.
  */
 export default function PaymentConfirmation({ sessionId }: { sessionId: string }) {
-  const [state, setState] = useState<State>({ phase: "checking" });
+  const [state, setState] = useState<State>(sessionId ? { phase: "checking" } : { phase: "missing" });
 
   useEffect(() => {
-    if (!sessionId) {
-      setState({ phase: "missing" });
-      return;
-    }
+    if (!sessionId) return;
     let stop = false;
     let tries = 0;
     const poll = async () => {

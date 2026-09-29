@@ -5,6 +5,7 @@
  * Any number of workers can run; jobs are claimed with SKIP LOCKED.
  *   --once   process everything currently due, then exit (tests / cron)
  */
+import "./_env";
 import os from "os";
 import { claimJobs, completeJob, enqueue, failJob, PermanentJobError, type JobType } from "../src/lib/server/jobs/queue";
 import { runJob } from "../src/lib/server/jobs/handlers";
