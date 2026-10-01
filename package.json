@@ -30,7 +30,8 @@
     "test:security": "tsx tests/e2e/security.e2e.ts",
     "release": "prisma migrate deploy && tsx prisma/seed.ts",
     "check:env": "tsx scripts/check-env.ts",
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "tsc --noEmit -p .",
+    "marketing:render": "tsx scripts/marketing/render.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1142.0",

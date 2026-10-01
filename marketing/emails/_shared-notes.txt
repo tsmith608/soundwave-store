@@ -1,0 +1,9 @@
+Placeholders to replace in your email tool (Resend Broadcasts, Mailchimp, Klaviyo...):
+  {{BRAND}}            brand name
+  {{SITE}}             https://yourdomain.com
+  {{IMAGE_BASE}}       public URL where marketing/out/images/*.png are hosted
+  {{FIRST_NAME}}       optional; remove the greeting line if your list has no names
+  {{PHYSICAL_ADDRESS}} REQUIRED by CAN-SPAM: a valid postal address (a PO box is fine)
+  {{UNSUBSCRIBE_URL}}  REQUIRED: your email tool's one-click unsubscribe link
+Only send to people who opted in to marketing. Order-confirmation consent is not marketing consent.
+  {{CUTOFF_DATE}}      holiday-cutoff only: confirm with Prodigi's published dates before sending
