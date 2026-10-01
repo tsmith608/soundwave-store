@@ -165,7 +165,28 @@ def compose(cue, out):
     print("audio", out, f"{dur}s")
 
 
+PROGRESSIONS = [
+    [DMAJ9, BM11, GMAJ7, ASUS4, DMAJ9_END],
+    [GMAJ9, DMAJ9, EM9, ASUS4, DMAJ9_END],
+    [BM7, GMAJ7, DMAJ9, AADD9, DMAJ9_END],
+    [DMAJ9, EM9, GMAJ9, ASUS4, DMAJ9_END],
+]
+
+
+def generic(dur, seed, bells):
+    """Short-video cue: one of a few in-key progressions spread over the length, resolving on the end card."""
+    prog = PROGRESSIONS[seed % len(PROGRESSIONS)]
+    end_at = bells[-1][0] if bells else dur - 2.2
+    step = end_at / (len(prog) - 1)
+    chords = [(round(i * step, 2), notes) for i, notes in enumerate(prog[:-1])] + [(end_at, prog[-1])]
+    return {"dur": dur, "chords": chords, "ticks": [], "thumps": [], "bells": bells}
+
+
 if __name__ == "__main__":
     name = sys.argv[1] if len(sys.argv) > 1 else "launch"
+    if name == "generic":  # generic OUT DUR SEED "t:midi:vel,t:midi:vel"
+        bells = [(float(t), int(m), float(v)) for t, m, v in (b.split(":") for b in sys.argv[5].split(",") if b)] if len(sys.argv) > 5 else []
+        compose(generic(float(sys.argv[3]), int(sys.argv[4]), bells), sys.argv[2])
+        sys.exit(0)
     default_out = os.path.join("marketing", "brag-output", "work", "soundtrack.wav")
     compose(CUES[name], sys.argv[2] if len(sys.argv) > 2 else default_out)

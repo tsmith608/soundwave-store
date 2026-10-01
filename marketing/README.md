@@ -170,3 +170,24 @@ Description: `The real moon phase for your date, ringed by a recording of your v
 - **Two-month calendar:** `social/calendar.csv` (for Later, Buffer or a spreadsheet) and `social/calendar.json`. Edit `scripts/marketing/social_calendar.py` and re-run it to change dates or posts; set `START` to the real launch Monday.
 - **New calendar graphics:** the `carousel-voicemail-1…4`, `feed-08`, `feed-09`, `story-05`, `story-06` and `pin-05` images in `out/images/`.
 - **ChatGPT room scenes:** see `chatgpt-image-guide.md`. Clean print images are in `out/art/` (`npx tsx scripts/marketing/export_art.ts`). Composite them into ChatGPT scenes with `python3 scripts/marketing/composite.py room.png out/art/<print>.png out.jpg`.
+
+## Daily posts (TikTok, Facebook, Pinterest)
+
+`social/daily.csv` and `social/daily.json` list one TikTok (also post it to Reels and Shorts), one Facebook post and one Pinterest pin for each of the 56 days. Key posts from `social/calendar.json` keep their days. Every other day gets a generated video from four series:
+- **Tonight's moon:** the real moon for that date. Captions say "about N% lit", because the engine uses the average lunar cycle.
+- **Lists:** useful kinetic-text tips.
+- **Grow:** a Herbarium print growing.
+- **Which would you hang?:** two colourways, A or B.
+
+Files:
+- videos: `out/daily/video/<date>-<series>.mp4` (+ `-poster.jpg`)
+- pins: `out/daily/pins/<date>.jpg`
+
+Regenerate (set `START` in `scripts/marketing/daily.ts` and `social_calendar.py` to the real launch Monday first):
+```bash
+python3 scripts/marketing/social_calendar.py
+npx tsx scripts/marketing/daily.ts plan
+npx tsx scripts/marketing/daily.ts pins
+npx tsx scripts/marketing/daily.ts videos        # ~20 min; or a range: videos 0 22
+```
+MoneyPrinterTurbo (narrated explainers, run on your own computer): see `moneyprinterturbo/README.md`.

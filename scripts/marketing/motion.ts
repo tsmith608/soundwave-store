@@ -125,14 +125,14 @@ export function ffmpegPath(): string {
 }
 
 /** Bakes the poster frame in as frame 0 (replacing it, so timing is unchanged) and muxes the soundtrack. */
-export function encodeFilm(workDir: string, posterFrame: number, audio: string, outMp4: string, outPoster: string) {
+export function encodeFilm(workDir: string, posterFrame: number, audio: string, outMp4: string, outPoster: string, crf = 18) {
   const frames = path.join(workDir, "frames");
   const pad = (n: number) => `${String(n).padStart(4, "0")}.jpg`;
   fs.copyFileSync(path.join(frames, pad(posterFrame)), outPoster);
   fs.copyFileSync(outPoster, path.join(frames, pad(0)));
   execFileSync(ffmpegPath(), [
     "-y", "-loglevel", "error", "-framerate", String(FPS), "-i", path.join(frames, "%04d.jpg"), "-i", audio,
-    "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p",
+    "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-preset", "slow", "-crf", String(crf), "-pix_fmt", "yuv420p",
     "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", outMp4,
   ]);
   console.log("video", path.relative(process.cwd(), outMp4));
