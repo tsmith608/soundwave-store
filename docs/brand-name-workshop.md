@@ -59,3 +59,37 @@ Sources:
 - [Hushmark Press](https://www.hushmarkpress.com/about/)
 - [Artsy Voiceprint](https://artsyvoiceprint.com/)
 - [Bespoken Art](https://www.bespokenart.com/)
+
+---
+
+## Round 2 — 1 Oct 2026
+
+**How this was checked:** web searches for each exact name (businesses, shops, products, social accounts). Domain and trademark registries are **blocked from this environment**, so "clear" means *no visible business found*, not *available*. The domain and USPTO checks below are still yours to do; both are free.
+
+![wordmark shortlist](review/brand-names-shortlist.jpg)
+
+| Name | Idea | Web search | Say-it / spell-it test | Verdict |
+|---|---|---|---|---|
+| **Still Heard** | Their voice is still heard | Clear (re-checked) | Passes | **Still the first choice** |
+| **Afterhum** | What stays after the sound | Clear | Passes; one made-up word, easy to spell | **Best backup.** Very ownable; leans a little more toward memory than joy |
+| **Hum & Hold** | Warm, works for babies and grief | Clear | Passes aloud, but the domain `humandhold.com` reads "human d hold". Use `humholdstudio.com` or `hum-hold.com` | Strong backup |
+| **Murmurkeep** | Keep the murmur | Clear | Long, but spells as it sounds | Possible |
+| Heardloom | Heirloom you can hear | Clear, but **Heartloom** is a NYC fashion brand (32k Instagram followers) | **Fails:** heard aloud, people type "heirloom" or "heartloom" | Clever on paper; risky in TikToks |
+| Hearsake | Keepsake you can hear | Clear | **Fails:** sounds like "hearsay" (gossip, an unreliable account) | Avoid |
+| Holdsound | — | Clear | Passes | Plain; fine as a fallback |
+| Ever Heard | — | Clear as a business | Common phrase ("have you ever heard…") | Weak trademark, hard to search |
+| Unforgot | — | Clear | Reads as a typo | Avoid |
+| Heardwell | — | **HearWell** is used by several hearing-aid companies | — | Avoid |
+| Kept Voices | — | Descriptive; "voice keepsake" is a crowded search term | — | Avoid |
+
+### Check before choosing (about 15 minutes, free)
+1. **Domains:** type each into a registrar search (Namecheap, Porkbun or Cloudflare). Try `stillheard.com`, `afterhum.com`, `murmurkeep.com`, `humholdstudio.com`. If a .com is taken, check whether anything is actually built on it before settling for .co or .studio.
+2. **Trademark:** [tmsearch.uspto.gov](https://tmsearch.uspto.gov/). Search the words with and without the space, in classes 16, 20, 40 and 42.
+3. **Handles:** the same name on Instagram, TikTok and Pinterest.
+4. **Ear test:** say it to three people and ask them to type it.
+
+Sources (round 2):
+- [Heartloom on Instagram](https://www.instagram.com/heartloom/)
+- [HearWell Group (OTC hearing aids)](https://www.einpresswire.com/article/718230800/hearwell-group-unveils-advanced-over-the-counter-hearing-aids-for-hearing-health)
+- [Hearwell Ltd (Widex shop listing)](https://widex.com/en-gb/shop-finder/shop-details/gb/hr4-0ed/hereford/hearwell-ltd/afde4bfb-4ae6-4a8d-b7d1-2a58f7a898fa)
+- [Voice recording keepsake (Beyond Memories)](https://beyond-memories.com/blogs/beyond-memories/voice-recording-keepsake)
