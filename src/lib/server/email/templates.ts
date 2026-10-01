@@ -39,7 +39,7 @@ function layout(title: string, body: string, preheader = ""): string {
 }
 
 function button(href: string, label: string) {
-  return `<p style="margin:24px 0"><a href="${esc(href)}" style="background:#FF5B2E;color:#151412;border:2px solid #151412;padding:12px 18px;font-weight:700;text-decoration:none;display:inline-block">${esc(label)}</a></p>`;
+  return `<p style="margin:24px 0"><a href="${esc(href)}" style="background:#151412;color:#F2EDE3;border-radius:999px;padding:13px 24px;font-weight:600;text-decoration:none;display:inline-block">${esc(label)}</a></p>`;
 }
 
 function itemsTable(o: OrderWith): { html: string; text: string } {

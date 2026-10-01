@@ -67,9 +67,9 @@ export default function Navbar() {
             Account
           </Link>
           <CartLink count={count} />
-          <Link href="/create" className="btn btn-signal !min-h-[44px] !text-sm !shadow-[3px_3px_0_#151412]">
+          <Link href="/create" className="btn btn-signal !min-h-[44px] !text-sm">
             <span>Create yours</span>
-            <span className="btn-arrow !w-10" aria-hidden>
+            <span className="btn-arrow" aria-hidden>
               →
             </span>
           </Link>

@@ -36,9 +36,9 @@ export default function EmailCapture({ source, heading, blurb, dark = false }: {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             aria-label="Email address"
-            className="flex-1 min-w-0 h-12 border-2 border-current bg-transparent px-3 text-[15px] placeholder:opacity-50 focus:outline-none"
+            className={`flex-1 min-w-0 h-12 rounded-full border bg-transparent px-5 text-[15px] placeholder:opacity-50 focus:border-current focus:outline-none ${dark ? "border-white/30" : "border-ink/25"}`}
           />
-          <button disabled={state === "busy"} className="h-12 border-2 border-current bg-signal px-4 text-sm font-semibold text-ink disabled:opacity-60">
+          <button disabled={state === "busy"} className="btn btn-ink !min-h-0 h-12 !px-5 text-sm disabled:opacity-60">
             {state === "busy" ? "…" : "Remind me"}
           </button>
         </form>

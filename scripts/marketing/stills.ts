@@ -1,4 +1,4 @@
-import { BRAND, C, URL_TEXT, art, bars, doc, framed, logo, phone } from "./kit";
+import { BRAND, C, URL_TEXT, art, bars, doc, framed, logo, phone, pill } from "./kit";
 
 export interface Still {
   name: string;
@@ -116,7 +116,7 @@ function howSlides(): Still[] {
        <h2 class="display" style="position:absolute;left:72px;top:330px;right:72px;font-size:104px;color:${C.ink}">${title}</h2>
        <p class="ui" style="position:absolute;left:72px;top:470px;width:560px;font-size:32px;line-height:1.4;color:${C.soft};font-weight:500">${text}</p>
        <div style="position:absolute;right:90px;bottom:170px;transform:rotate(${i % 2 ? -2 : 2}deg)">${visual}</div>
-       ${i === 2 ? `<div class="display" style="position:absolute;left:72px;top:640px;font-size:44px;color:${C.signal}">Make yours →<br><span style="color:${C.ink}">${URL_TEXT}</span></div>` : ""}
+       ${i === 2 ? `<div style="position:absolute;left:72px;top:640px">${pill("Make yours", 34, C.ink, C.paper)}<div class="meta" style="font-size:22px;color:${C.ink};margin-top:26px;opacity:.75">${URL_TEXT}</div></div>` : ""}
        ${foot(C.ink)}`,
       i === 1 ? C.paper2 : C.paper,
     ),
@@ -186,7 +186,7 @@ function ads(): Still[] {
       `<h1 class="display" style="position:absolute;left:64px;top:70px;width:560px;font-size:96px;color:${color}">${headline}</h1>
        <p class="ui" style="position:absolute;left:64px;top:520px;width:500px;font-size:30px;line-height:1.4;font-weight:500;color:${color};opacity:.85">${subline}</p>
        <div style="position:absolute;right:56px;top:70px;transform:rotate(2deg)">${visual}</div>
-       <div style="position:absolute;left:64px;bottom:150px;display:inline-flex;border:3px solid ${C.ink};box-shadow:6px 6px 0 ${C.ink};background:${C.signal}"><span class="ui" style="font-size:32px;font-weight:600;padding:20px 28px;color:${C.ink}">${cta}</span><span class="ui" style="font-size:32px;font-weight:600;padding:20px 24px;border-left:3px solid ${C.ink};color:${C.ink}">→</span></div>
+       <div style="position:absolute;left:64px;bottom:150px">${pill(cta, 32, color, bg)}</div>
        <div style="position:absolute;left:64px;bottom:60px">${logo(28, color)}</div>`,
       bg,
     ),

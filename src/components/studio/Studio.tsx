@@ -572,7 +572,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       <h2 className="display text-5xl">Choose your artwork</h2>
       <div className="grid grid-cols-2 gap-4">
         {DESIGNS.map((d) => (
-          <button key={d.id} type="button" onClick={() => chooseDesign(d.id)} aria-pressed={d.id === design.id} className={`text-left border-2 border-ink p-2 ${d.id === design.id ? "bg-ink text-paper shadow-[4px_4px_0_#FF5B2E]" : "bg-paper hover:bg-paper-2"}`}>
+          <button key={d.id} type="button" onClick={() => chooseDesign(d.id)} aria-pressed={d.id === design.id} className={`text-left border-2 border-ink p-2 ${d.id === design.id ? "bg-ink text-paper shadow-[0_10px_28px_-14px_rgba(21,20,18,.45)]" : "bg-paper hover:bg-paper-2"}`}>
             <Artwork designId={d.id} fields={d.sample} peaks={peaks} colorwayId={d.id === design.id ? colorwayId : undefined} showQr={false} idPrefix={`pick-${d.id}`} />
             <span className="display mt-3 block text-2xl">{d.name}</span>
             <span className="mt-1 block text-sm opacity-80">{d.tagline}</span>
@@ -904,14 +904,14 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
         {step < STEPS.length - 1 ? (
           <button type="button" onClick={() => goto(step + 1)} className="btn btn-ink !min-h-[44px] !text-sm">
             <span>Next</span>
-            <span className="btn-arrow !w-10" aria-hidden>
+            <span className="btn-arrow" aria-hidden>
               →
             </span>
           </button>
         ) : (
           <button type="button" onClick={addToCart} disabled={busy} className="btn btn-signal !min-h-[44px] !text-sm">
             <span>{busy ? "Saving…" : editItem ? "Update" : "Add to cart"}</span>
-            <span className="btn-arrow !w-10" aria-hidden>
+            <span className="btn-arrow" aria-hidden>
               →
             </span>
           </button>

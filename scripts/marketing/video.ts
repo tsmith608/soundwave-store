@@ -7,7 +7,7 @@
 import { execFileSync } from "child_process";
 import fs from "fs";
 import path from "path";
-import { C, OUT, URL_TEXT, art, doc, ensureDir, framed, logo, phone } from "./kit";
+import { C, OUT, URL_TEXT, art, doc, ensureDir, framed, logo, phone, pill } from "./kit";
 
 type Browser = Awaited<ReturnType<typeof import("../../src/lib/art/node").launch>>;
 
@@ -40,7 +40,7 @@ const endCard = (bg: string, ink: string, start: number) => `
   <div style="position:absolute;left:90px;right:90px;top:640px">
     ${logo(54, ink)}
     <h2 class="display" style="font-size:150px;color:${ink};margin-top:70px">Keep the sound of <span class="accent">it.</span></h2>
-    <div class="ui" style="display:inline-flex;align-items:center;gap:22px;margin-top:80px;background:${C.signal};color:${C.ink};border:3px solid ${C.ink};box-shadow:6px 6px 0 ${C.ink};padding:26px 40px;font-size:44px;font-weight:600">Make yours →</div>
+    <div style="margin-top:80px">${pill("Make yours", 44, ink, bg)}</div>
     <div class="meta" style="font-size:36px;color:${ink};margin-top:48px;opacity:.8">${URL_TEXT}</div>
   </div>
 </div>`;

@@ -172,6 +172,12 @@ export function logo(size: number, color: string): string {
   return `<div style="display:flex;align-items:center;gap:${size * 0.35}px;color:${color}"><svg width="${size * 1.2}" height="${size}" viewBox="0 0 26 22">${marks}</svg><span class="display" style="font-size:${size}px;letter-spacing:-.03em">${BRAND}</span></div>`;
 }
 
+/** Soft pill CTA (matches the site's buttons): world-ink fill, inline arrow. */
+export function pill(label: string, size: number, fill: string, text: string): string {
+  const arrow = `<svg width="${size * 0.8}" height="${size * 0.8}" viewBox="0 0 18 18" style="margin-left:${size * 0.45}px"><path d="M2 9h13M10 4l5 5-5 5" fill="none" stroke="${text}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<div class="ui" style="display:inline-flex;align-items:center;background:${fill};color:${text};border-radius:999px;padding:${size * 0.62}px ${size * 0.95}px ${size * 0.62}px ${size * 1.1}px;font-size:${size}px;font-weight:500;letter-spacing:-.005em;box-shadow:0 ${size * 0.35}px ${size * 1.1}px -${size * 0.5}px rgba(21,20,18,.45)">${label}${arrow}</div>`;
+}
+
 export function ensureDir(p: string) {
   fs.mkdirSync(p, { recursive: true });
 }
