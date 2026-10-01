@@ -8,60 +8,15 @@
  * and text/artwork changes are time-keyed swaps. Prints come from the real art engine.
  */
 import "../_env";
-import fs from "fs";
 import path from "path";
-import { launch } from "../../src/lib/art/node";
-import { samplePeaks } from "../../src/lib/art";
 import { C, art, doc, framed, logo, phone, pill } from "./kit";
+import { demoLabel as demo, motionCss as css, renderFilm, scene, swapper, waveBars } from "./motion";
 
 const W = 1920;
 const H = 1080;
-const FPS = 30;
 export const DURATION = 21.5;
-const OUT = path.resolve("marketing/brag-output");
-const WORK = path.join(OUT, "work");
-
-type Swaps = Record<string, [number, string][]>;
-const swaps: Swaps = {};
-const swap = (id: string, t: number, html: string) => (swaps[id] ??= []).push([t, html]);
-
-const css = `*{animation-play-state:paused!important;animation-fill-mode:both!important}
-body{background:${C.paper}}
-.scene{position:absolute;inset:0;overflow:hidden}
-.e{animation-timing-function:cubic-bezier(.2,.7,.2,1)}
-@keyframes in{from{opacity:0}to{opacity:1}}
-@keyframes out{from{opacity:1}to{opacity:0}}
-@keyframes up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
-@keyframes pop{from{opacity:0;transform:translateY(30px) scale(.96) rotate(var(--r,0deg))}to{opacity:1;transform:rotate(var(--r,0deg))}}
-@keyframes fill{from{width:0}to{width:100%}}
-@keyframes grow{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
-@keyframes barIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
-@keyframes cursor{from{transform:translate(0,0)}to{transform:translate(var(--dx),var(--dy))}}
-@keyframes press{0%,100%{transform:scale(1)}50%{transform:scale(.95)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(160px) rotate(-3deg)}to{opacity:1;transform:rotate(-3deg)}}
-.pfill{animation:none}
-rect.b{transform-box:fill-box;transform-origin:center}
-.input{border:1px solid rgba(21,20,18,.25);border-radius:16px;height:72px;display:flex;align-items:center;padding:0 24px;font-size:30px;background:#fff}
-`;
-
-/** Scene wrapper: outer fades out at `end`, inner fades in at `start` (a dip through paper). */
-const scene = (start: number, end: number, bg: string, body: string) =>
-  `<div class="scene" style="animation:out .3s ${end - 0.3}s ease-in"><div class="scene" style="background:${bg};animation:in .35s ${start}s ease-out">${body}</div></div>`;
-
-const demo = (color: string) => `<div class="meta" style="position:absolute;right:80px;top:64px;font-size:20px;color:${color};opacity:.55">Demo · illustrative names</div>`;
-
-function waveBars(seed: string, n: number, w: number, h: number, color: string, t0: number): string {
-  const p = samplePeaks(seed, "voice");
-  const bw = w / n;
-  let out = "";
-  for (let i = 0; i < n; i++) {
-    const v = Math.max(0.1, p[Math.floor((i / n) * p.length)]);
-    const bh = v * h;
-    out += `<rect class="b e" style="animation:barIn .45s ${(t0 + i * 0.022).toFixed(3)}s" x="${(i * bw).toFixed(1)}" y="${((h - bh) / 2).toFixed(1)}" width="${(bw * 0.6).toFixed(1)}" height="${bh.toFixed(1)}" rx="${(bw * 0.3).toFixed(1)}" fill="${color}"/>`;
-  }
-  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${out}</svg>`;
-}
+const WORK = path.resolve("marketing/brag-output/work");
+const { swaps, swap } = swapper();
 
 const walter = (title: string) =>
   art({ design: "herbarium", colorway: "stone", fields: { title, subtitle: "Voicemail · 11 March 2021", names: "His children", date: "1938 — 2025" } });
@@ -72,7 +27,7 @@ function build(): string {
     ${demo(C.wine)}
     <h1 class="display e" style="position:absolute;left:140px;top:290px;width:960px;font-size:160px;color:${C.wine};animation:up .7s .1s">Don&rsquo;t delete that <span class="accent">voicemail.</span></h1>
     <div class="e" style="position:absolute;left:1260px;top:150px;--r:-3deg;animation:pop .7s .2s">${phone({ w: 380, label: "", time: "0:14", scene: "voicemail", seed: "dadvm", progress: 1 })}</div>
-    <style>.s1 .pfill{animation:fill 2.8s .5s linear!important}</style>`).replace('class="scene" style="background', 'class="scene s1" style="background');
+    <style>.s1 .pfill{animation:fill 2.8s .5s linear!important}</style>`, "s1");
 
   // 2 · Reveal — film: the sound grows into the print
   const s2 = scene(3.4, 7.6, C.film, `
@@ -136,7 +91,7 @@ function build(): string {
     <p class="ui e" style="position:absolute;left:146px;top:640px;width:700px;font-size:30px;line-height:1.4;color:${C.soft};animation:up .7s 17.2s">A quiet code on the print plays the recording from any phone.</p>
     <div class="e" style="position:absolute;left:1060px;top:250px;--r:-2deg;animation:pop .7s 17.0s">${framed(walter("Walter James Brennan"), 380, "white")}</div>
     <div class="e" style="position:absolute;left:1440px;top:250px;animation:slideUp .8s 17.25s">${phone({ w: 330, label: "Walter", time: "", scene: "player", seed: "dadvm", progress: 1, caption: "Voicemail · 0:14" })}</div>
-    <style>.s5 .pfill{animation:fill 1.6s 17.6s linear!important}</style>`).replace('class="scene" style="background', 'class="scene s5" style="background');
+    <style>.s5 .pfill{animation:fill 1.6s 17.6s linear!important}</style>`, "s5");
 
   // 5b · End card
   const s5b = scene(19.2, DURATION + 1, C.paper, `
@@ -151,50 +106,8 @@ function build(): string {
 
 async function main() {
   const args = process.argv.slice(2);
-  const stillsArg = args.includes("--stills") ? args[args.indexOf("--stills") + 1] : null;
-  const html = build();
-  const browser = await launch();
-  const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
-  await page.setContent(html, { waitUntil: "load" });
-  await page.evaluate(() => document.fonts.ready);
-  await page.evaluate((s) => {
-    const w = window as unknown as { __swaps: Swaps; __cur: Record<string, number>; __seek: (t: number) => void };
-    w.__swaps = s;
-    w.__cur = {};
-    w.__seek = (t: number) => {
-      for (const [id, list] of Object.entries(w.__swaps)) {
-        let idx = 0;
-        list.forEach(([st], i) => { if (t >= st) idx = i; });
-        if (w.__cur[id] !== idx) {
-          document.getElementById(id)!.innerHTML = list[idx][1];
-          w.__cur[id] = idx;
-        }
-      }
-      for (const a of document.getAnimations()) a.currentTime = t * 1000;
-    };
-  }, swaps);
-  const seek = (t: number) => page.evaluate((x) => (window as unknown as { __seek: (t: number) => void }).__seek(x), t);
-
-  if (stillsArg) {
-    const dir = path.join(WORK, "stills");
-    fs.mkdirSync(dir, { recursive: true });
-    for (const t of stillsArg.split(",").map(Number)) {
-      await seek(t);
-      await page.screenshot({ path: path.join(dir, `t${t.toFixed(2)}.jpg`), type: "jpeg", quality: 80 });
-    }
-    console.log("stills", dir);
-  } else {
-    const dir = path.join(WORK, "frames");
-    fs.rmSync(dir, { recursive: true, force: true });
-    fs.mkdirSync(dir, { recursive: true });
-    const total = Math.round(DURATION * FPS);
-    for (let f = 0; f < total; f++) {
-      await seek(f / FPS);
-      await page.screenshot({ path: path.join(dir, `${String(f).padStart(4, "0")}.jpg`), type: "jpeg", quality: 93 });
-    }
-    console.log("frames", total, dir);
-  }
-  await browser.close();
+  const stills = args.includes("--stills") ? args[args.indexOf("--stills") + 1].split(",").map(Number) : undefined;
+  await renderFilm({ html: build(), swaps, width: W, height: H, duration: DURATION, workDir: WORK }, stills);
 }
 
 main().catch((e) => {

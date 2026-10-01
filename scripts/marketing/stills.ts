@@ -209,7 +209,107 @@ function holiday(): Still {
   return { name: "seasonal-holiday-cutoff", w: 1080, h: 1350, html: doc(1080, 1350, body, C.night) };
 }
 
+// ── Calendar posts: save-a-voicemail carousel + engagement/seasonal ────────
+const stepList = (items: string[], color: string, size = 34) =>
+  `<ol style="list-style:none;display:grid;gap:30px">${items
+    .map((t, i) => `<li style="display:flex;gap:26px;align-items:baseline"><span class="display" style="font-size:${size * 1.6}px;color:${color};opacity:.35;min-width:${size * 1.4}px">${i + 1}</span><span class="ui" style="font-size:${size}px;line-height:1.4;font-weight:500;color:${color}">${t}</span></li>`)
+    .join("")}</ol>`;
+
+function voicemailCarousel(): Still[] {
+  const slide = (n: number, body: string, bg: string = C.paper, color: string = C.ink): Still => ({
+    name: `carousel-voicemail-${n}`,
+    w: 1080,
+    h: 1350,
+    html: doc(1080, 1350, `<div class="meta" style="position:absolute;right:72px;top:64px;font-size:20px;color:${color};opacity:.6">Save a voicemail · ${n}/4</div>${body}${foot(color)}`, bg),
+  });
+  return [
+    slide(1, `
+      <h1 class="display" style="position:absolute;left:72px;top:120px;width:620px;font-size:132px;color:${C.wine}">How to save a voicemail before it&rsquo;s <span class="accent">gone.</span></h1>
+      <p class="ui" style="position:absolute;left:72px;top:820px;width:520px;font-size:32px;line-height:1.4;font-weight:500;color:${C.wine}">Carriers delete saved voicemails, and a new phone or a cancelled line can wipe them. Here&rsquo;s how to keep a copy. Swipe →</p>
+      <div style="position:absolute;right:80px;top:300px;transform:rotate(3deg)">${phone({ w: 300, label: "", time: "0:14", scene: "voicemail", seed: "dadvm", progress: 0.55 })}</div>`, C.romantic, C.wine),
+    slide(2, `
+      <div class="meta" style="position:absolute;left:72px;top:120px;font-size:24px;color:${C.soft}">iPhone</div>
+      <h2 class="display" style="position:absolute;left:72px;top:170px;font-size:110px;color:${C.ink}">Share it to <span class="accent">Files.</span></h2>
+      <div style="position:absolute;left:72px;right:72px;top:420px">${stepList(["Open the Phone app and tap Voicemail (bottom right).", "Tap the message, then the Share button (the square with an arrow).", "Choose Save to Files, or send it to yourself by Mail or Messages. You now have an .m4a audio file."], C.ink)}</div>
+      <p class="ui" style="position:absolute;left:72px;right:72px;top:1010px;font-size:28px;line-height:1.45;color:${C.soft}">Deleted by accident? Check Deleted Messages at the bottom of the Voicemail list. iPhone keeps them there for a while.</p>`),
+    slide(3, `
+      <div class="meta" style="position:absolute;left:72px;top:120px;font-size:24px;color:${C.soft}">Android</div>
+      <h2 class="display" style="position:absolute;left:72px;top:170px;font-size:110px;color:${C.ink}">Find <span class="accent">Share</span> or Save.</h2>
+      <div style="position:absolute;left:72px;right:72px;top:420px">${stepList(["In the Phone app, open the Voicemail tab and tap the message.", "Tap the three-dot menu, then Share, and save it to Drive, Gmail or Files.", "On Samsung or carrier phones, look for Save, Export or Share in your carrier&rsquo;s voicemail app."], C.ink)}</div>
+      <p class="ui" style="position:absolute;left:72px;right:72px;top:1010px;font-size:28px;line-height:1.45;color:${C.soft}">No save button? Play it on speaker and record it with another phone&rsquo;s voice-memo app, or ask your carrier about voicemail-to-email.</p>`),
+    slide(4, `
+      <h2 class="display" style="position:absolute;left:72px;top:150px;width:900px;font-size:120px;color:${C.botanicalInk}">Then keep it <span class="accent">safe.</span></h2>
+      <div style="position:absolute;left:72px;right:72px;top:450px">${stepList(["Keep two copies in different places, like cloud storage and a computer.", "Rename it with who, what and when: “Mom, birthday voicemail, 2021-03-11”.", "Send a copy to family now, while everyone remembers which message matters."], C.botanicalInk)}</div>
+      <p class="accent" style="position:absolute;left:72px;right:72px;top:1000px;font-size:46px;line-height:1.2;color:${C.botanicalInk}">When you&rsquo;re ready, we can grow it into a print you can keep.</p>`, C.botanical, C.botanicalInk),
+  ];
+}
+
+function calendarExtras(): Still[] {
+  const cutoff = process.env.MARKETING_CUTOFF || "Dec 10";
+  const sources = ["a saved voicemail", "wedding vows", "a Snapchat memory", "a baby&rsquo;s laugh", "a dog&rsquo;s bark", "a proposal clip", "Grandma singing", "a voice note"];
+  return [
+    {
+      name: "feed-08-what-can-become-art",
+      w: 1080,
+      h: 1350,
+      html: doc(1080, 1350, `
+        <div class="meta" style="position:absolute;left:72px;top:110px;font-size:22px;color:${C.soft}">What can become art?</div>
+        <h1 style="position:absolute;left:72px;right:72px;top:170px;font-size:82px;line-height:1.08;color:${C.ink}">${sources
+          .map((t, i) => `<span class="${i % 2 ? "accent" : "display"}" style="${i % 2 ? "" : "letter-spacing:-.04em"}">${t}</span>`)
+          .join(` <span style="color:${C.wine};opacity:.5">/</span> `)}</h1>
+        <p class="ui" style="position:absolute;left:72px;right:72px;top:1010px;font-size:32px;line-height:1.4;font-weight:500;color:${C.soft}">If it&rsquo;s on your phone and it has sound, we can make it into a print. We use the sound, not the footage.</p>
+        ${foot(C.ink)}`),
+    },
+    {
+      name: "feed-09-comment-your-date",
+      w: 1080,
+      h: 1350,
+      html: doc(1080, 1350, `
+        <h1 class="display" style="position:absolute;left:72px;top:110px;width:540px;font-size:104px;color:${C.nightInk}">Comment the date you <span class="accent">met.</span></h1>
+        <p class="ui" style="position:absolute;left:72px;top:620px;width:520px;font-size:34px;line-height:1.4;font-weight:500;color:${C.nightInk};opacity:.85">We&rsquo;ll reply with the moon from that night, exactly as it was.</p>
+        <div style="position:absolute;right:64px;top:170px;transform:rotate(2deg)">${framed(art({ design: "night-of", fields: { names: "Sam & Alex", date: "2019-10-12", title: "The night we met" } }), 360, "black")}</div>
+        <div class="meta" style="position:absolute;left:72px;top:900px;font-size:26px;color:${C.moon}">↓ e.g. 12 October 2019</div>
+        ${demo(C.nightInk)}${foot(C.nightInk)}`, C.night),
+    },
+    {
+      name: "story-05-record-them",
+      w: 1080,
+      h: 1920,
+      html: doc(1080, 1920, `
+        <h1 class="display" style="position:absolute;left:84px;right:84px;top:250px;font-size:132px;color:${C.wine}">Record them this <span class="accent">Thanksgiving.</span></h1>
+        <p class="ui" style="position:absolute;left:84px;right:84px;top:720px;font-size:36px;line-height:1.4;font-weight:500;color:${C.wine}">Open Voice Memos, set the phone on the table, and ask one question:</p>
+        <div style="position:absolute;left:84px;right:84px;top:900px">${["How did you two meet?", "What was your first job?", "What do you remember about your grandparents?", "What song did you dance to?"]
+          .map((q) => `<p class="accent" style="font-size:52px;line-height:1.2;color:${C.wine};margin-bottom:26px">“${q}”</p>`)
+          .join("")}</div>
+        <div style="position:absolute;left:84px;bottom:420px">${logo(34, C.wine)}</div>`, C.romantic),
+    },
+    {
+      name: "story-06-last-week",
+      w: 1080,
+      h: 1920,
+      html: doc(1080, 1920, `
+        <div class="meta" style="position:absolute;left:84px;top:250px;font-size:26px;color:${C.nightInk};opacity:.7">For Christmas delivery (US)</div>
+        <h1 class="display" style="position:absolute;left:84px;right:84px;top:310px;font-size:150px;color:${C.nightInk}">Last week for framed <span class="accent">prints.</span></h1>
+        <p class="ui" style="position:absolute;left:84px;right:84px;top:760px;font-size:40px;line-height:1.4;font-weight:500;color:${C.nightInk}">Order by <span style="color:${C.moon}">${cutoff}</span>. Every print is made to order, so the date is real.</p>
+        <div style="position:absolute;left:50%;top:960px;transform:translateX(-50%) rotate(-1.5deg)">${framed(art({ design: "night-of", colorway: "plum", fields: { names: "Grandma & Grandpa", date: "1976-12-24", title: "Fifty Christmases" } }), 420, "natural")}</div>
+        <div style="position:absolute;left:84px;bottom:340px">${logo(34, C.nightInk)}</div>`, C.night),
+    },
+    {
+      name: "pin-05-save-voicemail",
+      w: 1000,
+      h: 1500,
+      html: doc(1000, 1500, `
+        <div style="position:absolute;left:0;right:0;top:120px;display:flex;justify-content:center;transform:rotate(-2deg)">${phone({ w: 330, label: "", time: "0:14", scene: "voicemail", seed: "dadvm", progress: 0.55 })}</div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:560px;background:${C.paper};border-radius:36px 36px 0 0;padding:56px 64px">
+          <div class="meta" style="font-size:22px;color:${C.soft}">iPhone + Android guide</div>
+          <h2 class="display" style="font-size:84px;color:${C.ink};margin-top:18px">How to save a voicemail before it&rsquo;s <span class="accent">deleted</span></h2>
+          <div style="position:absolute;left:64px;right:64px;bottom:52px;display:flex;justify-content:space-between;align-items:center">${logo(28, C.ink)}<span class="meta" style="font-size:22px;color:${C.soft}">${URL_TEXT}</span></div>
+        </div>`, C.romantic),
+    },
+  ];
+}
+
 export function allStills(): Still[] {
-  return [heroPost(), voicemailPost(), transformPost(), leavesPost(), moonPost(), qrPost(), giftPost(), ...howSlides(), ...stories(), ...pins(), ...ads(), holiday()];
+  return [heroPost(), voicemailPost(), transformPost(), leavesPost(), moonPost(), qrPost(), giftPost(), ...howSlides(), ...stories(), ...pins(), ...ads(), holiday(), ...voicemailCarousel(), ...calendarExtras()];
 }
 export { BRAND };

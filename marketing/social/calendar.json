@@ -1,0 +1,725 @@
+{
+ "start": "2026-10-12",
+ "weeks": [
+  {
+   "n": 1,
+   "theme": "Launch",
+   "why": "Introduce Afterhum and both designs. Every post explains what it is in one line."
+  },
+  {
+   "n": 2,
+   "theme": "Save the voicemail",
+   "why": "Useful, shareable voicemail content. The carousel is the save-and-send post of the season."
+  },
+  {
+   "n": 3,
+   "theme": "The moon on your date",
+   "why": "Night Of week. Comment-your-date gets people talking; replies become content."
+  },
+  {
+   "n": 4,
+   "theme": "Vows and anniversaries",
+   "why": "Weddings and the paper (first) anniversary. The scan-to-play code."
+  },
+  {
+   "n": 5,
+   "theme": "New parents",
+   "why": "Heartbeats, first laughs and the sounds that change fastest."
+  },
+  {
+   "n": 6,
+   "theme": "Gift guide",
+   "why": "Who it's for, shown in real-feeling rooms (ChatGPT scenes with the real print composited in)."
+  },
+  {
+   "n": 7,
+   "theme": "Thanksgiving: record them",
+   "why": "Encourage people to record family at the table. Black Friday without fake discounts."
+  },
+  {
+   "n": 8,
+   "theme": "Last call",
+   "why": "The holiday order-by date, said plainly and often."
+  }
+ ],
+ "posts": [
+  {
+   "date": "2026-10-12",
+   "day": "Mon 12 Oct",
+   "week": 1,
+   "theme": "Launch",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "Vertical video",
+   "asset": "out/video/vertical-herbarium.mp4",
+   "hook": "This plant grew from a voicemail.",
+   "caption": "This plant grew from a voicemail. Every leaf is a second of their voice, root to tip.\n\nAfterhum is open. Upload a voice memo, a saved voicemail or a video from your phone, and we turn its sound into a print you can keep.\n\n#voicemail #grief #keepsake #personalizedgifts",
+   "cta": "Link in bio",
+   "notes": "Add a sound in the app if you want one; the file already has its own soft piano track."
+  },
+  {
+   "date": "2026-10-13",
+   "day": "Tue 13 Oct",
+   "week": 1,
+   "theme": "Launch",
+   "platforms": [
+    "Pinterest"
+   ],
+   "format": "3 pins",
+   "asset": "out/images/pin-01-voicemail-memorial.png · pin-05-save-voicemail.png · pin-02-wedding-vows.png",
+   "hook": "Pinterest batch",
+   "caption": "Use the titles and descriptions from marketing/README.md (Pinterest section). Pin-05 links to the how-to-save-a-voicemail page.",
+   "cta": "Link each pin to its landing page",
+   "notes": "Pinterest is slow to build: post 2–3 pins every week, every week."
+  },
+  {
+   "date": "2026-10-14",
+   "day": "Wed 14 Oct",
+   "week": 1,
+   "theme": "Launch",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Carousel (3)",
+   "asset": "out/images/carousel-how-1.png → carousel-how-3.png",
+   "hook": "How it works, in three slides",
+   "caption": "How it works, in three slides.\n1. Upload a memory: a voice memo, a saved voicemail, a wedding clip.\n2. Make it yours: The Night Of or Herbarium, names, a date, a short line.\n3. We print and frame it, and ship it free in the US.\n\nOnly the sound is used. Your video never leaves your phone.\n\n#keepsake #wallart #personalizedgifts #soundart",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-10-16",
+   "day": "Fri 16 Oct",
+   "week": 1,
+   "theme": "Launch",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "Vertical video",
+   "asset": "out/video/vertical-night-of.mp4",
+   "hook": "What did the moon look like the night you met?",
+   "caption": "What did the moon look like the night you met?\n\nThe Night Of draws the real moon for your date and rings it with the sound of your recording: your vows, a voice note, the video from that night.\n\n#moonphase #anniversarygift #thenightwemet #personalizedgifts",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-10-17",
+   "day": "Sat 17 Oct",
+   "week": 1,
+   "theme": "Launch",
+   "platforms": [
+    "Facebook",
+    "YouTube",
+    "LinkedIn"
+   ],
+   "format": "Landscape video",
+   "asset": "brag-output/brag.mp4",
+   "hook": "We're open.",
+   "caption": "Still have their voicemail? Afterhum turns the sound of it into a print you can hang: every leaf drawn from their voice, with a quiet code that plays it again.\n\n#keepsake #wallart #personalizedgifts #soundart",
+   "cta": "https://DOMAIN/?utm_source=facebook&utm_medium=social&utm_campaign=launch&utm_content=launch-film",
+   "notes": "The 16:9 launch film. Pin it to the top of the Facebook page."
+  },
+  {
+   "date": "2026-10-18",
+   "day": "Sun 18 Oct",
+   "week": 1,
+   "theme": "Launch",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story + question sticker",
+   "asset": "out/images/story-03-moon.png",
+   "hook": "When did you meet?",
+   "caption": "Add a question sticker: \"What date did you meet?\" Reply to answers in DMs with a screenshot of the moon from the studio preview.",
+   "cta": "Link sticker → /create",
+   "notes": "Answers become week 3 content (ask permission before sharing anyone's date publicly)."
+  },
+  {
+   "date": "2026-10-19",
+   "day": "Mon 19 Oct",
+   "week": 2,
+   "theme": "Save the voicemail",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Carousel (4)",
+   "asset": "out/images/carousel-voicemail-1.png → carousel-voicemail-4.png",
+   "hook": "How to save a voicemail before it's gone",
+   "caption": "Carriers delete saved voicemails, and a new phone or a cancelled line can wipe them for good. Here's how to keep a copy, on iPhone and Android.\n\nSave this, and send it to whoever needs it.\n\n#voicemail #grief #keepsake #personalizedgifts",
+   "cta": "Save + share",
+   "notes": "The most useful post of the plan. Make it the first pinned post on the grid."
+  },
+  {
+   "date": "2026-10-20",
+   "day": "Tue 20 Oct",
+   "week": 2,
+   "theme": "Save the voicemail",
+   "platforms": [
+    "Pinterest"
+   ],
+   "format": "2 pins + 1 scene",
+   "asset": "out/images/pin-05-save-voicemail.png · pin-01-voicemail-memorial.png · AI-1 composite (herbarium-stone)",
+   "hook": "Pinterest batch",
+   "caption": "AI-1 is the bedside scene from chatgpt-image-guide.md with the real Herbarium Stone print composited in.",
+   "cta": "Link to /how-to-save-a-voicemail and /voicemail-memorial-art",
+   "notes": ""
+  },
+  {
+   "date": "2026-10-21",
+   "day": "Wed 21 Oct",
+   "week": 2,
+   "theme": "Save the voicemail",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "Vertical video",
+   "asset": "out/video/video-01-voicemail-to-leaves.mp4",
+   "hook": "Don't delete that voicemail.",
+   "caption": "Don't delete that voicemail.\n\nSave it, upload it, and we'll grow it into a botanical print. Every leaf is a moment of their voice.\n\n#voicemail #grief #keepsake #personalizedgifts",
+   "cta": "Link in bio",
+   "notes": "Names shown are illustrative; the video says so."
+  },
+  {
+   "date": "2026-10-23",
+   "day": "Fri 23 Oct",
+   "week": 2,
+   "theme": "Save the voicemail",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Single image",
+   "asset": "out/images/feed-02-voicemail.png",
+   "hook": "Don't delete that voicemail.",
+   "caption": "For the voicemail you play when you need to hear them. Save it, upload it, and we'll grow it into a print you can keep. There's a quiet code on the print that plays it again.\n\n#voicemail #grief #keepsake #personalizedgifts",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-10-24",
+   "day": "Sat 24 Oct",
+   "week": 2,
+   "theme": "Save the voicemail",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "To film (10–15 s)",
+   "asset": "FILM: screen recording on a real iPhone",
+   "hook": "How to save a voicemail on iPhone in 10 seconds",
+   "caption": "How to save a voicemail on iPhone: Phone → Voicemail → tap the message → Share → Save to Files. That's it. Do it today; carriers delete them.\n\n#voicemail #grief #keepsake #personalizedgifts",
+   "cta": "Link in bio",
+   "notes": "Screen-record a real voicemail from a friend (with their OK) or a test one you leave yourself. No product pitch; the profile does that."
+  },
+  {
+   "date": "2026-10-25",
+   "day": "Sun 25 Oct",
+   "week": 2,
+   "theme": "Save the voicemail",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story + poll",
+   "asset": "out/images/ad-01-voice.png (or a plain colour story)",
+   "hook": "Do you still have a voicemail you can't delete?",
+   "caption": "Poll sticker: \"Do you still have a voicemail you can't delete?\" Yes / I wish I'd saved one. Next frame: link to the save-a-voicemail carousel.",
+   "cta": "Link sticker → carousel post",
+   "notes": ""
+  },
+  {
+   "date": "2026-10-26",
+   "day": "Mon 26 Oct",
+   "week": 3,
+   "theme": "The moon on your date",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Single image (engagement)",
+   "asset": "out/images/feed-09-comment-your-date.png",
+   "hook": "Comment the date you met.",
+   "caption": "Comment the date you met, and we'll reply with the moon from that night, exactly as it was.\n\n#moonphase #anniversarygift #thenightwemet #personalizedgifts",
+   "cta": "Comment",
+   "notes": "Reply to every comment with a screenshot of the studio preview for that date. It takes about 30 seconds each, and it's the best engagement post in the plan."
+  },
+  {
+   "date": "2026-10-27",
+   "day": "Tue 27 Oct",
+   "week": 3,
+   "theme": "The moon on your date",
+   "platforms": [
+    "Pinterest"
+   ],
+   "format": "2 pins + 1 scene",
+   "asset": "out/images/pin-04-anniversary-moon.png · AI-8 composite (night-of-midnight)",
+   "hook": "Pinterest batch",
+   "caption": "AI-8 is the anniversary dinner-table scene with The Night Of composited in.",
+   "cta": "Link to /anniversary-sound-wave-gift",
+   "notes": ""
+  },
+  {
+   "date": "2026-10-28",
+   "day": "Wed 28 Oct",
+   "week": 3,
+   "theme": "The moon on your date",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "Vertical video",
+   "asset": "out/video/video-02-moon-on-your-date.mp4",
+   "hook": "What did the moon look like the night you met?",
+   "caption": "The moon changes every night. Yours was exactly this one.\n\nThe Night Of: the real moon for your date, ringed by the sound of your recording.\n\n#moonphase #anniversarygift #thenightwemet #personalizedgifts",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-10-30",
+   "day": "Fri 30 Oct",
+   "week": 3,
+   "theme": "The moon on your date",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Single image",
+   "asset": "out/images/feed-05-night-of.png",
+   "hook": "The moon, exactly as it was that night.",
+   "caption": "The moon, exactly as it was that night. Phase computed for your date, ringed by the sound of your recording. Midnight, Dawn or Plum Night; framed or print-only.\n\n#moonphase #anniversarygift #thenightwemet #personalizedgifts",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-10-31",
+   "day": "Sat 31 Oct",
+   "week": 3,
+   "theme": "The moon on your date",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "To film (15–20 s)",
+   "asset": "FILM: screen recording of the studio",
+   "hook": "Replying to your dates",
+   "caption": "You sent us your dates. Here's the moon from three of them.\n\n#moonphase #anniversarygift #thenightwemet #personalizedgifts",
+   "cta": "Link in bio",
+   "notes": "Screen-record /create: type a commenter's date (with their OK) and show the preview update. Real UI, real moon."
+  },
+  {
+   "date": "2026-11-01",
+   "day": "Sun 01 Nov",
+   "week": 3,
+   "theme": "The moon on your date",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story + link",
+   "asset": "out/images/story-03-moon.png",
+   "hook": "Find your moon",
+   "caption": "Tell us your date. We'll show you.",
+   "cta": "Link sticker → /create?occasion=night-we-met",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-02",
+   "day": "Mon 02 Nov",
+   "week": 4,
+   "theme": "Vows and anniversaries",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "Vertical video",
+   "asset": "out/video/video-03-scan-it-hear-it.mp4",
+   "hook": "Scan it. Hear it again.",
+   "caption": "Scan it. Hear it again.\n\nEvery print can carry a small, tone-on-tone code that plays your recording from any phone camera. No app. Your vows, back in the room.\n\n#weddingvows #paperanniversary #weddinggift #keepsake",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-03",
+   "day": "Tue 03 Nov",
+   "week": 4,
+   "theme": "Vows and anniversaries",
+   "platforms": [
+    "Pinterest"
+   ],
+   "format": "2 pins + 1 scene",
+   "asset": "out/images/pin-02-wedding-vows.png · AI-12 composite (herbarium-herbarium)",
+   "hook": "Pinterest batch",
+   "caption": "",
+   "cta": "Link to /wedding-vows-art",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-04",
+   "day": "Wed 04 Nov",
+   "week": 4,
+   "theme": "Vows and anniversaries",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Single image",
+   "asset": "out/images/feed-03-transformation.png",
+   "hook": "From a clip on your phone to a print on your wall.",
+   "caption": "From a clip on your phone to a print on your wall. 01 your video, 02 its sound, 03 your print. We use the sound, not the footage.\n\n#weddingvows #paperanniversary #weddinggift #keepsake",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-06",
+   "day": "Fri 06 Nov",
+   "week": 4,
+   "theme": "Vows and anniversaries",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Lifestyle image",
+   "asset": "AI-3 composite (night-of-dawn, natural frame)",
+   "hook": "Your vows, on the shelf.",
+   "caption": "Your vows from the wedding video, on the shelf where you'll see them every day.\n\n#weddingvows #paperanniversary #weddinggift #keepsake",
+   "cta": "Link in bio",
+   "notes": "ChatGPT shelf scene with the real Dawn print composited in. Label as AI if the platform asks."
+  },
+  {
+   "date": "2026-11-08",
+   "day": "Sun 08 Nov",
+   "week": 4,
+   "theme": "Vows and anniversaries",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story",
+   "asset": "out/images/story-02-wedding-video.png",
+   "hook": "The first anniversary is paper.",
+   "caption": "The first anniversary is traditionally paper. This one is archival paper, printed with your vows.",
+   "cta": "Link sticker → /wedding-vows-art",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-09",
+   "day": "Mon 09 Nov",
+   "week": 5,
+   "theme": "New parents",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Lifestyle image",
+   "asset": "AI-5 composite (herbarium-blush, white frame)",
+   "hook": "The first sound you heard of them.",
+   "caption": "The first sound you heard of them. Upload the heartbeat from the scan video in your camera roll, and we grow it into a botanical print for the nursery.\n\n#newparents #babyheartbeat #nurseryart #keepsake",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-10",
+   "day": "Tue 10 Nov",
+   "week": 5,
+   "theme": "New parents",
+   "platforms": [
+    "Pinterest"
+   ],
+   "format": "1 pin + 1 scene",
+   "asset": "out/images/pin-03-baby-heartbeat.png · AI-5 composite",
+   "hook": "Pinterest batch",
+   "caption": "",
+   "cta": "Link to /gifts/first-baby-heartbeat-soundwave-art",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-11",
+   "day": "Wed 11 Nov",
+   "week": 5,
+   "theme": "New parents",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "To film (15 s)",
+   "asset": "FILM: text-on-screen over b-roll of your own phone",
+   "hook": "Sounds to record before they're grown",
+   "caption": "Sounds to record before they're grown: the first laugh, the made-up song, \"I love you\" said wrong, bedtime questions, the way they say your name.\n\n#newparents #babyheartbeat #nurseryart #keepsake",
+   "cta": "Link in bio",
+   "notes": "No faces needed: film hands, a phone on a table, a voice-memo waveform. Use your own recordings or ask a friend."
+  },
+  {
+   "date": "2026-11-13",
+   "day": "Fri 13 Nov",
+   "week": 5,
+   "theme": "New parents",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Single image",
+   "asset": "out/images/feed-08-what-can-become-art.png",
+   "hook": "What can become art?",
+   "caption": "A saved voicemail, wedding vows, a Snapchat memory, a baby's laugh, a dog's bark, Grandma singing. If it's on your phone and it has sound, it can become a print.\n\n#keepsake #wallart #personalizedgifts #soundart",
+   "cta": "Link in bio",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-15",
+   "day": "Sun 15 Nov",
+   "week": 5,
+   "theme": "New parents",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story",
+   "asset": "out/images/story-04-heartbeat.png",
+   "hook": "From the scan video in your camera roll.",
+   "caption": "The first sound you heard of them.",
+   "cta": "Link sticker → /create?occasion=baby",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-16",
+   "day": "Mon 16 Nov",
+   "week": 6,
+   "theme": "Gift guide",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Carousel (4)",
+   "asset": "out/images/feed-07-gift-guide.png + AI-2, AI-6, AI-10 composites",
+   "hook": "Gifts made from a sound you share",
+   "caption": "Gifts made from a sound you share.\nFor the anniversary: the moon from your night.\nFor the new parents: a heartbeat.\nFor the one who misses a voice: the voicemail they saved.\n\n#giftideas #meaningfulgifts #personalizedgifts #christmasgifts",
+   "cta": "Link in bio",
+   "notes": "Slide 1 is the existing graphic; slides 2–4 are ChatGPT room scenes with real prints composited in."
+  },
+  {
+   "date": "2026-11-17",
+   "day": "Tue 17 Nov",
+   "week": 6,
+   "theme": "Gift guide",
+   "platforms": [
+    "Pinterest"
+   ],
+   "format": "3 scenes",
+   "asset": "AI-2, AI-7, AI-10 composites",
+   "hook": "Pinterest batch",
+   "caption": "Gift-guide pins. Title pattern: \"[Recipient] gift idea: [what it is]\".",
+   "cta": "Link to /create",
+   "notes": ""
+  },
+  {
+   "date": "2026-11-18",
+   "day": "Wed 18 Nov",
+   "week": 6,
+   "theme": "Gift guide",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "Repost best Reel",
+   "asset": "Best performer from weeks 1–5",
+   "hook": "(new hook in the first line of the caption)",
+   "caption": "Repost your best-performing Reel with a new caption hook aimed at gifting: \"The gift for the person who has everything except this.\"\n\n#giftideas #meaningfulgifts #personalizedgifts #christmasgifts",
+   "cta": "Link in bio",
+   "notes": "Reposting a winner beats a new mediocre post."
+  },
+  {
+   "date": "2026-11-20",
+   "day": "Fri 20 Nov",
+   "week": 6,
+   "theme": "Gift guide",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Single image",
+   "asset": "out/images/seasonal-holiday-cutoff.png",
+   "hook": "Order by [date] for framed prints.",
+   "caption": "Every print is made to order, so the holiday date is real: order framed prints by [DATE] for delivery before the 25th (US).\n\n#giftideas #meaningfulgifts #personalizedgifts #christmasgifts",
+   "cta": "Link in bio",
+   "notes": "Only post once Prodigi confirms the cutoff. Re-render with MARKETING_CUTOFF=\"Dec X\"."
+  },
+  {
+   "date": "2026-11-22",
+   "day": "Sun 22 Nov",
+   "week": 6,
+   "theme": "Gift guide",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story",
+   "asset": "out/images/story-05-record-them.png",
+   "hook": "Record them this Thanksgiving.",
+   "caption": "A heads-up for Thursday: put your phone on the table, open Voice Memos, and ask one question.",
+   "cta": "No link needed",
+   "notes": "Pure value. People screenshot this."
+  },
+  {
+   "date": "2026-11-24",
+   "day": "Tue 24 Nov",
+   "week": 7,
+   "theme": "Thanksgiving: record them",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "To film (15–20 s)",
+   "asset": "FILM: a phone on a dinner table, Voice Memos recording",
+   "hook": "Do this at Thanksgiving",
+   "caption": "Do this at Thanksgiving: set your phone on the table, hit record, and ask \"How did you two meet?\" You'll be so glad you have it.\n\n#keepsake #wallart #personalizedgifts #soundart",
+   "cta": "Link in bio",
+   "notes": "Film only hands and the table. If you use real family audio, get their OK."
+  },
+  {
+   "date": "2026-11-26",
+   "day": "Thu 26 Nov",
+   "week": 7,
+   "theme": "Thanksgiving: record them",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story",
+   "asset": "out/images/story-05-record-them.png",
+   "hook": "Record them today.",
+   "caption": "Happy Thanksgiving. Record them today.",
+   "cta": "No link",
+   "notes": "Thanksgiving Day (Thu 26 Nov). No selling today."
+  },
+  {
+   "date": "2026-11-27",
+   "day": "Fri 27 Nov",
+   "week": 7,
+   "theme": "Thanksgiving: record them",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Square image",
+   "asset": "out/images/ad-01-voice.png",
+   "hook": "Keep their voice where you can see it.",
+   "caption": "Keep their voice where you can see it. Upload a saved voicemail or voice note, and we grow it into a botanical print you can frame.\n\n#giftideas #meaningfulgifts #personalizedgifts #christmasgifts",
+   "cta": "Link in bio",
+   "notes": "Black Friday (27 Nov). Only mention an offer if you've actually set up a discount code in Admin → Discounts. Never show a fake \"was\" price."
+  },
+  {
+   "date": "2026-11-28",
+   "day": "Sat 28 Nov",
+   "week": 7,
+   "theme": "Thanksgiving: record them",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "To film (20–30 s)",
+   "asset": "FILM: you, talking to camera (or voice-over)",
+   "hook": "Why I started Afterhum",
+   "caption": "Small Business Saturday. Here's why Afterhum exists.\n\n#keepsake #wallart #personalizedgifts #soundart",
+   "cta": "Link in bio",
+   "notes": "Real founder story; it's the one thing no competitor can copy. Keep it under 30 seconds."
+  },
+  {
+   "date": "2026-11-30",
+   "day": "Mon 30 Nov",
+   "week": 8,
+   "theme": "Last call",
+   "platforms": [
+    "Instagram Reels",
+    "TikTok",
+    "YouTube Shorts"
+   ],
+   "format": "Vertical video",
+   "asset": "out/video/vertical-herbarium.mp4 or the best performer",
+   "hook": "Last week for framed prints.",
+   "caption": "Last call for the holidays: order framed prints by [DATE] for delivery before the 25th (US). Every one is made to order.\n\n#giftideas #meaningfulgifts #personalizedgifts #christmasgifts",
+   "cta": "Link in bio",
+   "notes": "Cyber Monday (30 Nov)."
+  },
+  {
+   "date": "2026-12-01",
+   "day": "Tue 01 Dec",
+   "week": 8,
+   "theme": "Last call",
+   "platforms": [
+    "Pinterest"
+   ],
+   "format": "Refresh",
+   "asset": "Top 3 pins re-pinned to a \"Christmas gifts\" board",
+   "hook": "Pinterest batch",
+   "caption": "",
+   "cta": "",
+   "notes": ""
+  },
+  {
+   "date": "2026-12-02",
+   "day": "Wed 02 Dec",
+   "week": 8,
+   "theme": "Last call",
+   "platforms": [
+    "Instagram",
+    "Facebook"
+   ],
+   "format": "Single image",
+   "asset": "out/images/seasonal-holiday-cutoff.png",
+   "hook": "Order by [date].",
+   "caption": "One week left to order framed prints for Christmas delivery. Print-only orders ship faster.\n\n#giftideas #meaningfulgifts #personalizedgifts #christmasgifts",
+   "cta": "Link in bio",
+   "notes": "Check print-only versus framed lead times with Prodigi before saying \"faster\"."
+  },
+  {
+   "date": "2026-12-04",
+   "day": "Fri 04 Dec",
+   "week": 8,
+   "theme": "Last call",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story + countdown sticker",
+   "asset": "out/images/story-06-last-week.png",
+   "hook": "Last week for framed prints.",
+   "caption": "Add a countdown sticker to the cutoff date so followers get a reminder.",
+   "cta": "Link sticker → /create",
+   "notes": ""
+  },
+  {
+   "date": "2026-12-06",
+   "day": "Sun 06 Dec",
+   "week": 8,
+   "theme": "Last call",
+   "platforms": [
+    "Instagram Stories",
+    "Facebook Stories"
+   ],
+   "format": "Story",
+   "asset": "out/images/story-06-last-week.png",
+   "hook": "Final days.",
+   "caption": "Final days to order for the holidays.",
+   "cta": "Link sticker → /create",
+   "notes": "If the cutoff has passed, switch to: \"Too late for Christmas? It makes a beautiful New Year's gift.\""
+  }
+ ]
+}

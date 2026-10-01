@@ -158,3 +158,15 @@ Description: `The real moon phase for your date, ringed by a recording of your v
 - Real phone-in-hand / on-the-wall photos and UGC-style videos. These outperform rendered mockups.
 - A founder-story video ("why I built this"). It can't be faked.
 - Customer stories, with written permission, to replace the demo names.
+
+## Product videos, social calendar and ChatGPT scenes
+
+- **Vertical product videos** (1080×1920, 20 s, original soundtrack): `out/video/vertical-night-of.mp4` and `out/video/vertical-herbarium.mp4`, each with a `-poster.jpg`. Re-make them with:
+  ```bash
+  npx tsx scripts/marketing/verticals.ts night-of           # frames
+  npx tsx scripts/marketing/verticals.ts night-of --encode  # soundtrack + mp4
+  ```
+  The same works for `herbarium`; add `--stills 1.5,7.4` to check frames first. The launch film (`brag-output/`) uses the same engine (`scripts/marketing/motion.ts`).
+- **Two-month calendar:** `social/calendar.csv` (for Later, Buffer or a spreadsheet) and `social/calendar.json`. Edit `scripts/marketing/social_calendar.py` and re-run it to change dates or posts; set `START` to the real launch Monday.
+- **New calendar graphics:** the `carousel-voicemail-1…4`, `feed-08`, `feed-09`, `story-05`, `story-06` and `pin-05` images in `out/images/`.
+- **ChatGPT room scenes:** see `chatgpt-image-guide.md`. Clean print images are in `out/art/` (`npx tsx scripts/marketing/export_art.ts`). Composite them into ChatGPT scenes with `python3 scripts/marketing/composite.py room.png out/art/<print>.png out.jpg`.
