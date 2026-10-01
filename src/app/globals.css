@@ -101,7 +101,7 @@ button {
   --ink: #151412;
   --ink-soft: #57524b;
   --line: rgba(21, 20, 18, 0.14);
-  --signal: #ff5b2e;
+  --signal: #5a1e2b; /* the old orange accent, retired */
   --signal-ink: #151412;
   /* worlds */
   --night: #0f1627;
@@ -246,7 +246,7 @@ body {
 }
 
 :focus-visible {
-  outline: 3px solid var(--signal);
+  outline: 2px solid currentColor;
   outline-offset: 3px;
 }
 

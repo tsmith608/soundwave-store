@@ -61,7 +61,7 @@ export default function PaymentConfirmation({ sessionId }: { sessionId: string }
         <p className="meta">Checkout</p>
         <h1 className="display mt-3 text-5xl">Confirming your payment…</h1>
         <p className="mt-4 text-lg text-ink-soft">This usually takes a few seconds. Please don&rsquo;t pay again.</p>
-        <div className="mt-8 h-2 w-full overflow-hidden border-2 border-ink">
+        <div className="mt-8 h-2 w-full overflow-hidden rounded-xl border border-ink/15">
           <div className="anim-playhead h-full w-1/3 bg-signal" />
         </div>
       </div>

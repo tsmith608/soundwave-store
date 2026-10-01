@@ -13,7 +13,7 @@ export default function LegalPage({ title, updated, intro, children }: { title: 
           <h1 className="display mt-4 text-[15vw] sm:text-[9vw] lg:text-[112px]">{title}</h1>
           <div className="mt-6 max-w-2xl text-xl leading-relaxed text-ink-soft">{intro}</div>
         </section>
-        <article className="legal mx-auto max-w-[1440px] border-t-2 border-ink px-4 pb-24 pt-10 sm:px-8">
+        <article className="legal mx-auto max-w-[1440px] border-t border-ink/15 px-4 pb-24 pt-10 sm:px-8">
           <div className="max-w-[72ch] space-y-10 text-[17px] leading-relaxed">{children}</div>
         </article>
       </main>

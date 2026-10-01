@@ -5,7 +5,7 @@ import { BRAND_NAME, SUPPORT_EMAIL } from "@/lib/site";
 
 export default function Footer() {
   return (
-    <footer className="border-t-2 border-ink bg-ink text-paper on-dark">
+    <footer className="border-t border-ink/15 bg-ink text-paper on-dark">
       <div className="mx-auto max-w-[1440px] px-4 pb-10 pt-16 sm:px-8">
         <p className="display text-[13vw] leading-[0.82] sm:text-[9vw] lg:text-[128px]">
           Keep the <span className="accent !font-normal">sound</span> of it.

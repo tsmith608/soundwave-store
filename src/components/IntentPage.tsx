@@ -128,12 +128,12 @@ export default function IntentPage({ c }: { c: IntentContent }) {
           </section>
         )}
 
-        <section className="border-y-2 border-ink">
+        <section className="border-y border-ink/15">
           <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8">
             <h2 className="display text-[11vw] sm:text-[7vw] lg:text-[72px]">{c.howToTitle}</h2>
             <ol className="mt-10 grid gap-10 md:grid-cols-3">
               {c.howTo.map((h, i) => (
-                <li key={i} className="border-t-2 border-ink pt-4">
+                <li key={i} className="border-t border-ink/15 pt-4">
                   <span className="display text-5xl text-signal">{i + 1}</span>
                   <span className="display mt-2 block text-3xl">{h.title}</span>
                   <p className="mt-3 text-lg leading-relaxed text-ink-soft">{h.body}</p>
@@ -148,7 +148,7 @@ export default function IntentPage({ c }: { c: IntentContent }) {
             <h2 className="display text-5xl sm:text-6xl">Before you order</h2>
             <dl className="mt-8 space-y-6">
               {c.considerations.map((k, i) => (
-                <div key={i} className="border-t-2 border-ink pt-3">
+                <div key={i} className="border-t border-ink/15 pt-3">
                   <dt className="text-xl font-semibold">{k.title}</dt>
                   <dd className="mt-2 text-lg leading-relaxed text-ink-soft">{k.body}</dd>
                 </div>
@@ -159,7 +159,7 @@ export default function IntentPage({ c }: { c: IntentContent }) {
             <h2 className="display text-5xl sm:text-6xl">Questions</h2>
             <dl className="mt-8 space-y-6">
               {c.faqs.map((f, i) => (
-                <div key={i} className="border-t-2 border-ink pt-3">
+                <div key={i} className="border-t border-ink/15 pt-3">
                   <dt className="text-xl font-semibold">{f.q}</dt>
                   <dd className="mt-2 text-lg leading-relaxed text-ink-soft">{f.a}</dd>
                 </div>

@@ -21,7 +21,7 @@ export default function CookiePreferences() {
     window.dispatchEvent(new Event("sw:consent"));
   };
   return (
-    <div className="mt-4 border-2 border-ink p-4" aria-live="polite">
+    <div className="mt-4 rounded-xl border border-ink/15 p-4" aria-live="polite">
       <p>
         Advertising cookies are currently: <strong>{v === "granted" ? "allowed" : v === "denied" ? "declined" : "not chosen (off)"}</strong>
       </p>

@@ -16,7 +16,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <h1 className="display text-6xl">Sign in</h1>
           <p className="mt-3 text-lg text-ink-soft">No password needed — we&rsquo;ll email you a secure link. You don&rsquo;t need an account to order; signing in lets you see past orders and saved designs.</p>
           {error && (
-            <p role="alert" className="mt-4 border-2 border-[#B2361B] bg-[#FBE7E1] p-3 text-[#7E2512]">
+            <p role="alert" className="mt-4 rounded-xl border border-[#B2361B]/40 bg-[#FBE7E1] p-3 text-[#7E2512]">
               {error === "rate" ? "Too many attempts — please wait a few minutes." : "That sign-in link has expired or was already used. Request a new one below."}
             </p>
           )}

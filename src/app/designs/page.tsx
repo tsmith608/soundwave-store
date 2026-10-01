@@ -72,7 +72,7 @@ export default function DesignsPage() {
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:col-span-7 lg:grid-cols-2 xl:grid-cols-3">
                       {d.colorways.map((c, i) => (
                         <Reveal as="figure" key={c.id} delay={i * 100} className={i === 0 && idx === 1 ? "" : ""}>
-                          <div className="border-2 border-current shadow-[6px_6px_0_currentColor]">
+                          <div className="overflow-hidden rounded-lg shadow-soft">
                             <Artwork designId={d.id} fields={d.sample} colorwayId={c.id} qrStyle="discreet" idPrefix={`dz-${c.id}`} />
                           </div>
                           <figcaption className="meta mt-3">{c.name}</figcaption>

@@ -20,7 +20,7 @@ export const C = {
   paper2: "#E9E2D4",
   ink: "#151412",
   soft: "#57524B",
-  signal: "#FF5B2E",
+  signal: "#5A1E2B", // the old orange accent, retired: now the wine ink
   night: "#0F1627",
   nightInk: "#E8E6DF",
   moon: "#EFE6D0",
@@ -138,7 +138,7 @@ export function phone(o: { w: number; label: string; time: string; scene: "dusk"
         <div class="accent" style="font-size:${o.w * 0.13}px;margin-top:${o.w * 0.25}px;line-height:1">${o.label}</div>
         <div class="ui" style="font-size:${o.w * 0.045}px;opacity:.7;margin-top:${o.w * 0.03}px">${o.caption ?? ""}</div>
         <div style="margin-top:${o.w * 0.12}px">${bars(o.seed ?? "player", 40, o.w * 0.84, o.w * 0.22, "#F2EDE3")}</div>
-        <div style="height:3px;background:rgba(255,255,255,.25);margin-top:${o.w * 0.05}px"><div class="pfill" style="height:100%;width:${progress * 100}%;background:#FF5B2E"></div></div>
+        <div style="height:3px;background:rgba(255,255,255,.25);margin-top:${o.w * 0.05}px"><div class="pfill" style="height:100%;width:${progress * 100}%;background:#EFE6D0"></div></div>
         <div style="display:flex;justify-content:center;margin-top:${o.w * 0.1}px"><div style="width:${o.w * 0.2}px;height:${o.w * 0.2}px;border-radius:50%;background:#F2EDE3;display:flex;align-items:center;justify-content:center"><div style="width:${o.w * 0.025}px;height:${o.w * 0.07}px;background:#151412;margin-right:${o.w * 0.02}px"></div><div style="width:${o.w * 0.025}px;height:${o.w * 0.07}px;background:#151412"></div></div></div>
       </div>`
     : vm

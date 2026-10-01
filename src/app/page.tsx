@@ -157,7 +157,7 @@ export default function Home() {
                   n: "02",
                   label: "We extract the moment",
                   body: (
-                    <div className="flex aspect-[9/16] max-h-[340px] w-full flex-col justify-center border-2 border-ink bg-paper px-4">
+                    <div className="flex aspect-[9/16] max-h-[340px] w-full flex-col justify-center rounded-xl border border-ink/15 bg-paper px-4">
                       <WaveLine seed="step-phone" className="h-24 w-full text-ink" count={120} />
                       <Meta className="mt-4" rows={[["Length", "00:21.08"], ["Peaks", "400 samples"]]} />
                     </div>
@@ -167,7 +167,7 @@ export default function Home() {
                   n: "03",
                   label: "It shapes your artwork",
                   body: (
-                    <Reveal variant="grow-up" className="border-2 border-ink">
+                    <Reveal variant="grow-up" className="rounded-xl border border-ink/15">
                       <Artwork designId={herb.id} fields={herb.sample} peaks={samplePeaks("step-phone", "voice")} showQr={false} idPrefix="step-art" />
                     </Reveal>
                   ),
@@ -179,7 +179,7 @@ export default function Home() {
                 },
               ].map((s) => (
                 <li key={s.n} className="flex flex-col">
-                  <div className="mb-4 flex items-baseline gap-3 border-b-2 border-ink pb-2">
+                  <div className="mb-4 flex items-baseline gap-3 border-b border-ink/15 pb-2">
                     <span className="display text-4xl">{s.n}</span>
                     <span className="meta">{s.label}</span>
                   </div>
@@ -230,7 +230,7 @@ export default function Home() {
           </div>
 
           {/* What can become art */}
-          <div className="mt-28 border-t-2 border-ink pt-10">
+          <div className="mt-28 border-t border-ink/15 pt-10">
             <p className="meta mb-6">What can become art?</p>
             <p className="display text-[9vw] leading-[0.95] sm:text-[6vw] lg:text-[72px]">
               {SOURCES.map((s, i) => (
@@ -261,7 +261,7 @@ export default function Home() {
               <div className="mt-8 flex items-center gap-3">
                 {night.colorways.map((c) => (
                   <span key={c.id} className="flex items-center gap-2">
-                    <span className="h-6 w-6 rounded-full border-2 border-night-ink" style={{ background: `linear-gradient(135deg, ${c.swatch[0]} 50%, ${c.swatch[1]} 50%)` }} />
+                    <span className="h-6 w-6 rounded-full border border-night-ink/40" style={{ background: `linear-gradient(135deg, ${c.swatch[0]} 50%, ${c.swatch[1]} 50%)` }} />
                     <span className="meta">{c.name}</span>
                   </span>
                 ))}
@@ -316,7 +316,7 @@ export default function Home() {
             </p>
             <ul className="mt-12 grid gap-4 text-lg sm:grid-cols-2 lg:grid-cols-4">
               {["The way their voice sounded", "Laughter in the background", "The room you were in", "The small imperfect sounds"].map((t) => (
-                <li key={t} className="border-t-2 border-romantic-wine pt-3">
+                <li key={t} className="border-t border-romantic-wine/30 pt-3">
                   {t}
                 </li>
               ))}
@@ -335,12 +335,12 @@ export default function Home() {
             </p>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:col-span-7">
-            <div className="border-2 border-ink bg-paper-2 p-6 shadow-[6px_6px_0_#151412]">
+            <div className="rounded-xl border border-ink/15 bg-paper-2 p-6 shadow-soft">
               <p className="meta">Option A · default</p>
               <p className="display mt-3 text-4xl">Your recording</p>
               <p className="mt-3 leading-relaxed">The code plays the recording you uploaded, from a private link nobody can guess.</p>
             </div>
-            <div className="border-2 border-ink bg-paper-2 p-6 shadow-[6px_6px_0_#151412]">
+            <div className="rounded-xl border border-ink/15 bg-paper-2 p-6 shadow-soft">
               <p className="meta">Option B</p>
               <p className="display mt-3 text-4xl">Any link you choose</p>
               <p className="mt-3 leading-relaxed">A Spotify or Apple Music song, a YouTube video, a shared album — the code opens it.</p>
@@ -352,11 +352,11 @@ export default function Home() {
         </section>
 
         {/* ── 7 · THE OBJECT ───────────────────────────────────────── */}
-        <section className="border-y-2 border-ink bg-paper-2">
+        <section className="border-y border-ink/15 bg-paper-2">
           <div className="mx-auto grid max-w-[1440px] gap-12 px-4 py-20 sm:px-8 lg:grid-cols-12">
             <div className="lg:col-span-7">
               <p className="meta mb-4">Detail · Herbarium specimen label, shown at roughly print size</p>
-              <div className="relative aspect-[4/3] overflow-hidden border-2 border-ink bg-paper">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-ink/15 bg-paper">
                 <div className="absolute left-[-99%] top-[-239%] w-[210%]">
                   <Artwork designId={herb.id} fields={herb.sample} colorwayId="herbarium" qrStyle="discreet" idPrefix="detail" />
                 </div>
@@ -366,9 +366,9 @@ export default function Home() {
             <div className="lg:col-span-5">
               <h2 className="display text-[12vw] sm:text-[7vw] lg:text-[72px]">A real object, not a JPEG.</h2>
               <ul className="mt-8 space-y-4 text-lg">
-                <li className="border-t-2 border-ink pt-3">Pigment inks on archival matte fine-art paper</li>
-                <li className="border-t-2 border-ink pt-3">Solid wood frame — black, natural oak or white — with a white mount and shatterproof glazing</li>
-                <li className="border-t-2 border-ink pt-3">Made to order in 3–5 business days, tracked US delivery</li>
+                <li className="border-t border-ink/15 pt-3">Pigment inks on archival matte fine-art paper</li>
+                <li className="border-t border-ink/15 pt-3">Solid wood frame — black, natural oak or white — with a white mount and shatterproof glazing</li>
+                <li className="border-t border-ink/15 pt-3">Made to order in 3–5 business days, tracked US delivery</li>
               </ul>
               <table className="mt-10 w-full text-left">
                 <thead>
@@ -411,12 +411,12 @@ export default function Home() {
         </section>
 
         {/* ── 9 · OCCASIONS ────────────────────────────────────────── */}
-        <section id="occasions" className="scroll-mt-20 border-t-2 border-ink">
+        <section id="occasions" className="scroll-mt-20 border-t border-ink/15">
           <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8">
             <p className="meta mb-6">Who it’s for</p>
             <ul>
               {OCCASIONS.map((o) => (
-                <li key={o.id} className="border-b-2 border-ink">
+                <li key={o.id} className="border-b border-ink/15">
                   <Link href={o.landing ?? `/create?occasion=${o.id}`} className="group flex min-h-[64px] items-center justify-between gap-4 py-3">
                     <span className="display text-[10vw] transition-transform duration-300 group-hover:translate-x-3 sm:text-[6vw] lg:text-[72px]">{o.label}</span>
                     <span className="meta hidden text-right opacity-70 sm:block">{getDesign(o.designId)?.name} →</span>
@@ -431,8 +431,8 @@ export default function Home() {
         <FAQ />
 
         {/* ── 10 · FINAL CTA ───────────────────────────────────────── */}
-        <section className="relative overflow-hidden bg-signal">
-          <MemoryTrace seed="final" fill="rgba(21,20,18,.08)" className="pointer-events-none absolute inset-x-0 top-1/2 h-[140%] w-full -translate-y-1/2" />
+        <section className="relative overflow-hidden bg-romantic text-romantic-wine">
+          <MemoryTrace seed="final" fill="rgba(90,30,43,.07)" className="pointer-events-none absolute inset-x-0 top-1/2 h-[140%] w-full -translate-y-1/2" />
           <div className="relative mx-auto max-w-[1440px] px-4 py-24 sm:px-8">
             <h2 className="display text-[18vw] lg:text-[180px]">
               A moment you can <span className="accent !font-normal">hold.</span>

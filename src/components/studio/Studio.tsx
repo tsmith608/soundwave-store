@@ -451,7 +451,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
     }
   };
 
-  const inputCls = "w-full h-12 border-2 border-ink bg-paper px-3 text-[16px] focus:outline-none focus:bg-white";
+  const inputCls = "w-full h-12 rounded-xl border border-ink/25 bg-paper px-3 text-[16px] focus:outline-none focus:bg-white";
   const phase = mem.state.phase;
 
   // ── Panels ────────────────────────────────────────────────────────────
@@ -472,7 +472,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
               type="button"
               onClick={() => chooseOccasion(o.id)}
               aria-pressed={occasionId === o.id}
-              className={`min-h-[44px] border-2 border-ink px-3 text-sm ${occasionId === o.id ? "bg-ink text-paper" : "bg-transparent hover:bg-paper-2"}`}
+              className={`min-h-[44px] rounded-full border px-4 text-sm transition-colors ${occasionId === o.id ? "border-ink bg-ink text-paper" : "border-ink/20 bg-transparent hover:bg-paper-2"}`}
             >
               {o.label}
             </button>
@@ -482,7 +482,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       </div>
 
       {phase === "ready" && mem.info ? (
-        <div className="border-2 border-ink bg-paper-2 p-4">
+        <div className="rounded-xl border border-ink/15 bg-paper-2 p-4">
           <div className="flex items-start justify-between gap-4">
             <Meta
               rows={[
@@ -514,7 +514,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
             const f = e.dataTransfer.files?.[0];
             if (f) void mem.handle(f, f.name);
           }}
-          className="flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-ink bg-paper-2 p-6 text-center hover:bg-[#e2dac9]"
+          className="flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-ink/30 bg-paper-2 p-6 text-center hover:bg-[#e2dac9]"
         >
           <input type="file" accept={ACCEPT} className="sr-only" onChange={(e) => e.target.files?.[0] && mem.handle(e.target.files[0], e.target.files[0].name)} />
           {phase === "idle" || phase === "error" ? (
@@ -534,7 +534,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
                   : `Saving the sound… ${mem.state.phase === "uploading" ? Math.round(mem.state.progress * 100) : 0}%`}
               </span>
               {mem.state.phase === "uploading" && (
-                <span className="mt-1 block h-2 w-full max-w-xs border-2 border-ink" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(mem.state.progress * 100)} aria-label="Upload progress">
+                <span className="mt-1 block h-2 w-full max-w-xs rounded-xl border border-ink/15" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(mem.state.progress * 100)} aria-label="Upload progress">
                   <span className="block h-full bg-signal transition-[width]" style={{ width: `${Math.round(mem.state.progress * 100)}%` }} />
                 </span>
               )}
@@ -549,7 +549,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
         </label>
       )}
       {phase === "error" && mem.state.phase === "error" && (
-        <div role="alert" className="border-2 border-[#B2361B] bg-[#FBE7E1] p-4 text-sm text-[#7E2512]">
+        <div role="alert" className="rounded-xl border border-[#B2361B]/40 bg-[#FBE7E1] p-4 text-sm text-[#7E2512]">
           {mem.state.message}
           {(mem.state.code === "network" || mem.state.code === "server") && mem.canRetry() && (
             <button type="button" onClick={mem.retry} className="ml-2 font-semibold underline">
@@ -572,7 +572,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       <h2 className="display text-5xl">Choose your artwork</h2>
       <div className="grid grid-cols-2 gap-4">
         {DESIGNS.map((d) => (
-          <button key={d.id} type="button" onClick={() => chooseDesign(d.id)} aria-pressed={d.id === design.id} className={`text-left border-2 border-ink p-2 ${d.id === design.id ? "bg-ink text-paper shadow-[0_10px_28px_-14px_rgba(21,20,18,.45)]" : "bg-paper hover:bg-paper-2"}`}>
+          <button key={d.id} type="button" onClick={() => chooseDesign(d.id)} aria-pressed={d.id === design.id} className={`text-left rounded-xl border border-ink/15 p-2 ${d.id === design.id ? "bg-ink text-paper shadow-[0_10px_28px_-14px_rgba(21,20,18,.45)]" : "bg-paper hover:bg-paper-2"}`}>
             <Artwork designId={d.id} fields={d.sample} peaks={peaks} colorwayId={d.id === design.id ? colorwayId : undefined} showQr={false} idPrefix={`pick-${d.id}`} />
             <span className="display mt-3 block text-2xl">{d.name}</span>
             <span className="mt-1 block text-sm opacity-80">{d.tagline}</span>
@@ -588,9 +588,9 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
               type="button"
               onClick={() => setColorwayId(c.id)}
               aria-pressed={colorwayId === c.id}
-              className={`flex min-h-[44px] items-center gap-2 border-2 px-2.5 ${colorwayId === c.id ? "border-ink bg-paper-2" : "border-transparent"}`}
+              className={`flex min-h-[44px] items-center gap-2 rounded-full border pl-1.5 pr-3.5 ${colorwayId === c.id ? "border-ink/40 bg-paper-2" : "border-transparent"}`}
             >
-              <span className="h-7 w-7 rounded-full border-2 border-ink" style={{ background: `linear-gradient(135deg, ${c.swatch[0]} 50%, ${c.swatch[1]} 50%)` }} />
+              <span className="h-7 w-7 rounded-full border border-ink/25" style={{ background: `linear-gradient(135deg, ${c.swatch[0]} 50%, ${c.swatch[1]} 50%)` }} />
               <span className="text-sm">{c.name}</span>
             </button>
           ))}
@@ -629,14 +629,14 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       </div>
 
       {songField && (
-        <fieldset className="border-2 border-ink p-4">
+        <fieldset className="rounded-xl border border-ink/15 p-4">
           <legend className="meta px-2">Add the song behind the memory · optional</legend>
           <p className="mb-3 text-sm text-ink-soft">If a song is part of the story, add its title and artist. It’s printed as a small line — we don’t use the song’s audio.</p>
           <input type="text" maxLength={songField.maxLength} value={fields.song ?? ""} placeholder={songField.placeholder} onChange={(e) => setField("song", e.target.value)} className={inputCls} aria-label="Song title and artist" />
         </fieldset>
       )}
 
-      <fieldset className="border-2 border-ink p-4">
+      <fieldset className="rounded-xl border border-ink/15 p-4">
         <legend className="meta px-2">Scan-to-listen code</legend>
         <div className="grid grid-cols-3 gap-2">
           {(
@@ -646,7 +646,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
               ["off", "None", "Art only"],
             ] as const
           ).map(([id, label, note]) => (
-            <button key={id} type="button" onClick={() => setQr(id)} aria-pressed={qr === id} className={`min-h-[56px] border-2 border-ink p-2 text-left ${qr === id ? "bg-ink text-paper" : "bg-paper"}`}>
+            <button key={id} type="button" onClick={() => setQr(id)} aria-pressed={qr === id} className={`min-h-[56px] rounded-xl border border-ink/15 p-2 text-left ${qr === id ? "bg-ink text-paper" : "bg-paper"}`}>
               <span className="block text-sm font-semibold">{label}</span>
               <span className="block text-xs opacity-75">{note}</span>
             </button>
@@ -687,7 +687,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       <h2 className="display text-5xl">Print &amp; frame</h2>
       <div className="grid grid-cols-2 gap-3">
         {FORMATS.map((f) => (
-          <button key={f.id} type="button" onClick={() => setFormat(f.id)} aria-pressed={format === f.id} className={`border-2 border-ink p-3 text-left ${format === f.id ? "bg-ink text-paper" : "bg-paper"}`}>
+          <button key={f.id} type="button" onClick={() => setFormat(f.id)} aria-pressed={format === f.id} className={`rounded-xl border border-ink/15 p-3 text-left ${format === f.id ? "bg-ink text-paper" : "bg-paper"}`}>
             <span className="block font-semibold">{f.label}</span>
             <span className="mt-0.5 block text-xs opacity-80">{f.description}</span>
           </button>
@@ -697,7 +697,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
         {sizesForFormat.map((v) => {
           const s = getPrintSize(v.sizeId);
           return (
-            <button key={v.id} type="button" onClick={() => setSizeId(v.sizeId)} aria-pressed={sizeId === v.sizeId} className={`border-2 border-ink p-3 text-left ${sizeId === v.sizeId ? "bg-ink text-paper" : "bg-paper"}`}>
+            <button key={v.id} type="button" onClick={() => setSizeId(v.sizeId)} aria-pressed={sizeId === v.sizeId} className={`rounded-xl border border-ink/15 p-3 text-left ${sizeId === v.sizeId ? "bg-ink text-paper" : "bg-paper"}`}>
               <span className="display block text-2xl">{s?.label ?? v.sizeId}</span>
               <span className="block font-semibold">{formatPrice(v.priceCents)}</span>
               {s?.note && <span className="mt-1 block text-[11px] leading-tight opacity-75">{s.note}</span>}
@@ -710,8 +710,8 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
           <p className="meta mb-2">Frame</p>
           <div className="flex flex-wrap gap-3">
             {finishes.map((f) => (
-              <button key={f.id} type="button" onClick={() => setFrameFinish(f.id)} aria-pressed={frameFinish === f.id} className={`flex min-h-[44px] items-center gap-2 border-2 px-2.5 ${frameFinish === f.id ? "border-ink bg-paper-2" : "border-transparent"}`}>
-                <span className="h-7 w-7 border-2 border-ink" style={{ background: f.color }} />
+              <button key={f.id} type="button" onClick={() => setFrameFinish(f.id)} aria-pressed={frameFinish === f.id} className={`flex min-h-[44px] items-center gap-2 rounded-full border pl-1.5 pr-3.5 ${frameFinish === f.id ? "border-ink/40 bg-paper-2" : "border-transparent"}`}>
+                <span className="h-7 w-7 rounded-full border border-ink/25" style={{ background: f.color }} />
                 <span className="text-sm">{f.label}</span>
               </button>
             ))}
@@ -720,7 +720,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       )}
       <div>
         <p className="meta mb-2">Quantity</p>
-        <div className="inline-flex items-center border-2 border-ink">
+        <div className="inline-flex items-center rounded-xl border border-ink/15">
           <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1} className="h-11 w-11 text-xl disabled:opacity-30" aria-label="One fewer">
             −
           </button>
@@ -834,7 +834,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
         {/* Controls */}
         <div ref={panelRef} className="scroll-mt-24">
           {restored && (
-            <div role="status" className="mb-4 flex flex-wrap items-center justify-between gap-2 border-2 border-ink bg-film px-4 py-3 text-sm">
+            <div role="status" className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-ink/15 bg-film px-4 py-3 text-sm">
               <span>We restored the design you were working on.</span>
               <button type="button" onClick={reset} className="meta min-h-[44px] underline">
                 Start over
@@ -855,14 +855,14 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
             </span>
           </div>
           <nav aria-label="Steps" className="mb-8">
-            <ol className="grid grid-cols-5 border-2 border-ink">
+            <ol className="grid grid-cols-5 gap-1 rounded-2xl bg-paper-2 p-1">
               {STEPS.map((s, i) => (
-                <li key={s} className={i ? "border-l-2 border-ink" : ""}>
+                <li key={s}>
                   <button
                     type="button"
                     onClick={() => goto(i)}
                     aria-current={step === i ? "step" : undefined}
-                    className={`flex min-h-[52px] w-full flex-col items-start justify-center px-2 text-left sm:px-3 ${step === i ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
+                    className={`flex min-h-[52px] w-full flex-col items-start justify-center rounded-xl px-2 text-left transition-colors sm:px-3 ${step === i ? "bg-ink text-paper shadow-soft" : "hover:bg-paper"}`}
                   >
                     <span className="meta !text-[10px] opacity-70">
                       {stepDone[i] && step !== i ? "✓" : `0${i + 1}`}
@@ -876,7 +876,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
 
           {panels[step]}
 
-          <div className="mt-10 hidden items-center justify-between border-t-2 border-ink pt-5 lg:flex">
+          <div className="mt-10 hidden items-center justify-between border-t border-ink/15 pt-5 lg:flex">
             <button type="button" onClick={() => goto(step - 1)} disabled={step === 0} className="meta min-h-[44px] px-2 underline disabled:opacity-30">
               ← Back
             </button>
@@ -896,7 +896,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       </div>
 
       {/* Mobile step bar */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t-2 border-ink bg-paper px-4 py-3 lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t border-ink/15 bg-paper px-4 py-3 lg:hidden">
         <button type="button" onClick={() => goto(step - 1)} disabled={step === 0} className="meta min-h-[44px] px-1 underline disabled:opacity-30">
           ← Back
         </button>

@@ -30,7 +30,7 @@ export default function AboutPage() {
             </p>
           </div>
         </section>
-        <section className="border-y-2 border-ink bg-paper-2">
+        <section className="border-y border-ink/15 bg-paper-2">
           <div className="mx-auto grid max-w-[1100px] gap-8 px-4 py-14 sm:px-8 md:grid-cols-3">
             {[
               ["Made from your sound", "Every piece is generated from the loudness of your own recording. No stock waveforms, no templates filled in by hand."],

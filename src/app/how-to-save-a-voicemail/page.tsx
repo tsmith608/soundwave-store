@@ -77,7 +77,7 @@ export default function Page() {
               </ol>
             </section>
           ))}
-          <section className="mt-14 border-t-2 border-ink pt-10">
+          <section className="mt-14 border-t border-ink/15 pt-10">
             <h2 className="display text-4xl">If you&apos;d like to keep it on the wall</h2>
             <p className="mt-3 text-ink-soft leading-relaxed">
               Once you have the file, you can turn its sound into a quiet keepsake — a botanical specimen grown from their voice, with their name and the words they said — and a code that plays the message from any phone.

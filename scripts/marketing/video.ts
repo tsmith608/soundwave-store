@@ -71,7 +71,7 @@ function moon(): Video {
     const iso = d.toISOString().slice(0, 10);
     const label = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
     const html = `<div style="position:absolute;left:250px;top:620px">${framed(art({ design: "night-of", seed: "metnight", fields: { names: "Sam & Alex", date: iso, title: "The night we met" } }), 580, "black")}</div>
-      <div class="meta" style="position:absolute;left:0;right:0;top:1540px;text-align:center;font-size:48px;color:${i === steps - 1 ? C.signal : C.nightInk}">${label}</div>`;
+      <div class="meta" style="position:absolute;left:0;right:0;top:1540px;text-align:center;font-size:48px;color:${i === steps - 1 ? C.moon : C.nightInk};opacity:${i === steps - 1 ? 1 : 0.7}">${label}</div>`;
     swaps.push([1.4 + i * 0.32, html]);
   }
   const body = `

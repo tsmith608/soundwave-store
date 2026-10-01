@@ -80,7 +80,7 @@ fbq('init','${META}');fbq('track','PageView');`}</Script>
 ttq.load('${TIKTOK}');ttq.page();}(window, document, 'ttq');`}</Script>
       )}
       {anyPixel && consent === null && (
-        <div role="dialog" aria-label="Cookie choice" className="fixed bottom-20 left-4 right-4 z-50 border-2 border-ink bg-paper p-4 text-sm shadow-[4px_4px_0_#151412] sm:left-auto sm:max-w-sm lg:bottom-4">
+        <div role="dialog" aria-label="Cookie choice" className="fixed bottom-20 left-4 right-4 z-50 rounded-xl border border-ink/15 bg-paper p-4 text-sm shadow-soft sm:left-auto sm:max-w-sm lg:bottom-4">
           <p className="mb-3">
             We&rsquo;d like to use advertising cookies to measure which videos and ads bring people here. Nothing is shared with ad platforms until you say yes.{" "}
             <a href="/cookies" className="underline">
@@ -88,10 +88,10 @@ ttq.load('${TIKTOK}');ttq.page();}(window, document, 'ttq');`}</Script>
             </a>
           </p>
           <div className="flex gap-2">
-            <button onClick={() => decide("granted")} className="min-h-[44px] border-2 border-ink bg-ink px-4 text-paper">
+            <button onClick={() => decide("granted")} className="min-h-[44px] rounded-xl border border-ink/15 bg-ink px-4 text-paper">
               Accept
             </button>
-            <button onClick={() => decide("denied")} className="min-h-[44px] border-2 border-ink px-4">
+            <button onClick={() => decide("denied")} className="min-h-[44px] rounded-xl border border-ink/15 px-4">
               No thanks
             </button>
           </div>

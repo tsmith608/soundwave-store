@@ -7,7 +7,7 @@ import { FAQ_ITEMS } from "@/lib/faq";
 export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="faq" className="scroll-mt-20 border-t-2 border-ink">
+    <section id="faq" className="scroll-mt-20 border-t border-ink/15">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-20 sm:px-8 lg:grid-cols-12">
         <h2 className="display text-[16vw] lg:col-span-4 lg:text-[112px]">
           Good <span className="accent !font-normal">questions.</span>
@@ -16,7 +16,7 @@ export default function FAQ() {
           {FAQ_ITEMS.map((item, idx) => {
             const isOpen = open === idx;
             return (
-              <div key={item.question} className="border-b-2 border-ink">
+              <div key={item.question} className="border-b border-ink/15">
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : idx)}

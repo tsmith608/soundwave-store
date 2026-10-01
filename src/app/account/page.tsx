@@ -43,7 +43,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
               Orders
             </h2>
             {orders.length === 0 ? (
-              <p className="mt-4 border-2 border-ink bg-paper-2 p-6 text-lg">
+              <p className="mt-4 rounded-xl border border-ink/15 bg-paper-2 p-6 text-lg">
                 No orders yet. Orders placed with <strong>{user.email}</strong> appear here automatically.{" "}
                 <Link href="/create" className="underline">
                   Create your first piece
@@ -51,7 +51,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
                 .
               </p>
             ) : (
-              <ul className="mt-4 divide-y-2 divide-ink border-y-2 border-ink">
+              <ul className="mt-4 divide-y-2 divide-ink border-y border-ink/15">
                 {orders.map((o) => (
                   <li key={o.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
                     <div>
@@ -98,7 +98,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
               <ul className="mt-4 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
                 {projects.map((p) => (
                   <li key={p.id}>
-                    <Link href={`/create?project=${p.id}`} className="block border-2 border-ink bg-paper-2 p-2 hover:bg-paper">
+                    <Link href={`/create?project=${p.id}`} className="block rounded-xl border border-ink/15 bg-paper-2 p-2 hover:bg-paper">
                       <Artwork designId={p.designId} fields={p.fields as unknown as ArtFields} peaks={(p.peaks as number[]) ?? null} colorwayId={p.colorwayId} showQr={false} idPrefix={`acc-${p.id}`} />
                     </Link>
                     <p className="mt-2 text-sm font-semibold">{getDesign(p.designId)?.name}</p>
@@ -117,7 +117,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
             <AddressBook initial={addresses.map((a) => ({ id: a.id, text: [a.name, a.line1, a.line2, `${a.city}${a.state ? `, ${a.state}` : ""} ${a.postalCode}`, a.country].filter(Boolean).join(" · "), isDefault: a.isDefault }))} />
           </section>
 
-          <section className="mt-14 border-t-2 border-ink pt-8" aria-labelledby="acct-h">
+          <section className="mt-14 border-t border-ink/15 pt-8" aria-labelledby="acct-h">
             <h2 id="acct-h" className="display text-4xl">
               Account
             </h2>

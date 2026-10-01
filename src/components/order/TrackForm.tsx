@@ -21,7 +21,7 @@ export default function TrackForm() {
       setBusy(false);
     }
   };
-  const input = "mt-1 h-12 w-full border-2 border-ink bg-paper px-3 text-[16px]";
+  const input = "mt-1 h-12 w-full rounded-xl border border-ink/25 bg-paper px-3 text-[16px]";
   return (
     <form onSubmit={submit} className="mt-8 space-y-4" noValidate>
       <label className="block font-medium">

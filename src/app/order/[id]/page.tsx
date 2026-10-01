@@ -49,7 +49,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               {STEP_LABEL.map((label, i) => {
                 const done = idx >= i || (order.status === "ready_for_fulfillment" && i <= 1);
                 return (
-                  <li key={label} className={`border-2 border-ink p-2 text-sm ${done ? "bg-ink text-paper" : "bg-paper"}`} aria-current={idx === i ? "step" : undefined}>
+                  <li key={label} className={`rounded-xl border border-ink/15 p-2 text-sm ${done ? "bg-ink text-paper" : "bg-paper"}`} aria-current={idx === i ? "step" : undefined}>
                     <span className="meta block !text-[10px] opacity-70">{done ? "✓" : `0${i + 1}`}</span>
                     {label}
                   </li>
@@ -59,7 +59,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           )}
 
           {order.shipments.length > 0 && (
-            <section className="mt-10 border-2 border-ink bg-botanical p-5">
+            <section className="mt-10 rounded-xl border border-ink/15 bg-botanical p-5">
               <h2 className="display text-3xl">Tracking</h2>
               <ul className="mt-3 space-y-2">
                 {order.shipments.map((s) => (
@@ -85,7 +85,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                   const spec = it.artworkSpec as unknown as { designId: string; colorwayId: string; fields: ArtFields; peaks: number[]; widthIn: number; heightIn: number; showQr: boolean; qrStyle: "discreet" | "standard" };
                   return (
                     <li key={it.id} className="grid grid-cols-[120px_minmax(0,1fr)] gap-4">
-                      <div className="border-2 border-ink bg-paper-2 p-2">
+                      <div className="rounded-xl border border-ink/15 bg-paper-2 p-2">
                         <Artwork designId={spec.designId} fields={spec.fields} peaks={spec.peaks} colorwayId={spec.colorwayId} widthIn={spec.widthIn} heightIn={spec.heightIn} showQr={spec.showQr} qrStyle={spec.qrStyle} idPrefix={`o-${it.id}`} />
                       </div>
                       <div>
@@ -103,7 +103,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 })}
               </ul>
             </section>
-            <aside className="h-fit space-y-6 border-2 border-ink p-5">
+            <aside className="h-fit space-y-6 rounded-xl border border-ink/15 p-5">
               <dl className="space-y-1.5 text-[15px]">
                 <div className="flex justify-between">
                   <dt>Subtotal</dt>
@@ -123,7 +123,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                   <dt>Tax</dt>
                   <dd>{formatCents(order.taxCents)}</dd>
                 </div>
-                <div className="flex justify-between border-t-2 border-ink pt-2 font-semibold">
+                <div className="flex justify-between border-t border-ink/15 pt-2 font-semibold">
                   <dt>Total</dt>
                   <dd>{formatCents(order.totalCents)}</dd>
                 </div>

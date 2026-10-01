@@ -35,7 +35,7 @@ export default function PhoneMemory({
 }) {
   const peaks = samplePeaks(seed, "voice", 120);
   return (
-    <figure className={`relative aspect-[9/16] w-full overflow-hidden rounded-[22px] border-2 border-ink bg-ink shadow-[6px_6px_0_#151412] ${className}`}>
+    <figure className={`relative aspect-[9/16] w-full overflow-hidden rounded-[22px] border border-ink/15 bg-ink shadow-soft ${className}`}>
       <div className="absolute inset-0" style={{ background: SCENES[scene] }} />
       {/* soft blurry "footage" blobs */}
       <div className="absolute -left-6 top-1/3 h-32 w-32 rounded-full bg-white/25 blur-2xl" aria-hidden />

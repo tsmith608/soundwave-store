@@ -63,13 +63,13 @@ export function AddressBook({ initial }: { initial: { id: string; text: string; 
   const [list, setList] = useState(initial);
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const input = "h-11 w-full border-2 border-ink bg-paper px-3";
+  const input = "h-11 w-full rounded-xl border border-ink/25 bg-paper px-3";
   return (
     <div className="mt-4">
       {list.length === 0 && <p className="text-ink-soft">No saved addresses. You&rsquo;ll enter your shipping address at checkout.</p>}
       <ul className="space-y-2">
         {list.map((a) => (
-          <li key={a.id} className="flex items-center justify-between gap-4 border-2 border-ink p-3">
+          <li key={a.id} className="flex items-center justify-between gap-4 rounded-xl border border-ink/15 p-3">
             <span>
               {a.text}
               {a.isDefault && <span className="meta ml-2">default</span>}
@@ -163,7 +163,7 @@ export function AccountActions() {
           <span>Sign out</span>
         </button>
       </form>
-      <div className="max-w-xl border-2 border-[#B2361B] p-4">
+      <div className="max-w-xl rounded-xl border border-[#B2361B]/40 p-4">
         <p className="font-semibold">Delete my account</p>
         <p className="mt-1 text-sm text-ink-soft">
           Removes your sign-in, saved designs and addresses, and deletes recordings not used by an order. Paid orders are kept for our accounting records. To also remove recordings behind printed codes, contact us.
@@ -172,7 +172,7 @@ export function AccountActions() {
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <label className="text-sm">
               Type DELETE to confirm{" "}
-              <input value={text} onChange={(e) => setText(e.target.value)} className="h-11 border-2 border-ink px-2" />
+              <input value={text} onChange={(e) => setText(e.target.value)} className="h-11 rounded-xl border border-ink/25 px-2" />
             </label>
             <button
               type="button"

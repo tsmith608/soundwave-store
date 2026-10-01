@@ -47,13 +47,13 @@ export function insertHtml(): string {
         <div><div class="meta" style="font-size:8.5px;color:${C.soft}">Care</div><p style="font-size:10px;line-height:1.5;margin-top:4px">Hang out of direct sunlight. Dust with a soft dry cloth; no sprays on the glazing.</p></div>
         <div><div class="meta" style="font-size:8.5px;color:${C.soft}">Something wrong?</div><p style="font-size:10px;line-height:1.5;margin-top:4px">Damaged or our mistake? Tell us within 30 days for a reprint or refund. ${SUPPORT}</p></div>
       </div>
-      <div style="margin-top:22px;padding:14px 16px;background:${C.paper2};border:1.5px solid ${C.ink}">
+      <div style="margin-top:22px;padding:14px 16px;background:${C.paper2};border-radius:12px">
         <div class="meta" style="font-size:8.5px;color:${C.soft}">How yours was made</div>
         <p class="accent" style="font-size:19px;line-height:1.15;margin-top:6px">We measured how loud your recording was from its first second to its last — that&rsquo;s the shape on your wall. No two are alike.</p>
       </div>
     </div>
-    <div style="position:absolute;left:${safe}px;right:${safe}px;bottom:${safe}px;display:flex;gap:16px;align-items:flex-end;border-top:1.5px solid ${C.ink};padding-top:14px">
-      <div style="padding:6px;background:#fff;border:1.5px solid ${C.ink}">${qr}</div>
+    <div style="position:absolute;left:${safe}px;right:${safe}px;bottom:${safe}px;display:flex;gap:16px;align-items:flex-end;border-top:1px solid rgba(21,20,18,.2);padding-top:14px">
+      <div style="padding:7px;background:#fff;border-radius:10px">${qr}</div>
       <div style="flex:1">
         <div class="display" style="font-size:22px">Know someone with a voicemail they can&rsquo;t <span class="accent">delete?</span></div>
         <p class="ui" style="font-size:10px;line-height:1.45;margin-top:6px;font-weight:500">${CODE ? `Use <b>${CODE}</b> on their gift. ` : ""}${URL_TEXT}${HANDLE ? ` · ${HANDLE}` : ""}</p>

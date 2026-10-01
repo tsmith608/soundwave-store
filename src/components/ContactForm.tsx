@@ -24,11 +24,11 @@ export default function ContactForm({ defaultOrder, defaultTopic }: { defaultOrd
   };
   if (state === "sent")
     return (
-      <p role="status" className="h-fit border-2 border-ink bg-botanical p-6 text-lg">
+      <p role="status" className="h-fit rounded-xl border border-ink/15 bg-botanical p-6 text-lg">
         Thanks — your message is with us. We&rsquo;ve emailed you a copy and will reply soon.
       </p>
     );
-  const input = "mt-1 h-12 w-full border-2 border-ink bg-paper px-3 text-[16px]";
+  const input = "mt-1 h-12 w-full rounded-xl border border-ink/25 bg-paper px-3 text-[16px]";
   return (
     <form onSubmit={submit} className="space-y-4">
       <label className="block font-medium">
@@ -53,7 +53,7 @@ export default function ContactForm({ defaultOrder, defaultTopic }: { defaultOrd
       </label>
       <label className="block font-medium">
         Message
-        <textarea name="message" required rows={6} className="mt-1 w-full border-2 border-ink bg-paper p-3 text-[16px]" />
+        <textarea name="message" required rows={6} className="mt-1 w-full rounded-xl border border-ink/25 bg-paper p-3 text-[16px]" />
       </label>
       <div aria-hidden className="absolute left-[-9999px]">
         <label>

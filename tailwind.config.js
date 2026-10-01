@@ -16,10 +16,14 @@ module.exports = {
         serif: ["var(--font-serif)", "Cormorant Garamond", "Georgia", "serif"],
         sans: ["var(--font-sans)", "Inter", "-apple-system", "sans-serif"],
       },
+      boxShadow: {
+        soft: "0 1px 2px rgba(21,20,18,.06), 0 18px 40px -24px rgba(21,20,18,.35)",
+      },
       colors: {
         paper: { DEFAULT: "#F2EDE3", 2: "#E9E2D4" },
         ink: { DEFAULT: "#151412", soft: "#57524B" },
-        signal: "#FF5B2E",
+        // Former orange accent, retired; kept as an alias of the wine ink so nothing reads orange.
+        signal: "#5A1E2B",
         night: { DEFAULT: "#0F1627", ink: "#E8E6DF", soft: "#9AA3B5", moon: "#EFE6D0" },
         botanical: { DEFAULT: "#DFE6CF", ink: "#213520", leaf: "#4F6B45" },
         romantic: { DEFAULT: "#ECD3CD", wine: "#5A1E2B" },

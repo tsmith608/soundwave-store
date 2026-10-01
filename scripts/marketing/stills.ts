@@ -42,7 +42,7 @@ function transformPost(): Still {
   <div style="position:absolute;left:72px;right:72px;top:560px;display:flex;align-items:center;justify-content:space-between">
     <div style="text-align:center">${phone({ w: 250, label: "IMG_2208.MOV", time: "00:21", scene: "warm", seed: "dance", progress: 0.7, caption: "first dance, table six" })}<div class="meta" style="font-size:20px;margin-top:22px;color:${C.soft}">01 · your video</div></div>
     <div class="display" style="font-size:90px;color:${C.signal}">→</div>
-    <div style="text-align:center"><div style="width:250px;height:250px;display:flex;align-items:center;justify-content:center;border:3px solid ${C.ink};background:${C.paper}">${bars("dance", 28, 210, 140, C.ink)}</div><div class="meta" style="font-size:20px;margin-top:22px;color:${C.soft}">02 · its sound</div></div>
+    <div style="text-align:center"><div style="width:250px;height:250px;display:flex;align-items:center;justify-content:center;border-radius:28px;background:${C.paper};box-shadow:0 30px 60px -30px rgba(21,20,18,.45)">${bars("dance", 28, 210, 140, C.ink)}</div><div class="meta" style="font-size:20px;margin-top:22px;color:${C.soft}">02 · its sound</div></div>
     <div class="display" style="font-size:90px;color:${C.signal}">→</div>
     <div style="text-align:center">${framed(art({ design: "night-of", colorway: "dawn", fields: { names: "Maya & Jordan", date: "2024-09-12", title: "Our first dance, from table six" } }), 230, "natural")}<div class="meta" style="font-size:20px;margin-top:22px;color:${C.soft}">03 · your print</div></div>
   </div>
@@ -158,7 +158,7 @@ function pins(): Still[] {
       1000,
       1500,
       `<div style="position:absolute;left:0;right:0;top:110px;display:flex;justify-content:center">${visual}</div>
-       <div style="position:absolute;left:0;right:0;bottom:0;height:520px;background:${C.paper};border-top:4px solid ${C.ink};padding:56px 64px">
+       <div style="position:absolute;left:0;right:0;bottom:0;height:520px;background:${C.paper};border-radius:36px 36px 0 0;padding:56px 64px">
          <div class="meta" style="font-size:22px;color:${C.soft}">${kicker}</div>
          <h2 class="display" style="font-size:86px;color:${C.ink};margin-top:18px">${title}</h2>
          <div style="position:absolute;left:64px;right:64px;bottom:52px;display:flex;justify-content:space-between;align-items:center">${logo(28, C.ink)}<span class="meta" style="font-size:22px;color:${C.soft}">${URL_TEXT}</span></div>
@@ -203,7 +203,7 @@ function holiday(): Still {
   const cutoff = process.env.MARKETING_CUTOFF || "Dec 10";
   const body = `
   <div style="position:absolute;left:72px;top:90px;right:72px"><div class="meta" style="font-size:22px;color:${C.nightInk};opacity:.75">For Christmas delivery (US)</div>
-  <h1 class="display" style="font-size:150px;color:${C.nightInk};margin-top:26px">Order by <span style="color:${C.signal}">${cutoff}</span> <span class="accent">for framed prints.</span></h1></div>
+  <h1 class="display" style="font-size:150px;color:${C.nightInk};margin-top:26px">Order by <span class="accent" style="color:${C.moon}">${cutoff}</span> <span class="accent">for framed prints.</span></h1></div>
   <div style="position:absolute;left:50%;bottom:150px;transform:translateX(-50%) rotate(-1deg)">${framed(art({ design: "night-of", colorway: "midnight", fields: { names: "Grandma & Grandpa", date: "1976-12-24", title: "Fifty Christmases" } }), 420, "natural")}</div>
   ${foot(C.nightInk)}`;
   return { name: "seasonal-holiday-cutoff", w: 1080, h: 1350, html: doc(1080, 1350, body, C.night) };

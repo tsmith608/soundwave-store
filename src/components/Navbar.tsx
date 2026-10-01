@@ -19,7 +19,7 @@ function CartLink({ count, onClick }: { count: number; onClick?: () => void }) {
         <path d="M5 7h14l-1.5 12h-11z" />
         <path d="M9 7a3 3 0 0 1 6 0" />
       </svg>
-      {count > 0 && <span className="absolute -right-0.5 -top-0.5 min-w-[20px] rounded-full border-2 border-ink bg-signal px-1 text-center text-[11px] font-bold leading-4">{count}</span>}
+      {count > 0 && <span className="absolute -right-0.5 -top-0.5 min-w-[20px] rounded-full bg-ink px-1 text-center text-[11px] font-semibold leading-5 text-paper">{count}</span>}
     </Link>
   );
 }
@@ -46,7 +46,7 @@ export default function Navbar() {
       .catch(() => undefined);
   }, [pathname]);
   return (
-    <header className="sticky top-0 z-50 w-full border-b-2 border-ink bg-paper/95 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-ink/15 bg-paper/95 backdrop-blur">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-[60] focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">
         Skip to content
       </a>
@@ -84,7 +84,7 @@ export default function Navbar() {
         </div>
       </div>
       {open && (
-        <div className="border-t-2 border-ink bg-paper px-4 pb-6 pt-2 md:hidden">
+        <div className="border-t border-ink/15 bg-paper px-4 pb-6 pt-2 md:hidden">
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="display block py-2.5 text-3xl">
               {l.label}

@@ -21,7 +21,7 @@ export default function LoginForm({ next }: { next: string }) {
   };
   if (state === "sent")
     return (
-      <p role="status" className="mt-8 border-2 border-ink bg-botanical p-4 text-lg">
+      <p role="status" className="mt-8 rounded-xl border border-ink/15 bg-botanical p-4 text-lg">
         Check your inbox for a sign-in link from us. It works once and expires in 20 minutes.
       </p>
     );
@@ -29,7 +29,7 @@ export default function LoginForm({ next }: { next: string }) {
     <form onSubmit={submit} className="mt-8 space-y-4">
       <label className="block font-medium">
         Email
-        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className="mt-1 h-12 w-full border-2 border-ink bg-paper px-3 text-[16px]" />
+        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className="mt-1 h-12 w-full rounded-xl border border-ink/25 bg-paper px-3 text-[16px]" />
       </label>
       {state === "error" && (
         <p role="alert" className="text-[#7E2512]">
