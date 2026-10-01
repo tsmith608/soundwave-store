@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import IntentPage, { type IntentContent } from "@/components/IntentPage";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Voicemail Memorial Art — Keep Their Voice | SoundWave Art",
+  title: `Voicemail Memorial Art — Keep Their Voice | ${BRAND_NAME}`,
   description:
     "Turn a saved voicemail or voice note from someone you've lost into a quiet, finished memorial print — with their words set beneath and a code that plays their voice.",
   alternates: { canonical: "/voicemail-memorial-art" },

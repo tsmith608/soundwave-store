@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import IntentPage, { type IntentContent } from "@/components/IntentPage";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Pet Memorial Sound Art — Their Bark or Purr as a Print | SoundWave Art",
+  title: `Pet Memorial Sound Art — Their Bark or Purr as a Print | ${BRAND_NAME}`,
   description:
     "Keep the sound of a dog's bark or a cat's purr as a quiet memorial print with their name and years, and a code that plays it back.",
   alternates: { canonical: "/pet-memorial-sound-art" },

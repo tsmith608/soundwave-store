@@ -92,7 +92,7 @@ The studio has a separate, optional "The song behind the memory" field. It's pri
 | 2 | Retention | Recordings behind a QR code are kept for as long as the business runs. Without a code: deleted 90 days after delivery. Cancelled orders, abandoned checkouts and uploads never ordered: deleted after 30 days. | `src/lib/retention.ts` (tested). Run `npm run uploads:cleanup` (dry run), then add `-- --apply` on a daily schedule on the NAS. |
 | 3 | Background music in personal videos | Accepted | Terms §2, proposal and wedding pages |
 | 4 | Takedowns | Remove on request, no questions asked | `npm run uploads:remove -- <orderId or token> --apply` deletes the file. The QR page then says "This recording has been removed" and the audio returns 410. |
-| 5 | Brand name | Workshopped | `docs/brand-name-workshop.md`. Recommendation: **Still Heard**. |
+| 5 | Brand name | Workshopped | `docs/brand-name-workshop.md`. Chosen 1 Oct 2026: **Afterhum**. |
 
 **Commitments the drafted policies make on your behalf.** Change the pages if any of these are wrong:
 - Free changes or cancellation until production, which starts within about one business day.

@@ -1,4 +1,4 @@
-# SoundWave store
+# Afterhum store
 
 Personalised keepsake art made from the sound of a customer's own recording or video. The customer uploads a memory, customises a finished design (The Night Of / Herbarium), orders a print or framed print, and we render a 300-DPI print file and send it to the print lab (Prodigi), with tracking and emails throughout.
 

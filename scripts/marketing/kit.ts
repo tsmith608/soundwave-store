@@ -10,7 +10,7 @@ import path from "path";
 import { getDesign, renderArtwork, samplePeaks, type ArtFields } from "../../src/lib/art";
 import { embeddedFontCss } from "../../src/lib/art/node";
 
-export const BRAND = process.env.MARKETING_BRAND || process.env.NEXT_PUBLIC_BRAND_NAME || "SoundWave Art";
+export const BRAND = process.env.MARKETING_BRAND || process.env.NEXT_PUBLIC_BRAND_NAME || "Afterhum";
 export const URL_TEXT = (process.env.MARKETING_URL || "yourdomain.com").replace(/^https?:\/\//, "").replace(/\/$/, "");
 export const SITE = `https://${URL_TEXT}`;
 export const OUT = path.resolve(process.cwd(), "marketing/out");

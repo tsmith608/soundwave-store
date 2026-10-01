@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import IntentPage, { type IntentContent } from "@/components/IntentPage";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Baby Heartbeat Art — From Your Scan Video | SoundWave Art",
+  title: `Baby Heartbeat Art — From Your Scan Video | ${BRAND_NAME}`,
   description:
     "Turn the heartbeat from your ultrasound or Doppler video into a quiet nursery print. Upload the clip from your phone; we use its sound, not the footage. Framed or print-only.",
   alternates: { canonical: "/gifts/first-baby-heartbeat-soundwave-art" },

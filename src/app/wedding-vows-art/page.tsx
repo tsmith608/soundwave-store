@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import IntentPage, { type IntentContent } from "@/components/IntentPage";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Wedding Vows & First Dance Keepsake Art — From Your Wedding Video | SoundWave Art",
+  title: `Wedding Vows & First Dance Keepsake Art — From Your Wedding Video | ${BRAND_NAME}`,
   description:
     "Turn the sound of your wedding video — your vows, the speeches, the first dance as it was filmed — into keepsake wall art. Upload the clip; we use its sound. Framed or print-only.",
   alternates: { canonical: "/wedding-vows-art" },

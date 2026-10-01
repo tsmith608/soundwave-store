@@ -10,14 +10,14 @@ npm run marketing:render -- print        # insert card PDF
 npm run marketing:render -- sheet        # contact sheet
 
 # After the rename / domain decision, re-render everything in one go:
-MARKETING_BRAND="Still Heard" MARKETING_URL="stillheard.com" npm run marketing:render
+MARKETING_URL="afterhum.com" npm run marketing:render   # once the domain is bought
 ```
 
 Optional variables:
 
 | Variable | Used for | Default |
 |---|---|---|
-| `MARKETING_BRAND` | Wordmark on every asset | `NEXT_PUBLIC_BRAND_NAME`, then "SoundWave Art" |
+| `MARKETING_BRAND` | Wordmark on every asset | `NEXT_PUBLIC_BRAND_NAME`, then "Afterhum" |
 | `MARKETING_URL` | Printed URL + insert-card QR | `yourdomain.com` (**re-render before printing**) |
 | `MARKETING_CUTOFF` | Holiday graphic date | `Dec 10` (**placeholder: confirm with Prodigi**) |
 | `MARKETING_SUPPORT_EMAIL` | Insert card | `support@<MARKETING_URL>` |

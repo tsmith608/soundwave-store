@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { CTA } from "@/components/brand/Button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "How to Save a Voicemail on iPhone or Android (Before It's Deleted) | SoundWave Art",
+  title: `How to Save a Voicemail on iPhone or Android (Before It's Deleted) | ${BRAND_NAME}`,
   description:
     "Step-by-step: export a voicemail from an iPhone, an Android phone or a carrier mailbox, and back it up so a loved one's voice isn't lost when a line is cancelled or a phone is replaced.",
   alternates: { canonical: "/how-to-save-a-voicemail" },

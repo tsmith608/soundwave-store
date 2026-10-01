@@ -1,5 +1,7 @@
 # Brand Name Workshop
 
+> **Decision (1 Oct 2026): Afterhum.** Tagline: "What stays after the sound." The site, emails and marketing kit now use it by default. Still to do: the domain, the USPTO search and the social handles (Round 2 checklist below).
+
 **Date:** 28 Sep 2026.
 **Why:** "SoundWave Art" is used by an unrelated company in the same category, which has sold "Soundwave Art™" prints since 2012 (`docs/owner-review.md`, D1). We need a name we can own.
 

@@ -1,4 +1,4 @@
-// SoundWave Art — production commerce schema.
+// Afterhum — production commerce schema.
 // Money is always integer minor units (cents) + ISO currency. Timestamps are UTC.
 // Customer media never lives in the database: only object-storage keys.
 

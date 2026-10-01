@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import IntentPage, { type IntentContent } from "@/components/IntentPage";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Baby's First Laugh Art — From a Phone Video | SoundWave Art",
+  title: `Baby's First Laugh Art — From a Phone Video | ${BRAND_NAME}`,
   description:
     "Turn your baby's first laugh, first word or bedtime babble from a phone video into keepsake nursery art, with a code that plays it back. Framed or print-only.",
   alternates: { canonical: "/gifts/baby-first-laugh-soundwave-art" },

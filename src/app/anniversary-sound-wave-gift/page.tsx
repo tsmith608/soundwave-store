@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import IntentPage, { type IntentContent } from "@/components/IntentPage";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Anniversary Sound Wave Gift — Your Voice, Vows or Video as Art | SoundWave Art",
+  title: `Anniversary Sound Wave Gift — Your Voice, Vows or Video as Art | ${BRAND_NAME}`,
   description:
     "An anniversary gift made from a sound you share: your vows, a voice note, a video from the night you met. Finished keepsake art, archival paper, framed or print-only.",
   alternates: { canonical: "/anniversary-sound-wave-gift" },

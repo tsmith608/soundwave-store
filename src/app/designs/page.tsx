@@ -7,9 +7,10 @@ import { CTA } from "@/components/brand/Button";
 import Reveal from "@/components/brand/Reveal";
 import { WaveEdge } from "@/components/brand/shapes";
 import { getDesign } from "@/lib/art";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "The Art — The Night Of & Herbarium | SoundWave Art",
+  title: `The Art — The Night Of & Herbarium | ${BRAND_NAME}`,
   description: "Two finished keepsake designs generated from your own recording: The Night Of (the real moon on your date, surrounded by your sound) and Herbarium (a botanical specimen grown from your recording).",
   alternates: { canonical: "/designs" },
 };

@@ -46,7 +46,7 @@ Only services the code actually uses are listed. Set them as environment variabl
 ## B. Manual setup (can't be done in code)
 
 1. **Stripe**
-   - Settings → **Business details / Public details**: legal name, support email, statement descriptor (e.g. `SOUNDWAVE ART`).
+   - Settings → **Business details / Public details**: legal name, support email, statement descriptor (e.g. `AFTERHUM`).
    - Settings → **Branding**: logo and colours (shown on the Checkout page).
    - Settings → **Payment methods**: turn on Cards, **Apple Pay, Google Pay, Link**. Hosted Checkout needs no Apple Pay domain verification.
    - Settings → **Tax**:
@@ -83,7 +83,7 @@ Only services the code actually uses are listed. Set them as environment variabl
    - About page: add your real story (there's an `OWNER:` note in `src/app/about/page.tsx`).
    - Contact page: add a phone number only if you want one public (`OWNER:` note).
    - Review the promises in `/terms`, `/privacy`, `/shipping` and `/returns`: 12-hour correction window, 30-day damage/reprint window, reprint-at-cost for approved typos, US-only shipping, and emailing customers a download if you ever close.
-9. **Brand name and domain.** "SoundWave Art" conflicts with an existing company (`docs/brand-name-workshop.md`). Set `NEXT_PUBLIC_BRAND_NAME` and do a find-and-replace of the wordmark text before launch. Decide the domain before the first order ships, because printed QR codes use it.
+9. **Brand name and domain.** The brand is **Afterhum** (chosen 1 Oct 2026, `docs/brand-name-workshop.md`); the site and marketing kit already use it. Still to do: confirm the domain (e.g. `afterhum.com`) is available and buy it, run a USPTO search, and claim @afterhum handles. Decide the domain before the first order ships, because printed QR codes use it.
 
 ## C. Launch checklist
 
@@ -97,7 +97,8 @@ Only services the code actually uses are listed. Set them as environment variabl
 - [ ] Final domain on HTTPS; `NEXT_PUBLIC_APP_URL` set to it.
 - [ ] Legal name and state set; Terms/Privacy/Shipping/Returns promises reviewed and accepted by you.
 - [ ] Stripe Tax decision made (enabled with registrations, or consciously off after advice).
-- [ ] Brand name / trademark decision made.
+- [x] Brand name chosen: Afterhum.
+- [ ] Afterhum domain bought, USPTO search done, social handles claimed.
 - [ ] Rehearsal in test mode completed (`docs/operations.md`), including a refund and a QR scan of a real print.
 
 ### Should complete before launch

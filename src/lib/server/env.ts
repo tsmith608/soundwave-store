@@ -138,7 +138,7 @@ function build(): Env {
     paymentsProvider,
     fulfillmentProvider,
     emailProvider,
-    emailFrom: e.EMAIL_FROM || `${process.env.NEXT_PUBLIC_BRAND_NAME || "SoundWave Art"} <orders@example.com>`,
+    emailFrom: e.EMAIL_FROM || `${process.env.NEXT_PUBLIC_BRAND_NAME || "Afterhum"} <orders@example.com>`,
   };
 }
 

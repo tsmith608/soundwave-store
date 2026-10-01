@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import IntentPage, { type IntentContent } from "@/components/IntentPage";
+import { BRAND_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Proposal Keepsake Art — The ‘Yes’ From Your Video | SoundWave Art",
+  title: `Proposal Keepsake Art — The ‘Yes’ From Your Video | ${BRAND_NAME}`,
   description:
     "Someone filmed the proposal. Turn the sound of it — the question, the yes, the cheering — into keepsake art with the moon exactly as it was that night. Framed or print-only.",
   alternates: { canonical: "/gifts/proposal-audio-soundwave-art" },
