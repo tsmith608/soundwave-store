@@ -382,7 +382,7 @@ model Order {
 model OrderItem {
   id                 String         @id @default(cuid())
   orderId            String
-  order              Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order              Order          @relation(fields: [orderId], references: [id], onDelete: Restrict)
   variantId          String
   variant            ProductVariant @relation(fields: [variantId], references: [id])
   productName        String
@@ -414,7 +414,7 @@ model OrderItem {
 model OrderEvent {
   id         String       @id @default(cuid())
   orderId    String
-  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Restrict)
   type       String       // status_changed | payment | fulfillment | email | note | error
   fromStatus OrderStatus?
   toStatus   OrderStatus?
@@ -440,7 +440,7 @@ enum PaymentStatus {
 model Payment {
   id                String        @id @default(cuid())
   orderId           String
-  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Restrict)
   provider          String        @default("stripe")
   providerPaymentId String        @unique // PaymentIntent id
   amountCents       Int
@@ -464,7 +464,7 @@ enum RefundStatus {
 model Refund {
   id               String       @id @default(cuid())
   orderId          String
-  order            Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order            Order        @relation(fields: [orderId], references: [id], onDelete: Restrict)
   providerRefundId String?      @unique
   /// Guards against double refunds on retry (sent to Stripe as Idempotency-Key).
   idempotencyKey   String       @unique
@@ -514,7 +514,7 @@ model DiscountRedemption {
   discountId  String
   discount    Discount @relation(fields: [discountId], references: [id])
   orderId     String   @unique
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Restrict)
   email       String
   amountCents Int
   createdAt   DateTime @default(now())
@@ -538,7 +538,7 @@ enum FulfillmentStatus {
 model Fulfillment {
   id              String            @id @default(cuid())
   orderId         String
-  order           Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order           Order             @relation(fields: [orderId], references: [id], onDelete: Restrict)
   provider        String
   providerOrderId String?           @unique
   /// Sent to the provider so a retried submission never creates a second print order.
@@ -573,9 +573,9 @@ enum ShipmentStatus {
 model Shipment {
   id                 String         @id @default(cuid())
   orderId            String
-  order              Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order              Order          @relation(fields: [orderId], references: [id], onDelete: Restrict)
   fulfillmentId      String
-  fulfillment        Fulfillment    @relation(fields: [fulfillmentId], references: [id], onDelete: Cascade)
+  fulfillment        Fulfillment    @relation(fields: [fulfillmentId], references: [id], onDelete: Restrict)
   providerShipmentId String
   carrier            String?
   service            String?

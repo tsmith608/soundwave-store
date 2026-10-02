@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/server/db";
-import { clientIp } from "@/lib/server/http";
+import { AppError, assertSameOrigin, clientIp } from "@/lib/server/http";
 import { rateLimit } from "@/lib/server/rateLimit";
 
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/;
 
 /** Stores an email for launch news / shipping-cutoff reminders. Idempotent. */
 export async function POST(req: NextRequest) {
+  try {
+    assertSameOrigin(req);
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof AppError ? e.message : "Forbidden" }, { status: 403 });
+  }
   try {
     await rateLimit("contact", clientIp(req));
   } catch {

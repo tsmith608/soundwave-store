@@ -9,7 +9,13 @@ import { getEnv } from "./env";
  */
 export const DEVICE_COOKIE = "sw_did";
 export const CART_COOKIE = "sw_cart";
-export const SESSION_COOKIE = "sw_session";
+/**
+ * In production the session cookie uses the __Host- prefix: browsers then refuse it
+ * unless it's Secure, host-only and path "/", so a subdomain can't plant or read it.
+ */
+export function sessionCookieName(): string {
+  return getEnv().isProd ? "__Host-sw_session" : "sw_session";
+}
 
 export function cookieOptions(maxAgeDays: number) {
   return {

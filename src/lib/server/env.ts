@@ -66,6 +66,21 @@ const schema = z.object({
         .filter(Boolean),
     ),
 
+  /** Admin sessions expire this many hours after sign-in, however active (customers get 30 days). */
+  ADMIN_SESSION_HOURS: z.coerce.number().min(1).max(168).default(12),
+  /** Optional comma-separated IPs allowed to use /admin. Empty = any IP (still needs an admin sign-in). */
+  ADMIN_IP_ALLOWLIST: z
+    .string()
+    .default("")
+    .transform((v) =>
+      v
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ),
+  /** Header your host sets to the real client IP (e.g. fly-client-ip, cf-connecting-ip). See http.ts clientIp. */
+  TRUSTED_IP_HEADER: z.string().optional(),
+
   SENTRY_DSN: z.string().optional(),
   CHROMIUM_PATH: z.string().optional(),
   SHIPPING_EXPRESS_CENTS: z.coerce.number().int().min(0).optional(),
@@ -127,7 +142,10 @@ function build(): Env {
   if (problems.length) {
     const msg = `Environment is not ready:\n${problems.map((p) => `  - ${p}`).join("\n")}`;
     // In production refuse to run half-configured; in dev/test warn once.
-    if (isProd && process.env.SKIP_ENV_VALIDATION !== "true") throw new Error(msg);
+    // SKIP_ENV_VALIDATION only applies while `next build` runs (the Docker build has no secrets);
+    // a running production server always refuses to start half-configured.
+    const building = process.env.NEXT_PHASE === "phase-production-build";
+    if (isProd && !(building && process.env.SKIP_ENV_VALIDATION === "true")) throw new Error(msg);
     if (e.NODE_ENV !== "test") console.warn(msg);
   }
 

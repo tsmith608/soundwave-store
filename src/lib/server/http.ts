@@ -50,26 +50,54 @@ export async function parseJson<T>(req: NextRequest, schema: ZodType<T>, maxByte
   return parsed.data;
 }
 
-export function clientIp(req: NextRequest | Request): string {
-  const h = req.headers;
-  // Trust the first hop added by the platform proxy (Fly/Railway/Render/Cloudflare all set these).
-  return (h.get("cf-connecting-ip") || h.get("x-real-ip") || h.get("x-forwarded-for")?.split(",")[0] || "unknown").trim().slice(0, 64);
+/**
+ * The client's IP for rate limiting and audit logs.
+ *
+ * Headers like X-Forwarded-For can be set by the client, so trusting the first
+ * entry lets anyone rotate fake IPs past rate limits. Instead:
+ *  - if TRUSTED_IP_HEADER is set (e.g. "fly-client-ip", "cf-connecting-ip",
+ *    "x-real-ip"), use only that header: your platform overwrites it;
+ *  - otherwise use the LAST X-Forwarded-For hop, which is the one appended by
+ *    the proxy directly in front of the app (a client can only prepend).
+ */
+export function clientIp(req: NextRequest | Request | Headers): string {
+  const h = req instanceof Headers ? req : req.headers;
+  const trusted = process.env.TRUSTED_IP_HEADER?.trim().toLowerCase();
+  let ip: string | null | undefined;
+  if (trusted) ip = h.get(trusted)?.split(",").pop();
+  else ip = h.get("x-forwarded-for")?.split(",").pop() || h.get("x-real-ip");
+  return (ip || "unknown").trim().slice(0, 64);
 }
 
 /**
  * Same-origin check for state-changing JSON endpoints called by our own pages
  * (defence-in-depth on top of SameSite=Lax cookies). Webhooks don't use this.
+ *
+ * Rejects when the browser says the request is cross-site (Sec-Fetch-Site), or
+ * when the Origin header doesn't match this host or the configured app URL.
  */
 export function assertSameOrigin(req: NextRequest) {
-  const origin = req.headers.get("origin");
-  if (!origin) return; // non-browser clients (tests, curl) have no Origin; cookies still SameSite
-  const host = req.headers.get("x-forwarded-host") || req.headers.get("host");
-  try {
-    if (new URL(origin).host !== host) throw new AppError(403, "bad_origin", "This request came from another site.");
-  } catch (e) {
-    if (e instanceof AppError) throw e;
+  const deny = () => {
     throw new AppError(403, "bad_origin", "This request came from another site.");
+  };
+  const site = req.headers.get("sec-fetch-site");
+  if (site && site !== "same-origin" && site !== "none") deny();
+  const origin = req.headers.get("origin");
+  if (!origin) return; // non-browser clients (tests, curl) have no Origin; cookies are still SameSite
+  let originHost: string;
+  try {
+    originHost = new URL(origin).host;
+  } catch {
+    return deny();
   }
+  const host = req.headers.get("x-forwarded-host") || req.headers.get("host");
+  let appHost = "";
+  try {
+    appHost = new URL(process.env.NEXT_PUBLIC_APP_URL || "").host;
+  } catch {
+    /* not configured */
+  }
+  if (originHost !== host && originHost !== appHost) deny();
 }
 
 export { z };

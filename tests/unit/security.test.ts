@@ -8,6 +8,8 @@ import { sniffAudio, AUDIO_TYPES, normaliseMime, safeFileName } from "../../src/
 import { safeNext } from "../../src/lib/server/login";
 import { orderAccessToken, checkOrderAccessToken } from "../../src/lib/server/orders/access";
 import { cleanListenUrl } from "../../src/lib/listenLink";
+import { NextRequest } from "next/server";
+import { assertSameOrigin, clientIp } from "../../src/lib/server/http";
 
 describe("signed tokens", () => {
   it("round-trips and rejects tampering, wrong purpose, expiry", () => {
@@ -77,5 +79,32 @@ describe("redirect safety", () => {
     assert.equal(cleanListenUrl("javascript:alert(1)"), null);
     assert.equal(cleanListenUrl("https://user:pw@example.com"), null);
     assert.equal(cleanListenUrl("ftp://x.com"), null);
+  });
+});
+
+describe("client IP for rate limits", () => {
+  const req = (h: Record<string, string>) => new Request("https://shop.test/api/x", { headers: h });
+  it("ignores spoofed first X-Forwarded-For entries and uses the last proxy hop", () => {
+    delete process.env.TRUSTED_IP_HEADER;
+    assert.equal(clientIp(req({ "x-forwarded-for": "6.6.6.6, 203.0.113.9" })), "203.0.113.9");
+  });
+  it("uses only the configured trusted header when set", () => {
+    process.env.TRUSTED_IP_HEADER = "fly-client-ip";
+    assert.equal(clientIp(req({ "fly-client-ip": "198.51.100.7", "x-forwarded-for": "6.6.6.6" })), "198.51.100.7");
+    assert.equal(clientIp(req({ "x-forwarded-for": "6.6.6.6" })), "unknown");
+    delete process.env.TRUSTED_IP_HEADER;
+  });
+});
+
+describe("same-origin guard", () => {
+  const nreq = (h: Record<string, string>) => new NextRequest("https://shop.test/api/cart", { method: "POST", headers: { host: "shop.test", ...h } });
+  it("allows our own pages and non-browser clients", () => {
+    assert.doesNotThrow(() => assertSameOrigin(nreq({ origin: "https://shop.test", "sec-fetch-site": "same-origin" })));
+    assert.doesNotThrow(() => assertSameOrigin(nreq({})));
+  });
+  it("blocks other sites", () => {
+    assert.throws(() => assertSameOrigin(nreq({ origin: "https://evil.example" })));
+    assert.throws(() => assertSameOrigin(nreq({ "sec-fetch-site": "cross-site" })));
+    assert.throws(() => assertSameOrigin(nreq({ origin: "null" })));
   });
 });

@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import type { Prisma } from "@prisma/client";
 import { requireAdmin } from "@/lib/server/auth";
 import { prisma } from "@/lib/server/db";
-import { AppError } from "@/lib/server/http";
+import { AppError, clientIp } from "@/lib/server/http";
 import { enqueue } from "@/lib/server/jobs/queue";
 import { cancelOrder, createRefund } from "@/lib/server/orders/refunds";
 import { noteEvent, transition } from "@/lib/server/orders/state";
@@ -27,7 +27,7 @@ async function admin() {
 
 async function audit(actor: string, action: string, targetType: string, targetId: string, data?: Prisma.InputJsonValue) {
   const h = await headers();
-  await prisma.auditEvent.create({ data: { actor, action, targetType, targetId, data, ip: (h.get("x-forwarded-for") ?? "").split(",")[0] || null } });
+  await prisma.auditEvent.create({ data: { actor, action, targetType, targetId, data, ip: clientIp(h) } });
 }
 
 async function run(fn: () => Promise<string>, paths: string[]): Promise<ActionResult> {

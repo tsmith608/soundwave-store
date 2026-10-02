@@ -1,16 +1,18 @@
-import { cookies } from "next/headers";
-import type { User } from "@prisma/client";
+import { cookies, headers } from "next/headers";
+import type { Session, User } from "@prisma/client";
 import { prisma } from "./db";
 import { randomToken, sha256 } from "./crypto";
-import { cookieOptions, deviceKeyHash, SESSION_COOKIE } from "./identity";
+import { cookieOptions, deviceKeyHash, sessionCookieName } from "./identity";
+import { clientIp } from "./http";
+import { log } from "./log";
 import { getEnv } from "./env";
 
 const SESSION_DAYS = 30;
 
-/** The signed-in user for this request, or null. Never throws. */
-export async function getCurrentUser(): Promise<User | null> {
+/** The signed-in session (with its user) for this request, or null. Never throws. */
+async function getCurrentSession(): Promise<(Session & { user: User }) | null> {
   try {
-    const token = (await cookies()).get(SESSION_COOKIE)?.value;
+    const token = (await cookies()).get(sessionCookieName())?.value;
     if (!token || token.length < 20) return null;
     const session = await prisma.session.findUnique({ where: { tokenHash: sha256(`session:${token}`) }, include: { user: true } });
     if (!session || session.expiresAt < new Date() || session.user.deletedAt) return null;
@@ -18,19 +20,41 @@ export async function getCurrentUser(): Promise<User | null> {
     if (Date.now() - session.lastSeenAt.getTime() > 24 * 3600 * 1000) {
       await prisma.session.update({ where: { id: session.id }, data: { lastSeenAt: new Date(), expiresAt: new Date(Date.now() + SESSION_DAYS * 86400000) } });
     }
-    return session.user;
+    return session;
   } catch {
     return null;
   }
+}
+
+/** The signed-in user for this request, or null. Never throws. */
+export async function getCurrentUser(): Promise<User | null> {
+  return (await getCurrentSession())?.user ?? null;
 }
 
 export function isAdminEmail(email: string): boolean {
   return getEnv().ADMIN_EMAILS.includes(email.toLowerCase());
 }
 
+/**
+ * The admin for this request, or null. On top of a valid session this requires:
+ *  - the email to still be listed in ADMIN_EMAILS (removing it revokes access at once);
+ *  - a session younger than ADMIN_SESSION_HOURS (default 12): admins sign in again
+ *    each day even though customer sessions last 30 days;
+ *  - if ADMIN_IP_ALLOWLIST is set, a request from one of those IPs.
+ */
 export async function requireAdmin(): Promise<User | null> {
-  const user = await getCurrentUser();
-  if (!user || user.role !== "admin" || !isAdminEmail(user.email)) return null;
+  const session = await getCurrentSession();
+  const user = session?.user;
+  if (!session || !user || user.role !== "admin" || !isAdminEmail(user.email)) return null;
+  const env = getEnv();
+  if (Date.now() - session.createdAt.getTime() > env.ADMIN_SESSION_HOURS * 3600 * 1000) return null;
+  if (env.ADMIN_IP_ALLOWLIST.length) {
+    const ip = clientIp(await headers());
+    if (!env.ADMIN_IP_ALLOWLIST.includes(ip)) {
+      log.warn("admin_ip_blocked", { userId: user.id, ip });
+      return null;
+    }
+  }
   return user;
 }
 
@@ -41,14 +65,14 @@ export async function startSession(userId: string, userAgent?: string | null): P
     data: { userId, tokenHash: sha256(`session:${token}`), expiresAt: new Date(Date.now() + SESSION_DAYS * 86400000), userAgent: userAgent?.slice(0, 300) ?? null },
   });
   const jar = await cookies();
-  jar.set(SESSION_COOKIE, token, cookieOptions(SESSION_DAYS));
+  jar.set(sessionCookieName(), token, cookieOptions(SESSION_DAYS));
 }
 
 export async function endSession(): Promise<void> {
   const jar = await cookies();
-  const token = jar.get(SESSION_COOKIE)?.value;
+  const token = jar.get(sessionCookieName())?.value;
   if (token) await prisma.session.deleteMany({ where: { tokenHash: sha256(`session:${token}`) } });
-  jar.delete(SESSION_COOKIE);
+  jar.delete(sessionCookieName());
 }
 
 export interface Owner {
