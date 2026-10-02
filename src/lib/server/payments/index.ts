@@ -15,6 +15,8 @@ export interface CheckoutLine {
   unitAmountCents: number;
   quantity: number;
   metadata: Record<string, string>;
+  /** Stripe Tax product code; defaults to the physical-goods code. */
+  taxCode?: string;
 }
 
 export interface CreateCheckoutInput {
@@ -24,6 +26,8 @@ export interface CreateCheckoutInput {
   lines: CheckoutLine[];
   discount?: { code: string; amountOffCents: number } | null;
   shipping: { id: string; label: string; amountCents: number; minBusinessDays: number; maxBusinessDays: number }[];
+  /** False for digital-only orders: no shipping address or shipping options are collected. */
+  requiresShipping: boolean;
   successUrl: string;
   cancelUrl: string;
 }
@@ -68,10 +72,13 @@ class StripeProvider implements PaymentsProvider {
         client_reference_id: input.orderId,
         customer_email: input.email || undefined,
         customer_creation: "if_required",
-        billing_address_collection: "auto",
-        phone_number_collection: { enabled: true },
-        shipping_address_collection: { allowed_countries: e.SHIPPING_COUNTRIES as Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry[] },
-        shipping_options: input.shipping.map((m) => ({
+        // Digital-only orders still need a billing address so Stripe Tax can work out sales tax.
+        billing_address_collection: input.requiresShipping ? "auto" : "required",
+        phone_number_collection: { enabled: input.requiresShipping },
+        shipping_address_collection: input.requiresShipping
+          ? { allowed_countries: e.SHIPPING_COUNTRIES as Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry[] }
+          : undefined,
+        shipping_options: !input.requiresShipping ? undefined : input.shipping.map((m) => ({
           shipping_rate_data: {
             type: "fixed_amount",
             display_name: m.label,
@@ -87,7 +94,7 @@ class StripeProvider implements PaymentsProvider {
             currency: "usd",
             unit_amount: l.unitAmountCents,
             tax_behavior: "exclusive",
-            product_data: { name: l.name, description: l.description, tax_code: e.STRIPE_TAX_CODE, metadata: l.metadata },
+            product_data: { name: l.name, description: l.description, tax_code: l.taxCode ?? e.STRIPE_TAX_CODE, metadata: l.metadata },
           },
         })),
         discounts: couponId ? [{ coupon: couponId }] : undefined,

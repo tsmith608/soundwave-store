@@ -14,8 +14,8 @@ const customer = { email: "a@b.co", name: "Sam Lee", line1: "5 Oak Ave", city: "
 before(resetDb);
 after(() => prisma.$disconnect());
 
-async function paidOrder() {
-  const o = await makePendingOrder();
+async function paidOrder(opts: { digital?: boolean } = {}) {
+  const o = await makePendingOrder(opts);
   await markPaidFromSession(fakeSession(o, customer, "paid") as unknown as Stripe.Checkout.Session);
   return o;
 }
@@ -26,13 +26,30 @@ describe("print rendering + fulfillment", () => {
     await renderOrder(o.id);
     await renderOrder(o.id); // idempotent
     const assets = await prisma.generatedAsset.findMany({ where: { orderItemId: o.items[0].id } });
-    assert.deepEqual(assets.map((a) => a.kind).sort(), ["preview_png", "print_pdf", "print_png"]);
+    assert.deepEqual(assets.map((a) => a.kind).sort(), ["digital_pdf", "digital_png", "preview_png", "print_pdf", "print_png"]);
     const png = assets.find((a) => a.kind === "print_png")!;
     assert.equal(png.widthPx, 3600);
     assert.equal(png.heightPx, 4800);
     assert.equal(png.dpi, 300);
     assert.match(png.rendererVersion, /herbarium@v1/);
     assert.equal((await prisma.order.findUniqueOrThrow({ where: { id: o.id } })).status, "ready_for_fulfillment");
+  });
+
+  it("delivers a digital-only order without touching the lab", async () => {
+    const o = await paidOrder({ digital: true });
+    await renderOrder(o.id);
+    await renderOrder(o.id); // idempotent
+    const assets = await prisma.generatedAsset.findMany({ where: { orderItemId: o.items[0].id } });
+    assert.deepEqual(assets.map((a) => a.kind).sort(), ["digital_pdf", "digital_png", "preview_png"]);
+    const png = assets.find((a) => a.kind === "digital_png")!;
+    assert.equal(png.widthPx, 3600);
+    assert.equal(png.heightPx, 4800);
+    const ord = await prisma.order.findUniqueOrThrow({ where: { id: o.id } });
+    assert.equal(ord.status, "delivered");
+    const jobs = await prisma.job.findMany({ where: { dedupeKey: { contains: o.id } } });
+    assert.ok(jobs.some((j) => j.dedupeKey === `email:digital_ready:${o.id}`));
+    assert.ok(!jobs.some((j) => j.type === "submit_fulfillment"));
+    assert.equal(await prisma.fulfillment.count({ where: { orderId: o.id } }), 0);
   });
 
   it("submits to the lab exactly once, even when retried", async () => {

@@ -22,7 +22,8 @@ export async function runRetention(opts: { apply: boolean; now?: Date; batch?: n
         orderStatus: it.order.status,
         hasQr: Boolean(it.listenToken),
         recordingRemoved: Boolean(it.recordingRemovedAt),
-        deliveredAt: it.order.shipments.find((s) => s.deliveredAt)?.deliveredAt ?? null,
+        // Digital files are delivered by email straight after payment, so that's their delivery date.
+        deliveredAt: it.format === "digital" ? it.order.paidAt : (it.order.shipments.find((s) => s.deliveredAt)?.deliveredAt ?? null),
         shippedAt: it.order.shipments.find((s) => s.shippedAt)?.shippedAt ?? null,
         closedAt: it.order.cancelledAt ?? (["failed", "pending_payment", "refunded"].includes(it.order.status) ? it.order.updatedAt : null),
       }));

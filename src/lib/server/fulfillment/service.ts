@@ -41,7 +41,7 @@ export async function submitFulfillment(orderId: string) {
 
   const store = await storage();
   const items = [];
-  for (const it of order.items) {
+  for (const it of order.items.filter((i) => i.format !== "digital")) {
     const png = it.generatedAssets.find((a) => a.kind === "print_png");
     if (!png) return failHard(order, fulfillment, provider.name, `Item ${it.id} has no print file`);
     const attrsCfg = (it.variant.fulfillmentAttributes ?? {}) as { frameColorAttribute?: string; frameColors?: Record<string, string>; [k: string]: unknown };

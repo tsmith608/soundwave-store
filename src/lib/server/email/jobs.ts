@@ -4,7 +4,7 @@ import { deliver } from "./send";
 import * as T from "./templates";
 
 export interface EmailJob {
-  template: "order_confirmation" | "payment_failed" | "in_production" | "shipped" | "delivered" | "refund" | "cancelled";
+  template: "order_confirmation" | "payment_failed" | "in_production" | "shipped" | "delivered" | "refund" | "cancelled" | "digital_ready";
   orderId: string;
   shipmentId?: string;
   refundedCents?: number;
@@ -17,8 +17,12 @@ export async function sendOrderEmail(job: EmailJob, dedupeKey: string) {
   if (!order.email) throw new PermanentJobError(`Order ${order.number} has no email address`);
   let r: T.Rendered;
   switch (job.template) {
+    case "digital_ready":
+      r = T.digitalReady(order);
+      break;
     case "order_confirmation": {
-      const lead = { min: Math.max(...order.items.map((i) => i.variant.leadTimeMinDays)), max: Math.max(...order.items.map((i) => i.variant.leadTimeMaxDays)) };
+      const physical = order.items.filter((i) => i.format !== "digital");
+      const lead = physical.length ? { min: Math.max(...physical.map((i) => i.variant.leadTimeMinDays)), max: Math.max(...physical.map((i) => i.variant.leadTimeMaxDays)) } : { min: 0, max: 0 };
       r = T.orderConfirmation(order, lead);
       break;
     }

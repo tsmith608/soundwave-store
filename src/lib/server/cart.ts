@@ -144,13 +144,15 @@ export async function addItem(owner: Owner, input: z.infer<typeof AddItemInput>)
   const problems = projectProblems(project);
   if (problems.length) throw new AppError(400, "incomplete", problems.join(" "));
   const { v, finish } = await checkVariant(input.variantId, input.frameFinish);
+  // A digital file is one download; there's nothing to gain from buying it twice.
+  if (v.format === "digital") input = { ...input, quantity: 1 };
   const cart = (await getCart(owner, true))!;
   const count = cart.items.reduce((a, i) => a + i.quantity, 0);
   if (count + input.quantity > 20) throw new AppError(400, "cart_full", "Carts are limited to 20 pieces. Please place a separate order for more.");
   // Same design + same product → bump quantity instead of duplicating the line.
   const same = cart.items.find((i) => i.projectId === project.id && i.variantId === v.id && (i.frameFinish ?? null) === finish);
   if (same) {
-    await prisma.cartItem.update({ where: { id: same.id }, data: { quantity: Math.min(MAX_QTY_PER_LINE, same.quantity + input.quantity) } });
+    await prisma.cartItem.update({ where: { id: same.id }, data: { quantity: v.format === "digital" ? 1 : Math.min(MAX_QTY_PER_LINE, same.quantity + input.quantity) } });
   } else {
     await prisma.cartItem.create({ data: { cartId: cart.id, projectId: project.id, variantId: v.id, frameFinish: finish, quantity: input.quantity } });
   }
@@ -179,7 +181,8 @@ export async function updateItem(owner: Owner, itemId: string, input: z.infer<ty
     const { v, finish } = await checkVariant(input.variantId ?? item.variantId, input.frameFinish ?? item.frameFinish);
     data.variant = { connect: { id: v.id } };
     data.frameFinish = finish;
-  }
+    if (v.format === "digital") data.quantity = 1;
+  } else if (item.variant.format === "digital") data.quantity = 1;
   await prisma.cartItem.update({ where: { id: item.id }, data });
   await touch(cart.id, { status: "active" });
 }

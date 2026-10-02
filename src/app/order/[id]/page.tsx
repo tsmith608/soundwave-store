@@ -9,7 +9,7 @@ import { formatCents } from "@/lib/commerce";
 import { FRAME_FINISHES } from "@/lib/catalog";
 import { getCurrentUser, requireAdmin } from "@/lib/server/auth";
 import { prisma } from "@/lib/server/db";
-import { checkOrderAccessToken } from "@/lib/server/orders/access";
+import { checkOrderAccessToken, orderAccessToken } from "@/lib/server/orders/access";
 import { PROGRESS, STATUS_LABEL } from "@/lib/server/orders/state";
 import { BRAND_NAME, SUPPORT_EMAIL } from "@/lib/site";
 
@@ -17,6 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: `Your order — ${BRAND_NAME}`, robots: { index: false, follow: false } };
 
 const STEP_LABEL = ["Paid", "Print file", "At the studio", "Printing", "Shipped", "Delivered"];
+const DIGITAL_STEPS = ["Paid", "Preparing your file", "Ready to download"];
 
 /**
  * Order status. Visible to: the link in the customer's emails (signed token),
@@ -24,7 +25,7 @@ const STEP_LABEL = ["Paid", "Print file", "At the studio", "Printing", "Shipped"
  */
 export default async function OrderPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ t?: string }> }) {
   const [{ id }, { t }] = await Promise.all([params, searchParams]);
-  const order = await prisma.order.findUnique({ where: { id }, include: { items: true, shipments: { orderBy: { createdAt: "asc" } } } });
+  const order = await prisma.order.findUnique({ where: { id }, include: { items: { include: { generatedAssets: { where: { kind: { in: ["digital_png", "digital_pdf"] } }, select: { kind: true } } } }, shipments: { orderBy: { createdAt: "asc" } } } });
   if (!order) notFound();
   const user = await getCurrentUser();
   const allowed = checkOrderAccessToken(order.id, t) || (user && order.userId === user.id) || Boolean(await requireAdmin());
@@ -32,6 +33,10 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
 
   const idx = PROGRESS.indexOf(order.status);
   const closed = ["cancelled", "refunded", "failed", "pending_payment"].includes(order.status);
+  const digitalOnly = order.items.every((i) => i.format === "digital");
+  const digitalIdx = order.status === "delivered" ? 2 : ["processing_artwork", "ready_for_fulfillment"].includes(order.status) ? 1 : order.paidAt ? 0 : -1;
+  const token = orderAccessToken(order.id);
+  const download = (itemId: string, kind: "png" | "pdf") => `/api/orders/${order.id}/download?item=${itemId}&kind=${kind}&t=${token}`;
   const addr = [order.shipName, order.shipLine1, order.shipLine2, [order.shipCity, order.shipState, order.shipPostalCode].filter(Boolean).join(", ")].filter(Boolean);
 
   return (
@@ -44,7 +49,18 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           {order.paidAt && <p className="mt-2 text-ink-soft">Placed {order.paidAt.toLocaleDateString("en-US", { dateStyle: "long" })}</p>}
           {order.refundedCents > 0 && order.status !== "refunded" && <p className="mt-2 font-semibold">{formatCents(order.refundedCents)} refunded.</p>}
 
-          {!closed && (
+          {!closed && digitalOnly && (
+            <ol className="mt-8 grid grid-cols-3 gap-2" aria-label="Progress">
+              {DIGITAL_STEPS.map((label, i) => (
+                <li key={label} className={`rounded-xl border border-ink/15 p-2 text-sm ${digitalIdx >= i ? "bg-ink text-paper" : "bg-paper"}`} aria-current={digitalIdx === i ? "step" : undefined}>
+                  <span className="meta block !text-[10px] opacity-70">{digitalIdx >= i ? "✓" : `0${i + 1}`}</span>
+                  {label}
+                </li>
+              ))}
+            </ol>
+          )}
+
+          {!closed && !digitalOnly && (
             <ol className="mt-8 grid grid-cols-3 gap-2 sm:grid-cols-6" aria-label="Progress">
               {STEP_LABEL.map((label, i) => {
                 const done = idx >= i || (order.status === "ready_for_fulfillment" && i <= 1);
@@ -97,6 +113,23 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                         <p className="mt-1 text-sm">{[spec.fields.title, spec.fields.names, spec.fields.date].filter(Boolean).join(" · ")}</p>
                         <p className="mt-1 font-semibold">{formatCents(it.lineTotalCents)}</p>
                         {it.recordingRemovedAt && <p className="mt-1 text-sm text-ink-soft">Recording removed on request; the code is switched off.</p>}
+                        {!closed && (
+                          <div className="mt-3">
+                            <p className="meta">{it.format === "digital" ? "Your files" : "Free digital copy"}</p>
+                            {it.generatedAssets.length >= 2 ? (
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <a href={download(it.id, "png")} className="btn btn-ink !min-h-[40px] !text-sm">
+                                  Download PNG
+                                </a>
+                                <a href={download(it.id, "pdf")} className="btn !min-h-[40px] !text-sm">
+                                  Download PDF
+                                </a>
+                              </div>
+                            ) : (
+                              <p className="mt-1 text-sm text-ink-soft">Being prepared — we&rsquo;ll email you as soon as it&rsquo;s ready.</p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </li>
                   );
@@ -116,8 +149,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <dt>Shipping</dt>
-                  <dd>{order.shippingCents ? formatCents(order.shippingCents) : "Free"}</dd>
+                  <dt>{digitalOnly ? "Delivery" : "Shipping"}</dt>
+                  <dd>{digitalOnly ? "Email" : order.shippingCents ? formatCents(order.shippingCents) : "Free"}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt>Tax</dt>
@@ -128,7 +161,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                   <dd>{formatCents(order.totalCents)}</dd>
                 </div>
               </dl>
-              {addr.length > 0 && (
+              {addr.length > 0 && !digitalOnly && (
                 <div>
                   <p className="meta mb-1">Shipping to</p>
                   <address className="not-italic">

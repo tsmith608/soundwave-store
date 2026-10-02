@@ -26,7 +26,7 @@
 | **Errors and logs** | Customers see plain messages and never stack traces. Logs redact secrets. |
 | **Database integrity** | Orders' payments, refunds, items, lab orders, shipments and history **can't be deleted along with an order**. The database blocks negative money, refunds above the order total, out-of-range discounts and zero-price products. |
 
-**Tests:** `npm run test:unit` (45, including security), `npm run test:integration` (18, real Postgres), `npm run test:security` (end-to-end header and abuse checks against a running server).
+**Tests:** `npm run test:unit` (49, including security), `npm run test:integration` (19, real Postgres), `npm run test:security` (end-to-end header and abuse checks against a running server).
 
 ## 2. What you must do (before launch)
 

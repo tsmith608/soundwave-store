@@ -138,6 +138,9 @@ export function shippingMethods(opts: { expressCents?: number | null; leadMin: n
   return list;
 }
 
+/** Delivery for carts that contain only digital files: no address, no shipping, sent by email. */
+export const DIGITAL_DELIVERY: ShippingMethod = { id: "digital", label: "Email delivery", amountCents: 0, minBusinessDays: 0, maxBusinessDays: 0 };
+
 export function normaliseCode(code: string): string {
   return code.trim().toUpperCase().replace(/\s+/g, "").slice(0, 40);
 }

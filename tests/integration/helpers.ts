@@ -13,13 +13,15 @@ export async function resetDb() {
 
 let n = 0;
 /** A pending-payment order with one item, as startCheckout would create it. */
-export async function makePendingOrder(opts: { discountCode?: string; totalCents?: number; qr?: boolean } = {}) {
+export async function makePendingOrder(opts: { discountCode?: string; totalCents?: number; qr?: boolean; digital?: boolean } = {}) {
   n++;
+  const d = opts.digital === true;
+  const variantId = d ? "digital-12x16" : "framed-12x16";
   const asset = await prisma.uploadedAsset.create({ data: { storageKey: `uploads/test/${Date.now()}-${n}.wav`, mimeType: "audio/wav", sizeBytes: 5000, status: "ready", ownerKeyHash: "dev1" } });
   const project = await prisma.project.create({ data: { ownerKeyHash: "dev1", designId: "herbarium", colorwayId: "herbarium", fields: { title: "Test" }, options: { showQr: true }, peaks: samplePeaks("x", "voice"), audioAssetId: asset.id, rightsConfirmedAt: new Date() } });
-  const cart = await prisma.cart.create({ data: { tokenHash: `cart-${Date.now()}-${n}`, items: { create: { projectId: project.id, variantId: "framed-12x16", frameFinish: "black" } } } });
-  const spec = { version: 2, designId: "herbarium", templateVersion: 1, colorwayId: "herbarium", fields: { title: "Test", subtitle: "", names: "", date: "", message: "" }, peaks: samplePeaks("x", "voice"), showQr: opts.qr !== false, qrStyle: "discreet", qrUrl: "http://localhost:3999/l/tok", listenUrl: null, sizeId: "12x16", format: "framed", frameFinish: "black", widthIn: 12, heightIn: 16 };
-  const total = opts.totalCents ?? 9900;
+  const cart = await prisma.cart.create({ data: { tokenHash: `cart-${Date.now()}-${n}`, items: { create: { projectId: project.id, variantId, frameFinish: d ? null : "black" } } } });
+  const spec = { version: 2, designId: "herbarium", templateVersion: 1, colorwayId: "herbarium", fields: { title: "Test", subtitle: "", names: "", date: "", message: "" }, peaks: samplePeaks("x", "voice"), showQr: opts.qr !== false, qrStyle: "discreet", qrUrl: "http://localhost:3999/l/tok", listenUrl: null, sizeId: "12x16", format: d ? "digital" : "framed", frameFinish: d ? null : "black", widthIn: 12, heightIn: 16 };
+  const total = opts.totalCents ?? (d ? 1900 : 9900);
   return prisma.order.create({
     data: {
       number: `SW-T${Date.now().toString().slice(-6)}${n}`,
@@ -33,12 +35,12 @@ export async function makePendingOrder(opts: { discountCode?: string; totalCents
       pricingSnapshot: {},
       items: {
         create: {
-          variantId: "framed-12x16",
-          productName: '12 × 16" framed print',
-          sku: "SWA-FR-12X16",
-          format: "framed",
+          variantId,
+          productName: d ? "Digital file (PNG + PDF)" : '12 × 16" framed print',
+          sku: d ? "SWA-DG-12X16" : "SWA-FR-12X16",
+          format: d ? "digital" : "framed",
           sizeId: "12x16",
-          frameFinish: "black",
+          frameFinish: d ? null : "black",
           quantity: 1,
           unitPriceCents: total,
           lineTotalCents: total,

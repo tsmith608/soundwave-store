@@ -22,7 +22,7 @@ export interface ArtworkSpec {
   qrUrl: string | null;
   listenUrl: string | null;
   sizeId: string;
-  format: "print" | "framed";
+  format: "print" | "framed" | "digital";
   frameFinish: string | null;
   widthIn: number;
   heightIn: number;
@@ -65,7 +65,10 @@ export async function renderOrder(orderId: string, opts: { force?: boolean } = {
   try {
     for (const item of order.items) {
       const have = new Set(item.generatedAssets.map((a) => a.kind));
-      if (!opts.force && have.has("print_png") && have.has("print_pdf")) continue;
+      const digitalOnly = item.format === "digital";
+      const needPrint = !digitalOnly && (opts.force || !have.has("print_png") || !have.has("print_pdf"));
+      const needDigital = opts.force || !have.has("digital_png") || !have.has("digital_pdf");
+      if (!needPrint && !needDigital) continue;
       const spec = item.artworkSpec as unknown as ArtworkSpec;
       const design = getDesign(spec.designId);
       const currentVersion = design?.templateVersion ?? 1;
@@ -82,17 +85,31 @@ export async function renderOrder(orderId: string, opts: { force?: boolean } = {
       const print = withBleed(svg, spec.widthIn, spec.heightIn, bleed, colorway.paper);
       const rendererVersion = `${ART_ENGINE_VERSION}+${spec.designId}@v${spec.templateVersion}`;
 
-      const pdf = await svgToPdfBuffer(browser, print.svg, print.widthIn, print.heightIn);
-      const png = await svgToPngBuffer(browser, print.svg, print.widthIn, print.heightIn, dpi);
-      const preview = await svgToPngBuffer(browser, svg, spec.widthIn, spec.heightIn, Math.round(900 / spec.widthIn));
-
-      const files: { kind: "print_pdf" | "print_png" | "preview_png"; buf: Buffer; mime: string; ext: string; w?: number; h?: number; dpi?: number; wi: number; hi: number }[] = [
-        { kind: "print_pdf", buf: pdf, mime: "application/pdf", ext: "pdf", wi: print.widthIn, hi: print.heightIn },
-        { kind: "print_png", buf: png.png, mime: "image/png", ext: "png", w: png.widthPx, h: png.heightPx, dpi, wi: print.widthIn, hi: print.heightIn },
-        { kind: "preview_png", buf: preview.png, mime: "image/png", ext: "png", w: preview.widthPx, h: preview.heightPx, wi: spec.widthIn, hi: spec.heightIn },
-      ];
+      type Kind = "print_pdf" | "print_png" | "preview_png" | "digital_pdf" | "digital_png";
+      const files: { kind: Kind; buf: Buffer; mime: string; ext: string; w?: number; h?: number; dpi?: number; wi: number; hi: number }[] = [];
+      let pdfBytes = 0;
+      if (needPrint) {
+        // Lab files: with bleed, at the variant's print DPI.
+        const pdf = await svgToPdfBuffer(browser, print.svg, print.widthIn, print.heightIn);
+        const png = await svgToPngBuffer(browser, print.svg, print.widthIn, print.heightIn, dpi);
+        pdfBytes = pdf.length;
+        files.push({ kind: "print_pdf", buf: pdf, mime: "application/pdf", ext: "pdf", wi: print.widthIn, hi: print.heightIn });
+        files.push({ kind: "print_png", buf: png.png, mime: "image/png", ext: "png", w: png.widthPx, h: png.heightPx, dpi, wi: print.widthIn, hi: print.heightIn });
+      }
+      if (needDigital) {
+        // Customer download: no bleed, 300 DPI PNG plus a vector PDF that scales to any size.
+        const dpdf = await svgToPdfBuffer(browser, svg, spec.widthIn, spec.heightIn);
+        const dpng = await svgToPngBuffer(browser, svg, spec.widthIn, spec.heightIn, 300);
+        files.push({ kind: "digital_pdf", buf: dpdf, mime: "application/pdf", ext: "pdf", wi: spec.widthIn, hi: spec.heightIn });
+        files.push({ kind: "digital_png", buf: dpng.png, mime: "image/png", ext: "png", w: dpng.widthPx, h: dpng.heightPx, dpi: 300, wi: spec.widthIn, hi: spec.heightIn });
+      }
+      if (opts.force || !have.has("preview_png")) {
+        const preview = await svgToPngBuffer(browser, svg, spec.widthIn, spec.heightIn, Math.round(900 / spec.widthIn));
+        files.push({ kind: "preview_png", buf: preview.png, mime: "image/png", ext: "png", w: preview.widthPx, h: preview.heightPx, wi: spec.widthIn, hi: spec.heightIn });
+      }
+      const keyName: Record<Kind, "print-pdf" | "print-png" | "preview" | "digital-pdf" | "digital-png"> = { print_pdf: "print-pdf", print_png: "print-png", preview_png: "preview", digital_pdf: "digital-pdf", digital_png: "digital-png" };
       for (const f of files) {
-        const key = renderKey(order.number, item.id, f.kind === "print_pdf" ? "print-pdf" : f.kind === "print_png" ? "print-png" : "preview", f.ext);
+        const key = renderKey(order.number, item.id, keyName[f.kind], f.ext);
         await store.put(key, f.buf, f.mime);
         await prisma.generatedAsset.create({
           data: {
@@ -111,16 +128,28 @@ export async function renderOrder(orderId: string, opts: { force?: boolean } = {
           },
         });
       }
-      log.info("item_rendered", { orderId, itemId: item.id, pdfBytes: pdf.length, pngBytes: png.png.length, px: `${png.widthPx}x${png.heightPx}` });
+      log.info("item_rendered", { orderId, itemId: item.id, files: files.map((f) => f.kind), pdfBytes });
     }
   } finally {
     await browser.close().catch(() => undefined);
   }
 
   const env = getEnv();
+  const physical = order.items.some((i) => i.format !== "digital");
+  if (!physical) {
+    // Digital-only: nothing to print or ship. The files are the delivery.
+    await prisma.$transaction(async (tx) => {
+      await transition(tx, orderId, "ready_for_fulfillment", { actor: "worker", message: "Digital files ready." });
+      await transition(tx, orderId, "delivered", { actor: "worker", message: "Digital files delivered by email." });
+      await enqueue(tx, "send_email", { template: "digital_ready", orderId } as Prisma.InputJsonValue, { dedupeKey: `email:digital_ready:${orderId}` });
+    });
+    return;
+  }
   // Hold before sending to the lab so a customer can still correct a name or date.
   const holdUntil = new Date((order.paidAt ?? new Date()).getTime() + env.FULFILLMENT_HOLD_HOURS * 3600_000);
   await prisma.$transaction(async (tx) => {
+    // The free digital copy that comes with every print.
+    await enqueue(tx, "send_email", { template: "digital_ready", orderId } as Prisma.InputJsonValue, { dedupeKey: `email:digital_ready:${orderId}` });
     await transition(tx, orderId, "ready_for_fulfillment", { actor: "worker", message: holdUntil > new Date() ? `Print files ready. Sending to the lab after ${holdUntil.toISOString()} (correction window).` : "Print files ready." });
     if (env.FULFILLMENT_AUTO_SUBMIT) await enqueue(tx, "submit_fulfillment", { orderId } as Prisma.InputJsonValue, { dedupeKey: `submit_fulfillment:${orderId}`, runAt: holdUntil });
   });

@@ -11,7 +11,8 @@ export const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   pending_payment: ["paid", "cancelled", "failed"],
   paid: ["processing_artwork", "cancelled", "refunded"],
   processing_artwork: ["ready_for_fulfillment", "paid", "cancelled", "refunded"],
-  ready_for_fulfillment: ["submitted_to_fulfillment", "processing_artwork", "cancelled", "refunded"],
+  // → delivered only for digital-only orders, whose files are the delivery.
+  ready_for_fulfillment: ["submitted_to_fulfillment", "processing_artwork", "delivered", "cancelled", "refunded"],
   submitted_to_fulfillment: ["in_production", "shipped", "ready_for_fulfillment", "cancelled", "refunded"],
   in_production: ["shipped", "cancelled", "refunded"],
   shipped: ["delivered", "refunded"],

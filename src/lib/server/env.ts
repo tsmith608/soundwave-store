@@ -86,6 +86,8 @@ const schema = z.object({
   SHIPPING_EXPRESS_CENTS: z.coerce.number().int().min(0).optional(),
   SHIPPING_COUNTRIES: z.string().default("US").transform((v) => v.split(",").map((c) => c.trim().toUpperCase()).filter(Boolean)),
   STRIPE_TAX_CODE: z.string().default("txcd_99999999"),
+  /** Stripe Tax code for digital files. Default is Stripe's general electronically supplied services code; confirm with your accountant. */
+  STRIPE_TAX_CODE_DIGITAL: z.string().default("txcd_10000000"),
   WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(16).default(2),
 });
 

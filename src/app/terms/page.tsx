@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
 };
 
-const UPDATED = "28 September 2026";
+const UPDATED = "2 October 2026";
 
 export default function TermsPage() {
   const mail = <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>;
@@ -89,6 +89,9 @@ export default function TermsPage() {
         </p>
         <p>
           If there’s a typo that was in the preview you approved, we’ll reprint it at cost. Please check names and dates before ordering.
+        </p>
+        <p>
+          Digital files (bought on their own, or included free with a print) are for personal use: print them, frame them, and share them with family and friends, but don’t sell them or use them commercially. Because they’re delivered immediately, they can’t be returned; if a file has a mistake we made or won’t download, we’ll fix it or refund you.
         </p>
       </Section>
 

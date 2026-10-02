@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
-import { PRINT_SIZES, FRAME_FINISHES } from "@/lib/catalog";
+import { DIGITAL, PRINT_SIZES, FRAME_FINISHES } from "@/lib/catalog";
 import { DESIGNS } from "@/lib/art";
 
 /** Idempotent catalogue seed (also used by integration tests). */
@@ -36,6 +36,27 @@ export async function seedCatalog(prisma: PrismaClient, opts: { force?: boolean;
       };
       await prisma.productVariant.upsert({ where: { id }, create: { id, ...data }, update: opts.force ? data : { label: data.label } });
     }
+  }
+  {
+    const data = {
+      productId: "art-print",
+      sku: "SWA-DG-12X16",
+      format: "digital" as const,
+      sizeId: DIGITAL.sizeId,
+      label: DIGITAL.label,
+      widthIn: DIGITAL.widthIn,
+      heightIn: DIGITAL.heightIn,
+      priceCents: DIGITAL.priceCents,
+      frameFinishes: [],
+      fulfillmentProvider: "none",
+      fulfillmentSku: "",
+      fulfillmentAttributes: {},
+      printDpi: DIGITAL.pngDpi,
+      leadTimeMinDays: 0,
+      leadTimeMaxDays: 0,
+      sortOrder: sort++,
+    };
+    await prisma.productVariant.upsert({ where: { id: DIGITAL.variantId }, create: { id: DIGITAL.variantId, ...data }, update: opts.force ? data : { label: data.label } });
   }
   for (const [i, d] of DESIGNS.entries()) {
     await prisma.designTemplate.upsert({

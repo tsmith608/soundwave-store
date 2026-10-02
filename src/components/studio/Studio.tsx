@@ -7,7 +7,7 @@ import FramedArtwork from "@/components/art/FramedArtwork";
 import Meta from "@/components/brand/Meta";
 import { WaveBars } from "@/components/brand/shapes";
 import { DESIGNS, EMPTY_FIELDS, getSellableDesign, type ArtFields, type FieldKey } from "@/lib/art";
-import { DEFAULT_SIZE_ID, FORMATS, FRAME_FINISHES, OCCASIONS, formatPrice, getPrintSize, type ProductFormat } from "@/lib/catalog";
+import { DEFAULT_SIZE_ID, DIGITAL, FORMATS, FRAME_FINISHES, OCCASIONS, formatPrice, getPrintSize, type ProductFormat } from "@/lib/catalog";
 import { cleanListenUrl, listenServiceName } from "@/lib/listenLink";
 import { track } from "@/lib/analytics";
 import { ACCEPT, formatLength, useMemoryUpload, type MemoryInfo, type ReadyResult } from "./useMemoryUpload";
@@ -179,8 +179,11 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
 
   const variant = variants.find((v) => v.format === format && v.sizeId === sizeId) ?? variants.find((v) => v.format === format) ?? variants[0];
   const size = getPrintSize(variant?.sizeId) ?? getPrintSize(DEFAULT_SIZE_ID)!;
-  const unitPrice = variant?.priceCents ?? size.price[format];
-  const price = unitPrice * quantity;
+  const isDigital = format === "digital";
+  const unitPrice = variant?.priceCents ?? (isDigital ? DIGITAL.priceCents : size.price[format]);
+  // One file is all anyone needs; copies for family are free to share.
+  const qty = isDigital ? 1 : quantity;
+  const price = unitPrice * qty;
   const sizesForFormat = variants.filter((v) => v.format === format);
   const finishes = variant?.frameFinishes.length ? FRAME_FINISHES.filter((f) => variant.frameFinishes.includes(f.id)) : [];
   const occasion = OCCASIONS.find((o) => o.id === occasionId);
@@ -436,11 +439,11 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
       const pid = await saveProject();
       const finish = variant.format === "framed" ? frameFinish : null;
       const res = editItem
-        ? await fetch(`/api/cart/items/${editItem.id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ variantId: variant.id, frameFinish: finish, quantity }) })
-        : await fetch("/api/cart/items", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ projectId: pid, variantId: variant.id, frameFinish: finish, quantity }) });
+        ? await fetch(`/api/cart/items/${editItem.id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ variantId: variant.id, frameFinish: finish, quantity: qty }) })
+        : await fetch("/api/cart/items", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ projectId: pid, variantId: variant.id, frameFinish: finish, quantity: qty }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "We couldn’t add that to your cart. Please try again.");
-      track("add_to_cart", { design_id: design.id, occasion: occasionId, size: variant.sizeId, format: variant.format, value: price / 100, currency: "USD", quantity });
+      track("add_to_cart", { design_id: design.id, occasion: occasionId, size: variant.sizeId, format: variant.format, value: price / 100, currency: "USD", quantity: qty });
       try {
         localStorage.removeItem(DRAFT_KEY);
       } catch {}
@@ -684,8 +687,8 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
 
   const printPanel = (
     <div className="space-y-6">
-      <h2 className="display text-5xl">Print &amp; frame</h2>
-      <div className="grid grid-cols-2 gap-3">
+      <h2 className="display text-5xl">Format</h2>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {FORMATS.map((f) => (
           <button key={f.id} type="button" onClick={() => setFormat(f.id)} aria-pressed={format === f.id} className={`rounded-xl border border-ink/15 p-3 text-left ${format === f.id ? "bg-ink text-paper" : "bg-paper"}`}>
             <span className="block font-semibold">{f.label}</span>
@@ -693,6 +696,12 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
           </button>
         ))}
       </div>
+      {isDigital ? (
+        <div className="rounded-xl border border-ink/15 bg-paper-2 p-4">
+          <p className="display text-3xl">{formatPrice(unitPrice)}</p>
+          <p className="mt-1 text-[15px]">A high-resolution PNG (3600 × 4800, prints sharply up to 18 × 24 in) and a PDF that scales to any size. Print it anywhere, or send it to family.</p>
+        </div>
+      ) : (
       <div className="grid grid-cols-3 gap-3">
         {sizesForFormat.map((v) => {
           const s = getPrintSize(v.sizeId);
@@ -705,6 +714,8 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
           );
         })}
       </div>
+      )}
+      {!isDigital && <p className="text-sm">Includes the digital file free: a PNG and PDF of your artwork, emailed after you order.</p>}
       {format === "framed" && finishes.length > 0 && (
         <div>
           <p className="meta mb-2">Frame</p>
@@ -718,6 +729,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
           </div>
         </div>
       )}
+      {!isDigital && (
       <div>
         <p className="meta mb-2">Quantity</p>
         <div className="inline-flex items-center rounded-xl border border-ink/15">
@@ -733,8 +745,11 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
         </div>
         <span className="ml-3 text-sm text-ink-soft">Same design for family? Order extra copies here.</span>
       </div>
+      )}
       <p className="text-sm text-ink-soft">
-        Made to order · free tracked US shipping · usually {variant?.leadTimeMinDays ?? 5}–{variant?.leadTimeMaxDays ?? 9} business days to your door. Delivery dates are estimates.
+        {isDigital
+          ? "Delivered by email a few minutes after you order. For personal use: print it, frame it, share it with family."
+          : `Made to order · free tracked US shipping · usually ${variant?.leadTimeMinDays ?? 5}–${variant?.leadTimeMaxDays ?? 9} business days to your door. Delivery dates are estimates.`}
       </p>
     </div>
   );
@@ -747,9 +762,9 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
         rows={[
           ["Artwork", `${design.name} · ${design.colorways.find((c) => c.id === colorwayId)?.name}`],
           ["Source", mem.info ? `${mem.info.fileName} · ${formatLength(mem.info.duration)}` : "— not added yet"],
-          ["Print", `${size.label} ${format === "framed" ? `framed · ${frameFinish}` : "print only"}${quantity > 1 ? ` · × ${quantity}` : ""}`],
+          ["Format", isDigital ? "Digital file · PNG + PDF by email" : `${size.label} ${format === "framed" ? `framed · ${frameFinish}` : "print only"}${qty > 1 ? ` · × ${qty}` : ""} · digital file included`],
           ["Code", showQr ? `${qr === "discreet" ? "Discreet" : "Standard"} · ${qrTarget === "link" && cleanedUrl ? `opens ${listenServiceName(cleanedUrl)}` : "plays your recording"}` : "None"],
-          ["Price", `${formatPrice(price)} incl. US shipping · tax calculated at checkout`],
+          ["Price", `${formatPrice(price)}${isDigital ? "" : " incl. US shipping"} · tax calculated at checkout`],
         ]}
       />
       <p className="text-[15px]">Please check names and dates — we print exactly what you see.</p>
@@ -775,7 +790,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
           {orderError}
         </p>
       )}
-      <p className="text-sm text-ink-soft">Damaged, or not as previewed? We reprint it free.</p>
+      <p className="text-sm text-ink-soft">{isDigital ? "A name or date wrong? We'll fix the file free." : "Damaged, or not as previewed? We reprint it free."}</p>
       <p className="text-sm text-ink-soft">
         By ordering you agree to our{" "}
         <Link href="/terms" target="_blank" className="underline underline-offset-2">
@@ -804,7 +819,7 @@ export default function Studio({ variants, initialDesign, initialOccasion, initi
         heightIn={size.heightIn}
         showQr={showQr}
         qrStyle={artQrStyle}
-        format={format}
+        format={isDigital ? "print" : format}
         frameFinish={frameFinish}
         idPrefix="studio"
         title={`${design.name} preview`}

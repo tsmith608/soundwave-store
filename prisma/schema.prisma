@@ -101,6 +101,8 @@ model Product {
 enum ProductFormat {
   print
   framed
+  /// High-res file delivered by email; no printing or shipping.
+  digital
 }
 
 /// A sellable size × format. Frame finish is an option on the variant.
@@ -230,6 +232,9 @@ enum GeneratedAssetKind {
   print_pdf
   print_png
   preview_png
+  /// Customer download (no bleed): sold on its own, and free with every print.
+  digital_pdf
+  digital_png
 }
 
 /// Derived files: production print files and previews. Immutable once written.

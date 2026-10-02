@@ -29,6 +29,6 @@ export function newUploadKey(ext: string): string {
   return `uploads/${d.getUTCFullYear()}/${String(d.getUTCMonth() + 1).padStart(2, "0")}/${randomToken(18)}.${ext}`;
 }
 
-export function renderKey(orderNumber: string, itemId: string, kind: "print-pdf" | "print-png" | "preview", ext: string): string {
+export function renderKey(orderNumber: string, itemId: string, kind: "print-pdf" | "print-png" | "preview" | "digital-pdf" | "digital-png", ext: string): string {
   return `renders/${orderNumber}/${itemId}-${kind}-${randomToken(6)}.${ext}`;
 }

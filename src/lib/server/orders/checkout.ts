@@ -7,7 +7,7 @@ import { AppError } from "../http";
 import { log } from "../log";
 import { ownsRecord, type Owner } from "../auth";
 import { getCart, priceCart } from "../cart";
-import { availableShipping, variantDto } from "../catalog";
+import { availableShipping, needsShipping, variantDto } from "../catalog";
 import { payments } from "../payments";
 import type { ProjectOptions } from "../projects";
 import { nextOrderNumber } from "./state";
@@ -138,9 +138,11 @@ export async function startCheckout(owner: Owner, opts: { email?: string | null 
         unitAmountCents: it.unitPriceCents,
         quantity: it.quantity,
         metadata: { orderItemId: it.id, sku: it.sku },
+        taxCode: it.format === "digital" ? env.STRIPE_TAX_CODE_DIGITAL : undefined,
       })),
       discount: q.discountCents > 0 && q.discount ? { code: q.discount.code, amountOffCents: q.discountCents } : null,
       shipping: q.discount?.type === "free_shipping" ? shipping.filter((m) => m.id === "standard") : shipping,
+      requiresShipping: needsShipping(cart.items.map((i) => i.variant)),
       successUrl: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${appUrl}/cart?checkout=cancelled`,
     });

@@ -17,7 +17,7 @@ export interface CartItemDto {
   fields: unknown;
   options: unknown;
   peaks: unknown;
-  variant: { id: string; label: string; sizeId: string; format: "print" | "framed"; priceCents: number; frameFinishes: string[]; leadTimeMinDays: number; leadTimeMaxDays: number };
+  variant: { id: string; label: string; sizeId: string; format: "print" | "framed" | "digital"; priceCents: number; frameFinishes: string[]; leadTimeMinDays: number; leadTimeMaxDays: number };
   frameFinish: string | null;
   quantity: number;
   lineTotalCents: number;
@@ -114,7 +114,9 @@ export default function CartView({ initial, notice }: { initial: CartDto | null;
 
   const q = cart.quote!;
   const hasProblems = cart.items.some((i) => i.problems.length);
-  const lead = { min: Math.max(...cart.items.map((i) => i.variant.leadTimeMinDays)), max: Math.max(...cart.items.map((i) => i.variant.leadTimeMaxDays)) };
+  const physical = cart.items.filter((i) => i.variant.format !== "digital");
+  const digitalOnly = physical.length === 0;
+  const lead = physical.length ? { min: Math.max(...physical.map((i) => i.variant.leadTimeMinDays)), max: Math.max(...physical.map((i) => i.variant.leadTimeMaxDays)) } : { min: 0, max: 0 };
 
   return (
     <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
@@ -207,8 +209,8 @@ export default function CartView({ initial, notice }: { initial: CartDto | null;
             </div>
           )}
           <div className="flex justify-between">
-            <dt>Shipping</dt>
-            <dd>{q.shippingCents === 0 ? "Free" : formatCents(q.shippingCents)}</dd>
+            <dt>{digitalOnly ? "Delivery" : "Shipping"}</dt>
+            <dd>{digitalOnly ? "Email" : q.shippingCents === 0 ? "Free" : formatCents(q.shippingCents)}</dd>
           </div>
           <div className="flex justify-between text-ink-soft">
             <dt>Tax</dt>
@@ -263,7 +265,11 @@ export default function CartView({ initial, notice }: { initial: CartDto | null;
         {hasProblems && <p className="mt-2 text-sm text-[#7E2512]">Please fix the items marked above first.</p>}
         <ul className="mt-5 space-y-1.5 text-sm text-ink-soft">
           <li>🔒 Secure checkout by Stripe — card, Apple Pay, Google Pay. We never see your card number.</li>
-          <li>Made to order; usually {lead.min}–{lead.max} business days to your door (US).</li>
+          {digitalOnly ? (
+            <li>Your file arrives by email a few minutes after you pay.</li>
+          ) : (
+            <li>Made to order; usually {lead.min}–{lead.max} business days to your door (US). The digital file comes free.</li>
+          )}
           <li>
             Damaged or not as previewed? We reprint it free. <Link href="/returns" className="underline">Returns</Link> · <Link href="/shipping" className="underline">Shipping</Link>
           </li>

@@ -78,18 +78,39 @@ function hello(o: Order) {
 export function orderConfirmation(o: OrderWith, lead: { min: number; max: number }): Rendered {
   const t = itemsTable(o);
   const link = orderUrl(o.id);
+  const physical = o.items.some((i) => i.format !== "digital");
+  const next = physical
+    ? `We print and frame each piece to order. Most orders arrive in about ${lead.min}–${lead.max} business days; we'll email tracking as soon as it ships. Your free digital copy will arrive by email shortly.`
+    : "We're making your digital file now. You'll get an email with the download link in a few minutes.";
   const html = layout(
     `Order ${o.number} confirmed`,
-    `<p>${esc(hello(o))}</p><p>Thank you — your order <strong>${esc(o.number)}</strong> is confirmed and paid. We're preparing your print file now.</p>
+    `<p>${esc(hello(o))}</p><p>Thank you — your order <strong>${esc(o.number)}</strong> is confirmed and paid. We're preparing your ${physical ? "print file" : "digital file"} now.</p>
 ${t.html}
-<p style="margin-top:20px"><strong>Shipping to</strong><br>${esc(address(o)).replace(/\n/g, "<br>")}</p>
-<p><strong>What happens next</strong><br>We print and frame each piece to order. Most orders arrive in about ${lead.min}–${lead.max} business days; we'll email tracking as soon as it ships.</p>
-<p>Please check the names and dates above. If anything's wrong, reply within 12 hours and we'll fix it before it's printed.</p>
+${physical ? `<p style="margin-top:20px"><strong>Shipping to</strong><br>${esc(address(o)).replace(/\n/g, "<br>")}</p>` : ""}
+<p><strong>What happens next</strong><br>${esc(next)}</p>
+<p>Please check the names and dates above. If anything's wrong, reply within 12 hours and we'll fix it${physical ? " before it's printed" : ""}.</p>
 ${button(link, "View your order")}`,
     `Order ${o.number} is confirmed.`,
   );
-  const text = `${hello(o)}\n\nThank you — your order ${o.number} is confirmed and paid.\n\n${t.text}\n\nShipping to:\n${address(o)}\n\nMost orders arrive in about ${lead.min}–${lead.max} business days. We'll email tracking when it ships.\nIf a name or date is wrong, reply within 12 hours.\n\nView your order: ${link}\n`;
+  const text = `${hello(o)}\n\nThank you — your order ${o.number} is confirmed and paid.\n\n${t.text}\n\n${physical ? `Shipping to:\n${address(o)}\n\n` : ""}${next}\nIf a name or date is wrong, reply within 12 hours.\n\nView your order: ${link}\n`;
   return { subject: `Order ${o.number} confirmed — ${BRAND_NAME}`, html, text };
+}
+
+/** Download link for the digital file: the product itself for digital orders, a free extra with prints. */
+export function digitalReady(o: OrderWith): Rendered {
+  const link = orderUrl(o.id);
+  const physical = o.items.some((i) => i.format !== "digital");
+  const intro = physical ? "Your print is on its way, and here's something extra: the digital file of your artwork, free with your order." : "Your digital file is ready.";
+  const about = "You'll find a high-resolution PNG (prints sharply up to 18 × 24 in) and a PDF that scales to any size. Print it anywhere, set it as a lock screen, or send a copy to family. It's yours for personal use.";
+  return {
+    subject: physical ? `Your free digital copy — order ${o.number}` : `Your digital file is ready — order ${o.number}`,
+    html: layout(
+      "Your digital file",
+      `<p>${esc(hello(o))}</p><p>${esc(intro)}</p><p>${esc(about)}</p>${button(link, "Download your files")}<p style="font-size:14px;color:#57524B">The link on your order page stays available. If a name or date needs fixing, reply to this email.</p>`,
+      intro,
+    ),
+    text: `${hello(o)}\n\n${intro}\n\n${about}\n\nDownload: ${link}\n`,
+  };
 }
 
 export function paymentFailed(o: Order): Rendered {

@@ -6,7 +6,9 @@
  * FRAME_SIZES in constants.ts remain for existing orders and tests.
  */
 
-export type ProductFormat = "framed" | "print";
+/** Physical formats are printed by the lab; "digital" is a file delivered by email. */
+export type PhysicalFormat = "framed" | "print";
+export type ProductFormat = PhysicalFormat | "digital";
 
 export interface PrintSize {
   id: string;
@@ -15,9 +17,9 @@ export interface PrintSize {
   heightIn: number;
   note: string;
   /** Prices in cents per format. */
-  price: Record<ProductFormat, number>;
+  price: Record<PhysicalFormat, number>;
   /** Supplier SKUs to be confirmed in the supplier dashboard before launch. */
-  sku: { prodigi: Record<ProductFormat, string> };
+  sku: { prodigi: Record<PhysicalFormat, string> };
 }
 
 export const PRINT_SIZES: PrintSize[] = [
@@ -55,7 +57,23 @@ export const DEFAULT_SIZE_ID = "12x16";
 export const FORMATS: { id: ProductFormat; label: string; description: string }[] = [
   { id: "framed", label: "Framed", description: "Solid wood frame, white mount, acrylic glazing, ready to hang" },
   { id: "print", label: "Print only", description: "Archival matte fine-art paper, shipped flat in a rigid mailer" },
+  { id: "digital", label: "Digital file", description: "High-res file by email, ready to print anywhere or share with family" },
 ];
+
+/**
+ * The digital file: sold on its own, and included free with every print.
+ * One size (12 × 16 proportions); the vector PDF scales to any size and the
+ * PNG prints sharply up to 18 × 24.
+ */
+export const DIGITAL = {
+  variantId: "digital-12x16",
+  sizeId: "12x16",
+  widthIn: 12,
+  heightIn: 16,
+  priceCents: 1900,
+  pngDpi: 300,
+  label: "Digital file (PNG + PDF)",
+} as const;
 
 export const FRAME_FINISHES = [
   { id: "black", label: "Black", color: "#1E1D1B" },
